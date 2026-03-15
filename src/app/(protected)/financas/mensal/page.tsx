@@ -109,6 +109,21 @@ export default async function MensalPage() {
         ]}
       />
 
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-slate-800">Exportacao</p>
+            <p className="text-xs text-slate-500">Baixe os lancamentos do mes atual em CSV.</p>
+          </div>
+          <a
+            href="/api/exports/financas/mensal"
+            className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800"
+          >
+            Baixar CSV mensal
+          </a>
+        </div>
+      </Card>
+
       {!hasEnv ? (
         <Card>
           <p className="text-sm text-slate-600">

@@ -298,3 +298,16 @@ Arquivo: src/app/(protected)/financas/anual/page.tsx
   - totais anuais,
   - melhor e pior mes por resultado.
 - Formatacao monetaria respeitando currency/locale do perfil.
+
+## 18) Delta tecnico - exportacao CSV em Financas
+
+Arquivos: src/app/api/exports/financas/mensal/route.ts e src/app/api/exports/financas/anual/route.ts
+
+- Criadas rotas API autenticadas para exportacao CSV.
+- /api/exports/financas/mensal exporta lancamentos do mes atual com categoria resolvida.
+- /api/exports/financas/anual exporta consolidado por mes (receita, despesa, resultado e quantidade).
+- Respostas incluem content-disposition para download de arquivo e cache-control no-store.
+
+Arquivos: src/app/(protected)/financas/mensal/page.tsx e src/app/(protected)/financas/anual/page.tsx
+
+- Adicionados blocos de exportacao com botao direto para download de CSV nas duas telas.
