@@ -311,3 +311,10 @@ Arquivos: src/app/api/exports/financas/mensal/route.ts e src/app/api/exports/fin
 Arquivos: src/app/(protected)/financas/mensal/page.tsx e src/app/(protected)/financas/anual/page.tsx
 
 - Adicionados blocos de exportacao com botao direto para download de CSV nas duas telas.
+
+Evolucao adicional no mesmo ciclo:
+
+- Rotas passaram a aceitar query params start/end (YYYY-MM-DD) com validacao de intervalo.
+- Rota anual passou a aceitar mode=detailed para exportar transacoes detalhadas (id, data, tipo, status, descricao, valor).
+- UI de /financas/anual agora oferece dois downloads: resumo e detalhado.
+- UI de /financas/mensal agora oferece download do mes e atalho de ultimos 90 dias (via start/end).

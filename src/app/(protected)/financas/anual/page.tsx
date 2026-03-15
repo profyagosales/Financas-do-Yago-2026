@@ -114,14 +114,22 @@ export default async function AnualPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-slate-800">Exportacao</p>
-            <p className="text-xs text-slate-500">Baixe o consolidado anual por mes em CSV.</p>
+            <p className="text-xs text-slate-500">Baixe o consolidado anual ou o detalhado de transacoes em CSV.</p>
           </div>
-          <a
-            href="/api/exports/financas/anual"
-            className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800"
-          >
-            Baixar CSV anual
-          </a>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="/api/exports/financas/anual"
+              className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800"
+            >
+              Baixar CSV anual (resumo)
+            </a>
+            <a
+              href="/api/exports/financas/anual?mode=detailed"
+              className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200"
+            >
+              Baixar CSV anual (detalhado)
+            </a>
+          </div>
         </div>
       </Card>
 

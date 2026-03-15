@@ -78,6 +78,13 @@ export default async function MensalPage() {
   const { hasEnv, prefs, rows, categoriesMap } = await getMonthlyData();
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
 
+  const now = new Date();
+  const startCurrentMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
+  const endCurrentMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)).toISOString().slice(0, 10);
+  const startLast90 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 90)).toISOString().slice(0, 10);
+  const exportCurrentMonth = `/api/exports/financas/mensal?start=${startCurrentMonth}&end=${endCurrentMonth}`;
+  const exportLast90Days = `/api/exports/financas/mensal?start=${startLast90}&end=${endCurrentMonth}`;
+
   const receitas = rows.filter((r) => r.type === "income").reduce((s, r) => s + r.amount, 0);
   const despesas = rows.filter((r) => r.type === "expense").reduce((s, r) => s + r.amount, 0);
   const resultado = receitas - despesas;
@@ -113,14 +120,22 @@ export default async function MensalPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-slate-800">Exportacao</p>
-            <p className="text-xs text-slate-500">Baixe os lancamentos do mes atual em CSV.</p>
+            <p className="text-xs text-slate-500">Baixe os lancamentos do mes atual ou de um intervalo rapido em CSV.</p>
           </div>
-          <a
-            href="/api/exports/financas/mensal"
-            className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800"
-          >
-            Baixar CSV mensal
-          </a>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={exportCurrentMonth}
+              className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800"
+            >
+              Baixar CSV do mes
+            </a>
+            <a
+              href={exportLast90Days}
+              className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200"
+            >
+              Baixar CSV ultimos 90 dias
+            </a>
+          </div>
         </div>
       </Card>
 

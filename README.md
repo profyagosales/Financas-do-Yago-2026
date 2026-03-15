@@ -116,6 +116,7 @@ Automacao e acesso direto ao Supabase:
 - Configuracoes foi implementado com perfil (nome, moeda e localidade), preferencias da aplicacao (tema, graficos, alertas) e metricas de cadastros.
 - Financas mensal/anual/categorias deixou de ser placeholder e agora possui consolidacao real por periodo, comparativo anual e gestao operacional de categorias.
 - Financas mensal e anual agora oferecem exportacao CSV autenticada diretamente pela interface.
+- Exportacao CSV de financas agora aceita intervalo customizado por query string (start/end) e modo anual detalhado de transacoes.
 - Moeda/localidade do perfil agora sao aplicadas de forma consistente no dashboard e modulos de financas, mercado, metas, lista de desejo, investimentos e relatorios.
 - Preferencia de exibir graficos no dashboard agora respeita configuracao do usuario em tempo real.
 - OCR de nota fiscal esta preparado para fluxo assistido por revisao humana.

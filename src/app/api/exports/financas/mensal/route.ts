@@ -11,13 +11,18 @@ function monthRange() {
   };
 }
 
+function isIsoDate(value: string | null) {
+  if (!value) return false;
+  return /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
 function csvCell(value: unknown) {
   const raw = String(value ?? "");
   const escaped = raw.replace(/"/g, '""');
   return `"${escaped}"`;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   if (!hasSupabaseEnv()) {
     return new Response("Supabase nao configurado", { status: 503 });
   }
@@ -29,7 +34,17 @@ export async function GET() {
     return new Response("Nao autenticado", { status: 401 });
   }
 
-  const { start, end } = monthRange();
+  const url = new URL(request.url);
+  const qStart = url.searchParams.get("start");
+  const qEnd = url.searchParams.get("end");
+
+  const fallback = monthRange();
+  const start: string = isIsoDate(qStart) ? (qStart as string) : fallback.start;
+  const end: string = isIsoDate(qEnd) ? (qEnd as string) : fallback.end;
+
+  if (start >= end) {
+    return new Response("Intervalo invalido", { status: 400 });
+  }
 
   const [{ data: txData }, { data: categoriesData }] = await Promise.all([
     supabase
@@ -63,8 +78,7 @@ export async function GET() {
     );
   }
 
-  const now = new Date();
-  const filename = `financas-mensal-${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}.csv`;
+  const filename = `financas-mensal-${start}_a_${end}.csv`;
 
   return new Response(lines.join("\n"), {
     status: 200,
