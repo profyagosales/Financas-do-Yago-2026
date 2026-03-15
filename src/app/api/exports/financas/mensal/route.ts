@@ -1,4 +1,5 @@
 import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { logExportAudit } from "@/lib/exports/export-audit";
 import { csvCell, parseDateRange, parseFormatFilter, parseStatusFilter, parseTypeFilter } from "@/lib/exports/finance-export";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -83,6 +84,16 @@ export async function GET(request: Request) {
       data: normalized,
     };
 
+    await logExportAudit(supabase, {
+      userId,
+      module: "financas",
+      exportName: "mensal",
+      format,
+      mode: null,
+      filters: { start, end, type: typeFilter, status: statusFilter },
+      rowCount: normalized.length,
+    });
+
     return new Response(JSON.stringify(payload, null, 2), {
       status: 200,
       headers: {
@@ -111,6 +122,16 @@ export async function GET(request: Request) {
   }
 
   const filename = `financas-mensal-${start}_a_${end}.csv`;
+
+  await logExportAudit(supabase, {
+    userId,
+    module: "financas",
+    exportName: "mensal",
+    format,
+    mode: null,
+    filters: { start, end, type: typeFilter, status: statusFilter },
+    rowCount: normalized.length,
+  });
 
   return new Response(lines.join("\n"), {
     status: 200,

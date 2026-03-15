@@ -7,6 +7,16 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
+type ExportHistoryRow = {
+  id: string;
+  module: string;
+  export_name: string;
+  format: "csv" | "json";
+  mode: string | null;
+  row_count: number;
+  created_at: string;
+};
+
 async function getSettingsData() {
   if (!hasSupabaseEnv()) {
     return {
@@ -14,6 +24,7 @@ async function getSettingsData() {
       profile: { full_name: "", currency: "BRL" as const, locale: "pt-BR" as const },
       settings: { theme: "system" as const, show_charts: true, email_alerts: true, weekly_digest: false },
       stats: { accounts: 0, cards: 0, categories: 0, tags: 0 },
+      exports: [] as ExportHistoryRow[],
     };
   }
 
@@ -27,6 +38,7 @@ async function getSettingsData() {
       profile: { full_name: "", currency: "BRL" as const, locale: "pt-BR" as const },
       settings: { theme: "system" as const, show_charts: true, email_alerts: true, weekly_digest: false },
       stats: { accounts: 0, cards: 0, categories: 0, tags: 0 },
+      exports: [] as ExportHistoryRow[],
     };
   }
 
@@ -37,6 +49,7 @@ async function getSettingsData() {
     { count: cardsCount },
     { count: categoriesCount },
     { count: tagsCount },
+    { data: exportsData, error: exportsError },
   ] = await Promise.all([
     supabase.from("profiles").select("full_name, currency, locale").eq("id", userId).maybeSingle(),
     supabase
@@ -48,6 +61,12 @@ async function getSettingsData() {
     supabase.from("credit_cards").select("id", { count: "exact", head: true }).eq("user_id", userId),
     supabase.from("categories").select("id", { count: "exact", head: true }).eq("user_id", userId),
     supabase.from("tags").select("id", { count: "exact", head: true }).eq("user_id", userId),
+    supabase
+      .from("export_history")
+      .select("id, module, export_name, format, mode, row_count, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(12),
   ]);
 
   const dashboardConfig = (settingsData?.dashboard_config ?? {}) as Record<string, unknown>;
@@ -72,11 +91,12 @@ async function getSettingsData() {
       categories: categoriesCount ?? 0,
       tags: tagsCount ?? 0,
     },
+    exports: exportsError ? [] : ((exportsData ?? []) as ExportHistoryRow[]),
   };
 }
 
 export default async function ConfiguracoesPage() {
-  const { hasEnv, profile, settings, stats } = await getSettingsData();
+  const { hasEnv, profile, settings, stats, exports } = await getSettingsData();
 
   return (
     <div className="space-y-4">
@@ -138,6 +158,40 @@ export default async function ConfiguracoesPage() {
           />
         </div>
       </div>
+
+      <Card>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Historico de exportacoes</h2>
+        {exports.length === 0 ? (
+          <p className="mt-3 text-sm text-slate-600">Nenhuma exportacao registrada ainda.</p>
+        ) : (
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr>
+                  <th className="border-b border-slate-200 py-2 pr-3">Data</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Modulo</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Nome</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Formato</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Modo</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Linhas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {exports.map((item) => (
+                  <tr key={item.id}>
+                    <td className="border-b border-slate-100 py-2 pr-3">{new Date(item.created_at).toLocaleString("pt-BR")}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{item.module}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{item.export_name}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{item.format.toUpperCase()}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{item.mode ?? "-"}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{item.row_count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

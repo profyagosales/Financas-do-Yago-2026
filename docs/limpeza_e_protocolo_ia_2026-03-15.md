@@ -348,3 +348,11 @@ Bloco adicional de formatos de exportacao:
 - Rotas /api/exports/financas/mensal e /api/exports/financas/anual agora aceitam format=csv|json.
 - Para JSON, respostas incluem metadados (range, filtros, modo e contagem) e payload estruturado em data.
 - ExportRangeForm ganhou seletor de formato para escolha direta na interface.
+
+Bloco adicional de auditoria de exportacao:
+
+- Migration nova: supabase/migrations/202603150005_export_history.sql.
+- Tabela public.export_history criada com RLS e indice por usuario/data.
+- Helper src/lib/exports/export-audit.ts implementado para registrar auditoria sem bloquear download em caso de falha.
+- Rotas mensal/anual passaram a registrar log (modulo, formato, modo, filtros e quantidade de linhas exportadas).
+- Tela de configuracoes passou a exibir historico recente de exportacoes para o usuario.

@@ -1,4 +1,5 @@
 import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { logExportAudit } from "@/lib/exports/export-audit";
 import { csvCell, parseDateRange, parseFormatFilter, parseStatusFilter, parseTypeFilter } from "@/lib/exports/finance-export";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -70,6 +71,16 @@ export async function GET(request: Request) {
         data: rows,
       };
 
+      await logExportAudit(supabase, {
+        userId,
+        module: "financas",
+        exportName: "anual",
+        format,
+        mode,
+        filters: { start, end, type: typeFilter, status: statusFilter },
+        rowCount: rows.length,
+      });
+
       return new Response(JSON.stringify(payload, null, 2), {
         status: 200,
         headers: {
@@ -95,6 +106,16 @@ export async function GET(request: Request) {
         ].join(","),
       );
     }
+
+    await logExportAudit(supabase, {
+      userId,
+      module: "financas",
+      exportName: "anual",
+      format,
+      mode,
+      filters: { start, end, type: typeFilter, status: statusFilter },
+      rowCount: rows.length,
+    });
 
     return new Response(detailLines.join("\n"), {
       status: 200,
@@ -140,6 +161,16 @@ export async function GET(request: Request) {
       data: monthly,
     };
 
+    await logExportAudit(supabase, {
+      userId,
+      module: "financas",
+      exportName: "anual",
+      format,
+      mode,
+      filters: { start, end, type: typeFilter, status: statusFilter },
+      rowCount: monthly.length,
+    });
+
     return new Response(JSON.stringify(payload, null, 2), {
       status: 200,
       headers: {
@@ -166,6 +197,16 @@ export async function GET(request: Request) {
   }
 
   const filename = `financas-anual-resumo-${start}_a_${end}.csv`;
+
+  await logExportAudit(supabase, {
+    userId,
+    module: "financas",
+    exportName: "anual",
+    format,
+    mode,
+    filters: { start, end, type: typeFilter, status: statusFilter },
+    rowCount: monthly.length,
+  });
 
   return new Response(lines.join("\n"), {
     status: 200,

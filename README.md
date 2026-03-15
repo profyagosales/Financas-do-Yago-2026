@@ -122,6 +122,7 @@ Automacao e acesso direto ao Supabase:
 - Exportacao por intervalo ganhou validacao no frontend (start < end) e estado visual de geracao, com componente reutilizavel entre telas.
 - Exportacoes CSV mensal/anual agora suportam filtros por tipo e status (incluindo modo sem cancelados) tanto via UI quanto query string.
 - Exportacoes de financas agora suportam dois formatos (CSV e JSON), com os mesmos filtros de periodo/tipo/status.
+- Exportacoes agora sao auditadas no banco e exibidas em Configuracoes com historico recente (formato, modo, data e quantidade de linhas).
 - Moeda/localidade do perfil agora sao aplicadas de forma consistente no dashboard e modulos de financas, mercado, metas, lista de desejo, investimentos e relatorios.
 - Preferencia de exibir graficos no dashboard agora respeita configuracao do usuario em tempo real.
 - OCR de nota fiscal esta preparado para fluxo assistido por revisao humana.
