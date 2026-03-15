@@ -8,11 +8,22 @@ export function Topbar() {
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Painel financeiro pessoal</p>
         <p className="text-sm text-slate-700">Controle completo em um unico lugar</p>
       </div>
-      <form action={signOut}>
-        <Button variant="secondary" type="submit">
-          Sair
-        </Button>
-      </form>
+      <div className="flex items-center gap-2">
+        <form action="/busca" method="get" className="hidden items-center gap-2 lg:flex">
+          <input
+            type="text"
+            name="q"
+            placeholder="Buscar em todo o app"
+            className="w-64 rounded-xl border border-slate-300 px-3 py-2 text-sm"
+          />
+          <Button variant="secondary" type="submit">Buscar</Button>
+        </form>
+        <form action={signOut}>
+          <Button variant="secondary" type="submit">
+            Sair
+          </Button>
+        </form>
+      </div>
     </header>
   );
 }

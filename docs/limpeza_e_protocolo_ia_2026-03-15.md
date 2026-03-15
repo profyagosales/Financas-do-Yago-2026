@@ -368,3 +368,11 @@ Bloco adicional de historico avancado em Configuracoes:
 - Historico de exportacoes agora suporta busca textual (nome/modulo/formato/modo/data), filtros por modulo, formato e periodo (7d/30d/90d/todo periodo).
 - Lista ganhou paginacao no cliente (10 itens por pagina) com navegacao Anterior/Proxima e contador de exibicao.
 - Consulta em src/app/(protected)/configuracoes/page.tsx foi simplificada para uma unica carga (ate 500 registros), reutilizada por metricas e painel.
+
+Bloco adicional de Busca Global (blueprint - recurso avancado):
+
+- Criada rota protegida src/app/(protected)/busca/page.tsx para pesquisa unificada entre modulos.
+- Busca cobre dados de transactions, investment_assets, financial_goals, wishlist_items e grocery_items.
+- Implementado filtro de escopo por modulo (all, transactions, investments, goals, wishlist, market).
+- Resultado traz contexto operacional (status/tipo/valores) e atalho para o modulo de origem.
+- Navegacao atualizada com entrada "Busca Global" no menu lateral e atalho de busca no topo (desktop).

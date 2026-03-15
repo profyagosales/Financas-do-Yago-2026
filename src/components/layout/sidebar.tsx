@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 const links = [
   ["Dashboard", "/dashboard"],
+  ["Busca Global", "/busca"],
   ["Mensal", "/financas/mensal"],
   ["Anual", "/financas/anual"],
   ["Contas", "/financas/contas"],
