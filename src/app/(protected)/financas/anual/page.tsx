@@ -1,5 +1,5 @@
 import { ModulePage } from "@/components/common/module-page";
-import { Button } from "@/components/ui/button";
+import { ExportRangeForm } from "@/components/finance/export-range-form";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -175,42 +175,21 @@ export default async function AnualPage() {
           </div>
 
           <div className="grid gap-2 xl:grid-cols-2">
-            <form action="/api/exports/financas/anual" method="get" className="grid gap-2 sm:grid-cols-[1fr_1fr_auto] rounded-xl border border-slate-200 p-2">
-              <input
-                type="date"
-                name="start"
-                defaultValue={startYear}
-                className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
-                required
-              />
-              <input
-                type="date"
-                name="end"
-                defaultValue={endYear}
-                className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
-                required
-              />
-              <Button type="submit">CSV resumo</Button>
-            </form>
+            <ExportRangeForm
+              action="/api/exports/financas/anual"
+              defaultStart={startYear}
+              defaultEnd={endYear}
+              submitLabel="CSV resumo"
+            />
 
-            <form action="/api/exports/financas/anual" method="get" className="grid gap-2 sm:grid-cols-[1fr_1fr_auto] rounded-xl border border-slate-200 p-2">
-              <input type="hidden" name="mode" value="detailed" />
-              <input
-                type="date"
-                name="start"
-                defaultValue={startYear}
-                className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
-                required
-              />
-              <input
-                type="date"
-                name="end"
-                defaultValue={endYear}
-                className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
-                required
-              />
-              <Button type="submit" variant="secondary">CSV detalhado</Button>
-            </form>
+            <ExportRangeForm
+              action="/api/exports/financas/anual"
+              mode="detailed"
+              defaultStart={startYear}
+              defaultEnd={endYear}
+              submitLabel="CSV detalhado"
+              buttonVariant="secondary"
+            />
           </div>
         </div>
       </Card>

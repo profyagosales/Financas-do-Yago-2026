@@ -329,3 +329,9 @@ Evolucao adicional de presets:
 
 - /financas/mensal passou a expor atalhos de periodo com um clique (Hoje, 7d, 30d, YTD), alem de mes e 90 dias.
 - /financas/anual passou a expor atalhos de periodo para resumo e detalhado (Hoje, 7d, 30d, 90d e YTD).
+
+Refatoracao e robustez de UX:
+
+- Criado componente client compartilhado src/components/finance/export-range-form.tsx.
+- Componente aplica validacao local de intervalo (start < end), bloqueio de submit invalido e estado "Gerando..." no botao.
+- Formularios manuais de /financas/mensal e /financas/anual migrados para o componente unico, reduzindo duplicacao e risco de divergencia.

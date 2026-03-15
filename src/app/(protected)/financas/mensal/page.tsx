@@ -1,5 +1,5 @@
 import { ModulePage } from "@/components/common/module-page";
-import { Button } from "@/components/ui/button";
+import { ExportRangeForm } from "@/components/finance/export-range-form";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -166,23 +166,12 @@ export default async function MensalPage() {
               </a>
             ))}
           </div>
-          <form action="/api/exports/financas/mensal" method="get" className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-            <input
-              type="date"
-              name="start"
-              defaultValue={startCurrentMonth}
-              className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
-              required
-            />
-            <input
-              type="date"
-              name="end"
-              defaultValue={endCurrentMonth}
-              className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
-              required
-            />
-            <Button type="submit">Baixar CSV customizado</Button>
-          </form>
+          <ExportRangeForm
+            action="/api/exports/financas/mensal"
+            defaultStart={startCurrentMonth}
+            defaultEnd={endCurrentMonth}
+            submitLabel="Baixar CSV customizado"
+          />
         </div>
       </Card>
 

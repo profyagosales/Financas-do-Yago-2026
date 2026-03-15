@@ -119,6 +119,7 @@ Automacao e acesso direto ao Supabase:
 - Exportacao CSV de financas agora aceita intervalo customizado por query string (start/end) e modo anual detalhado de transacoes.
 - As telas mensal e anual agora possuem seletor de datas na propria interface para gerar exportacoes CSV sem editar URL.
 - A interface de exportacao tambem oferece presets de periodo com um clique (Hoje, 7d, 30d, 90d e YTD, conforme contexto da tela).
+- Exportacao por intervalo ganhou validacao no frontend (start < end) e estado visual de geracao, com componente reutilizavel entre telas.
 - Moeda/localidade do perfil agora sao aplicadas de forma consistente no dashboard e modulos de financas, mercado, metas, lista de desejo, investimentos e relatorios.
 - Preferencia de exibir graficos no dashboard agora respeita configuracao do usuario em tempo real.
 - OCR de nota fiscal esta preparado para fluxo assistido por revisao humana.
