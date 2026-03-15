@@ -262,3 +262,39 @@ Arquivos: dashboard, financas, mercado, metas, lista-de-desejo, investimentos e 
 
 - O item 3.3 deste documento registra uma limpeza anterior em que algumas actions de roadmap foram removidas por nao uso.
 - Com a continuidade do escopo nesta mesma data, essas actions foram recriadas e reconectadas aos formularios/paginas reais, deixando de ser codigo zumbi.
+
+## 17) Delta tecnico - continuidade em Financas core (mensal/anual/categorias)
+
+Arquivo: src/actions/categories.ts
+
+- Criadas server actions para categorias (createCategory, setCategoryActive, deleteCategory).
+- Revalidacao de /financas/categorias e /financas/lancamentos apos alteracoes.
+- Protecao para evitar exclusao de categorias padrao (is_default=true).
+
+Arquivos: src/components/forms/category-form.tsx e src/lib/validators/schemas.ts
+
+- Formulario real para criacao de categoria com validacao Zod.
+- Novo schema categorySchema com tipos de dominio alinhados ao check do banco.
+
+Arquivo: src/app/(protected)/financas/categorias/page.tsx
+
+- Pagina evoluida de placeholder para modulo funcional com:
+  - cards de resumo (total, ativas, padrao),
+  - criacao de categoria,
+  - tabela operacional com ativar/desativar e exclusao.
+
+Arquivo: src/app/(protected)/financas/mensal/page.tsx
+
+- Pagina evoluida de placeholder para consolidacao mensal real:
+  - receitas, despesas, resultado e pendencias,
+  - top categorias de despesa no periodo,
+  - ultimos lancamentos do mes.
+- Formatacao monetaria respeitando currency/locale do perfil.
+
+Arquivo: src/app/(protected)/financas/anual/page.tsx
+
+- Pagina evoluida de placeholder para comparativo anual real:
+  - consolidado por mes (receita, despesa, resultado, volume),
+  - totais anuais,
+  - melhor e pior mes por resultado.
+- Formatacao monetaria respeitando currency/locale do perfil.

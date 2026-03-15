@@ -174,3 +174,10 @@ export const appSettingsSchema = z.object({
   email_alerts: z.boolean().default(true),
   weekly_digest: z.boolean().default(false),
 });
+
+export const categorySchema = z.object({
+  name: z.string().min(2),
+  type: z.enum(["income", "expense", "transfer", "investment", "mileage", "grocery", "goal"]),
+  icon: z.string().optional(),
+  color: z.string().optional(),
+});
