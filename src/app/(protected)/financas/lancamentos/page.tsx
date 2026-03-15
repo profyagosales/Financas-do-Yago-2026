@@ -5,6 +5,7 @@ import { deleteTransaction, setTransactionStatus, uploadTransactionAttachment } 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { findIconByText, getIconsByDomains } from "@/lib/icon-registry";
+import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { toMoney } from "@/lib/utils";
@@ -56,12 +57,18 @@ async function getFormOptions() {
 }
 
 async function getTransactions() {
-  if (!hasSupabaseEnv()) return [];
+  if (!hasSupabaseEnv()) {
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, transactions: [] as any[] };
+  }
 
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return [];
+  if (!userId) {
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, transactions: [] as any[] };
+  }
+
+  const prefs = await getDisplayPrefsForUser(supabase, userId);
 
   const { data } = await supabase
     .from("transactions")
@@ -96,7 +103,12 @@ async function getTransactions() {
   });
 
   const ids = withInferred.map((item) => item.id);
-  if (ids.length === 0) return withInferred.map((item) => ({ ...item, attachments: [] }));
+  if (ids.length === 0) {
+    return {
+      prefs,
+      transactions: withInferred.map((item) => ({ ...item, attachments: [] })),
+    };
+  }
 
   const { data: attachmentsData } = await supabase
     .from("attachments")
@@ -124,15 +136,19 @@ async function getTransactions() {
     return acc;
   }, {});
 
-  return withInferred.map((item) => ({
-    ...item,
-    attachments: byTransaction[item.id] ?? [],
-  }));
+  return {
+    prefs,
+    transactions: withInferred.map((item) => ({
+      ...item,
+      attachments: byTransaction[item.id] ?? [],
+    })),
+  };
 }
 
 export default async function LancamentosPage() {
-  const transactions = await getTransactions();
+  const { prefs, transactions } = await getTransactions();
   const options = await getFormOptions();
+  const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
 
   return (
     <div className="space-y-4">
@@ -179,7 +195,7 @@ export default async function LancamentosPage() {
                     </td>
                     <td className="border-b border-slate-100 py-2 pr-3">{tx.type}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{tx.status}</td>
-                    <td className="border-b border-slate-100 py-2 pr-3">{toMoney(Number(tx.amount ?? 0))}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{formatMoney(Number(tx.amount ?? 0))}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">
                       <div className="space-y-2">
                         <form action={uploadTransactionAttachment} className="flex items-center gap-2">
@@ -196,7 +212,7 @@ export default async function LancamentosPage() {
                         </form>
                         {tx.attachments.length > 0 ? (
                           <ul className="space-y-1 text-xs text-slate-600">
-                            {tx.attachments.map((att) => (
+                            {tx.attachments.map((att: { id: string; signed_url: string | null; attachment_kind: string | null; file_name: string }) => (
                               <li key={att.id}>
                                 {att.signed_url ? (
                                   <a href={att.signed_url} target="_blank" rel="noreferrer" className="text-sky-700 underline">

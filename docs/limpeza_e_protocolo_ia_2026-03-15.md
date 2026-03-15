@@ -125,3 +125,140 @@ Assets publicos sem referencia:
 Os modulos de roadmap (investimentos/milhas/mercado/lista de desejo) permanecem com rotas e estrutura de UI. Foram removidos apenas action files sem consumo atual, para evitar falsa sensacao de implementacao concluida.
 
 Ao reativar esses modulos, recriar actions com contratos explicitamente ligados aos formularios e paginas reais.
+
+## 8) Delta tecnico - continuidade em metas
+
+Arquivo: src/app/(protected)/metas/page.tsx
+
+- Pagina evoluida de placeholder para modulo funcional com resumo, carteira de metas, barra de progresso e historico recente de aportes.
+- A listagem agora calcula valor aportado, restante e percentual concluido a partir de goal_contributions.
+- Foram adicionadas acoes operacionais de ativar, pausar, concluir e excluir metas.
+
+Arquivos: src/components/forms/goal-form.tsx e src/components/forms/goal-contribution-form.tsx
+
+- Criado formulario real para cadastro de metas.
+- Formulario de aporte deixou de exigir UUID manual e passou a usar selects de metas e contas.
+- Fluxo agora exibe feedback textual simples de sucesso/erro e reseta campos apos submissao valida.
+
+Arquivo: src/actions/goals.ts
+
+- Normalizacao de campos opcionais antes de persistir no Supabase.
+- Revalidacao de /metas e /dashboard em criacao, mudanca de status e exclusao.
+
+Arquivo: src/lib/validators/schemas.ts
+
+- Schema de metas ampliado para descricao, status e conta destino, alinhando UI e banco.
+
+## 9) Delta tecnico - continuidade em lista de desejo
+
+Arquivo: src/app/(protected)/lista-de-desejo/page.tsx
+
+- Pagina evoluida de placeholder para modulo funcional com resumo, cadastro, listagem e controle operacional de status.
+- A tela agora destaca oportunidades quando preco atual fica menor ou igual ao preco alvo.
+- Foi adicionado resumo agregado de valor monitorado, alvo e economia potencial.
+
+Arquivos: src/actions/wishlist.ts e src/components/forms/wishlist-item-form.tsx
+
+- Recriadas actions do modulo com contrato explicito ligado a pagina real.
+- Formulario agora persiste itens com validacao Zod e feedback simples de sucesso/erro.
+- Status e exclusao foram implementados via server actions compatíveis com form action.
+
+Arquivo: src/lib/validators/schemas.ts
+
+- Novo schema wishlistItemSchema alinhado a tabela wishlist_items do banco.
+
+## 10) Delta tecnico - continuidade em Mercado
+
+Arquivos: src/actions/grocery.ts e src/lib/validators/schemas.ts
+
+- Recriadas actions de mercado com contrato ligado as paginas reais.
+- Schemas para grocery_lists, grocery_items e grocery_notes adicionados ao arquivo central.
+- markGroceryItemPurchased grava automaticamente em grocery_price_history quando item tem preco e estabelecimento.
+- uploadGroceryNoteFile valida mime (imagem/PDF), limita a 10 MB e faz rollback do storage se o insert de attachment falhar.
+
+Arquivos: src/components/forms/grocery-list-form.tsx, grocery-item-form.tsx, grocery-note-form.tsx
+
+- Formularios reais com validacao Zod, feedback de sucesso/erro e reset apos submit.
+- grocery-note-form usa textarea nativo estilizado para a transcricao da nota.
+
+Arquivos: src/app/(protected)/mercado/listas, historico, notas
+
+- /mercado/listas: cards de resumo, criar lista, adicionar item, tabela de listas com contagens, tabela flat de itens com coluna Lista e marcacao.
+- /mercado/historico: view read-only com agregacao JS (min/max/avg/count por produto normalizado).
+- /mercado/notas: criar nota manual, upload por nota, marcar revisada, excluir. Exibe status de revisao e preview do texto.
+
+## 11) Delta tecnico - continuidade em Milhas
+
+Arquivos: src/components/common/mileage-program-page.tsx e src/actions/mileage.ts
+
+- Implementado componente compartilhado por programa para reduzir duplicacao de pagina.
+- Fluxo real de movimentacoes com saldo calculado, acumulado, resgatado e vencimento em 90 dias.
+- Historico operacional por tipo de entrada com exclusao e revalidacao cruzada de dashboard/modulos de milhas.
+
+Arquivos: src/components/forms/mileage-entry-form.tsx e src/lib/validators/schemas.ts
+
+- Formulario real de lancamento com validacao Zod e reset pos-sucesso.
+- Schema mileageEntrySchema adicionado com tipos de operacao e campos opcionais controlados.
+
+Arquivos: src/app/(protected)/milhas/livelo/page.tsx, src/app/(protected)/milhas/latam-pass/page.tsx, src/app/(protected)/milhas/azul/page.tsx
+
+- Rotas deixaram de usar placeholder e passaram a encapsular o componente compartilhado com contexto de cada programa.
+
+## 12) Delta tecnico - continuidade em Investimentos
+
+Arquivos: src/components/common/investment-class-page.tsx e src/actions/investments.ts
+
+- Implementado componente compartilhado por classe de ativo (fixed_income, fii, stock, crypto).
+- Consolidacao de posicao por ativo (investido, resgatado, proventos, quantidade liquida e custo medio).
+- Historico de movimentacoes com exclusao, labels por tipo e revalidacao de dashboard/modulo alvo.
+
+Arquivos: src/components/forms/investment-asset-form.tsx, src/components/forms/investment-transaction-form.tsx e src/lib/validators/schemas.ts
+
+- Formularios reais para cadastro de ativo e movimentacao com validacao centralizada.
+- Schemas investmentAssetSchema e investmentTransactionSchema adicionados para alinhar UI e banco.
+
+Arquivos: src/app/(protected)/investimentos/renda-fixa/page.tsx, src/app/(protected)/investimentos/fiis/page.tsx, src/app/(protected)/investimentos/bolsa/page.tsx, src/app/(protected)/investimentos/cripto/page.tsx
+
+- Rotas deixaram de usar placeholder e passaram a usar wrapper com assetClass especifico.
+
+## 13) Delta tecnico - continuidade em Relatorios
+
+Arquivo: src/app/(protected)/relatorios/page.tsx
+
+- Pagina evoluida de placeholder para modulo funcional com:
+  - consolidacao mensal de receitas, despesas e resultado,
+  - top categorias de despesa,
+  - faturas de cartao por referencia/status,
+  - agregacao de investimentos por classe,
+  - agregacao de milhas por programa.
+- Consulta de currency/locale do perfil aplicada na formatacao monetaria e numerica da tela.
+
+## 14) Delta tecnico - continuidade em Configuracoes
+
+Arquivos: src/app/(protected)/configuracoes/page.tsx e src/actions/settings.ts
+
+- Pagina evoluida de placeholder para modulo funcional de configuracoes.
+- Implementado upsert de perfil (full_name, currency, locale) e de preferencias (theme, dashboard_config, notification_prefs).
+- Revalidacao de /configuracoes e /dashboard apos alteracoes.
+
+Arquivos: src/components/forms/profile-settings-form.tsx, src/components/forms/app-settings-form.tsx e src/lib/validators/schemas.ts
+
+- Formularios reais com validacao Zod para dados de perfil e preferencias da aplicacao.
+- Schemas profileSettingsSchema e appSettingsSchema adicionados ao arquivo central.
+
+## 15) Delta tecnico - padronizacao global de exibicao
+
+Arquivo: src/lib/supabase/display-prefs.ts
+
+- Criado helper unico para leitura de currency/locale do usuario com fallback seguro (BRL/pt-BR).
+
+Arquivos: dashboard, financas, mercado, metas, lista-de-desejo, investimentos e relatorios
+
+- Padronizada a formatacao de moeda e numeros com base em preferencias reais do perfil.
+- Dashboard passou a respeitar show_charts vindo de settings.dashboard_config.
+- Tooltips de graficos no dashboard passaram a usar locale/currency do usuario.
+
+## 16) Nota de consistencia historica
+
+- O item 3.3 deste documento registra uma limpeza anterior em que algumas actions de roadmap foram removidas por nao uso.
+- Com a continuidade do escopo nesta mesma data, essas actions foram recriadas e reconectadas aos formularios/paginas reais, deixando de ser codigo zumbi.

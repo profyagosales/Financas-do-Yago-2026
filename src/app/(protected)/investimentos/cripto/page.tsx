@@ -1,16 +1,13 @@
-import { ModulePage } from "@/components/common/module-page";
+import { InvestmentClassPage } from "@/components/common/investment-class-page";
 
-export default function CriptoPage() {
+export const dynamic = "force-dynamic";
+
+export default async function CriptoPage() {
   return (
-    <ModulePage
-      title="Investimentos > Cripto"
-      subtitle="Movimentacoes manuais para criptoativos."
-      bullets={[
-        "Compra, venda e rendimento",
-        "Quantidade com precisao",
-        "Moedas e corretoras",
-        "Participacao consolidada",
-      ]}
+    <InvestmentClassPage
+      assetClass="crypto"
+      title="Cripto"
+      subtitle="Criptoativos, tokens e movimentacoes em blockchain."
     />
   );
 }

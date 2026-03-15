@@ -30,7 +30,14 @@ const categories = [
   { name: "Saude", value: 600 },
 ];
 
-export function OverviewCharts() {
+interface Props {
+  currency?: string;
+  locale?: string;
+}
+
+export function OverviewCharts({ currency = "BRL", locale = "pt-BR" }: Props) {
+  const formatMoney = (value: number) => toMoney(value, locale, currency);
+
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card>
@@ -41,7 +48,7 @@ export function OverviewCharts() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip formatter={(value) => toMoney(Number(value ?? 0))} />
+              <Tooltip formatter={(value) => formatMoney(Number(value ?? 0))} />
               <Area type="monotone" dataKey="receitas" stroke="#0ea5e9" fill="#bae6fd" />
               <Area type="monotone" dataKey="despesas" stroke="#f97316" fill="#fed7aa" />
             </AreaChart>
@@ -55,7 +62,7 @@ export function OverviewCharts() {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie data={categories} dataKey="value" nameKey="name" outerRadius={100} fill="#0284c7" label />
-              <Tooltip formatter={(value) => toMoney(Number(value ?? 0))} />
+              <Tooltip formatter={(value) => formatMoney(Number(value ?? 0))} />
             </PieChart>
           </ResponsiveContainer>
         </div>

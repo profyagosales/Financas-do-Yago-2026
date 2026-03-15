@@ -1,16 +1,12 @@
-import { ModulePage } from "@/components/common/module-page";
+import { MileageProgramPage } from "@/components/common/mileage-program-page";
 
-export default function LiveloPage() {
+export const dynamic = "force-dynamic";
+
+export default async function LiveloPage() {
   return (
-    <ModulePage
-      title="Milhas > Livelo"
-      subtitle="Entradas, saidas e validade de pontos."
-      bullets={[
-        "Saldo por programa",
-        "Pontos a expirar",
-        "Origem da pontuacao",
-        "Meta de emissao",
-      ]}
+    <MileageProgramPage
+      programName="Livelo"
+      subtitle="Entradas, saidas e validade de pontos Livelo."
     />
   );
 }

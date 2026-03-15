@@ -3,6 +3,7 @@ import { ModulePage } from "@/components/common/module-page";
 import { CreditCardForm } from "@/components/forms/credit-card-form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { toMoney } from "@/lib/utils";
@@ -11,15 +12,17 @@ export const dynamic = "force-dynamic";
 
 async function getCreditCardsAndBills() {
   if (!hasSupabaseEnv()) {
-    return { cards: [], bills: [] };
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, cards: [], bills: [] };
   }
 
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
   if (!userId) {
-    return { cards: [], bills: [] };
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, cards: [], bills: [] };
   }
+
+  const prefs = await getDisplayPrefsForUser(supabase, userId);
 
   const [{ data: cardsData }, { data: txData }, { data: billsData }] = await Promise.all([
     supabase
@@ -58,13 +61,15 @@ async function getCreditCardsAndBills() {
   });
 
   return {
+    prefs,
     cards,
     bills: billsData ?? [],
   };
 }
 
 export default async function CartoesPage() {
-  const { cards, bills } = await getCreditCardsAndBills();
+  const { prefs, cards, bills } = await getCreditCardsAndBills();
+  const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
 
   return (
     <div className="space-y-4">
@@ -110,9 +115,9 @@ export default async function CartoesPage() {
                     <td className="border-b border-slate-100 py-2 pr-3">{card.name}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{card.institution}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{card.brand ?? "-"}</td>
-                    <td className="border-b border-slate-100 py-2 pr-3">{toMoney(Number(card.credit_limit))}</td>
-                    <td className="border-b border-slate-100 py-2 pr-3">{toMoney(Number(card.used))}</td>
-                    <td className="border-b border-slate-100 py-2 pr-3">{toMoney(Number(card.available))}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{formatMoney(Number(card.credit_limit))}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{formatMoney(Number(card.used))}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{formatMoney(Number(card.available))}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{card.closing_day}/{card.due_day}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">
                       <form action={deleteCreditCard.bind(null, card.id)}>
@@ -154,7 +159,7 @@ export default async function CartoesPage() {
                     <td className="border-b border-slate-100 py-2 pr-3">{bill.closing_date}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{bill.due_date}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{bill.status}</td>
-                    <td className="border-b border-slate-100 py-2 pr-3">{toMoney(Number(bill.total_amount ?? 0))}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{formatMoney(Number(bill.total_amount ?? 0))}</td>
                   </tr>
                 ))}
               </tbody>

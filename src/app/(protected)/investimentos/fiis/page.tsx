@@ -1,16 +1,13 @@
-import { ModulePage } from "@/components/common/module-page";
+import { InvestmentClassPage } from "@/components/common/investment-class-page";
 
-export default function FiisPage() {
+export const dynamic = "force-dynamic";
+
+export default async function FiisPage() {
   return (
-    <ModulePage
-      title="Investimentos > FIIs"
-      subtitle="Controle de cotas, rendimentos e distribuicao."
-      bullets={[
-        "Compras e vendas",
-        "Dividendos",
-        "Participacao por classe",
-        "Analise de carteira",
-      ]}
+    <InvestmentClassPage
+      assetClass="fii"
+      title="FIIs"
+      subtitle="Fundos de Investimento Imobiliario, cotas, rendimentos e proventos."
     />
   );
 }

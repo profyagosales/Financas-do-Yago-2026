@@ -7,6 +7,11 @@ const OverviewCharts = dynamic(
   { ssr: false },
 );
 
-export function DashboardChartsShell() {
-  return <OverviewCharts />;
+interface Props {
+  currency?: string;
+  locale?: string;
+}
+
+export function DashboardChartsShell({ currency, locale }: Props) {
+  return <OverviewCharts currency={currency} locale={locale} />;
 }

@@ -1,16 +1,12 @@
-import { ModulePage } from "@/components/common/module-page";
+import { MileageProgramPage } from "@/components/common/mileage-program-page";
 
-export default function AzulPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AzulPage() {
   return (
-    <ModulePage
-      title="Milhas > Azul"
-      subtitle="Gestao completa do programa Azul."
-      bullets={[
-        "Saldo atual",
-        "Entradas e saidas",
-        "Expiracao",
-        "Ajustes manuais",
-      ]}
+    <MileageProgramPage
+      programName="Azul"
+      subtitle="Gestao completa do programa Tudo Azul."
     />
   );
 }

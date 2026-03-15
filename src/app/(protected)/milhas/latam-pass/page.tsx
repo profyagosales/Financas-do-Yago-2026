@@ -1,16 +1,12 @@
-import { ModulePage } from "@/components/common/module-page";
+import { MileageProgramPage } from "@/components/common/mileage-program-page";
 
-export default function LatamPassPage() {
+export const dynamic = "force-dynamic";
+
+export default async function LatamPassPage() {
   return (
-    <ModulePage
-      title="Milhas > Latam Pass"
-      subtitle="Controle de aculo, resgate e expiracao."
-      bullets={[
-        "Movimentacoes por tipo",
-        "Validade de pontos",
-        "Historico filtravel",
-        "Indicadores do periodo",
-      ]}
+    <MileageProgramPage
+      programName="Latam Pass"
+      subtitle="Controle de acumulo, resgate e expiracao de pontos Latam Pass."
     />
   );
 }

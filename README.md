@@ -107,6 +107,15 @@ Automacao e acesso direto ao Supabase:
 - O catalogo agora inclui tambem assinaturas e SaaS (ex.: Netflix, Prime Video, Spotify, ChatGPT, Notion, Microsoft 365) e icones genericos para despesas nao-brand (aluguel, academia, agua, luz, internet, impostos etc.).
 - Lancamentos aceitam selecao manual de icone e fallback automatico por reconhecimento de descricao/aliases.
 - Lancamentos do tipo despesa podem ser marcados como despesa fixa e sao replicados automaticamente para os meses seguintes.
+- O modulo de metas agora permite criar objetivos reais, registrar aportes por selecao de meta/conta, acompanhar progresso e alterar status sem usar UUID manual.
+- A Lista de Desejo agora tem CRUD funcional com preco atual, preco alvo, prioridade, status operacional e indicador de oportunidade de compra.
+- O modulo Mercado agora tem CRUD completo: listas de compra com itens, marcacao como comprado, historico de precos automatico e notas fiscais manuais com revisao obrigatoria e upload de arquivo.
+- Milhas foi implementado com paginas reais por programa (Livelo, Latam Pass, Azul), saldo calculado, vencimentos em 90 dias e historico operacional.
+- Investimentos foi implementado com paginas reais por classe (Renda Fixa, FIIs, Bolsa, Cripto), cadastro de ativos, movimentacoes e consolidacao de posicao.
+- Relatorios foi implementado com consolidacao mensal, top categorias, cartoes por referencia, investimentos por classe e milhas por programa.
+- Configuracoes foi implementado com perfil (nome, moeda e localidade), preferencias da aplicacao (tema, graficos, alertas) e metricas de cadastros.
+- Moeda/localidade do perfil agora sao aplicadas de forma consistente no dashboard e modulos de financas, mercado, metas, lista de desejo, investimentos e relatorios.
+- Preferencia de exibir graficos no dashboard agora respeita configuracao do usuario em tempo real.
 - OCR de nota fiscal esta preparado para fluxo assistido por revisao humana.
 - A arquitetura foi organizada para continuar as fases do blueprint sem retrabalho.
 

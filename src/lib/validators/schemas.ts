@@ -79,10 +79,13 @@ export const transactionSchema = z
 
 export const goalSchema = z.object({
   name: z.string().min(2),
+  description: z.string().optional(),
   target_amount: z.coerce.number().positive(),
   target_date: z.string().optional(),
   category: z.string().optional(),
   priority: z.enum(["low", "medium", "high"]).default("medium"),
+  status: z.enum(["active", "paused", "completed"]).default("active"),
+  destination_account_id: z.string().uuid().optional(),
 });
 
 export const goalContributionSchema = z.object({
@@ -91,4 +94,83 @@ export const goalContributionSchema = z.object({
   contribution_date: z.string(),
   source_account_id: z.string().uuid().optional(),
   notes: z.string().optional(),
+});
+
+export const wishlistItemSchema = z.object({
+  name: z.string().min(2),
+  category: z.string().optional(),
+  url: z.url("URL invalida").optional().or(z.literal("")),
+  image_url: z.url("URL da imagem invalida").optional().or(z.literal("")),
+  current_price: z.coerce.number().nonnegative().optional(),
+  target_price: z.coerce.number().nonnegative().optional(),
+  priority: z.enum(["low", "medium", "high"]).default("medium"),
+  store_name: z.string().optional(),
+  status: z.enum(["active", "bought", "paused", "discarded"]).default("active"),
+  notes: z.string().optional(),
+});
+
+export const groceryListSchema = z.object({
+  name: z.string().min(2),
+  notes: z.string().optional(),
+});
+
+export const groceryItemSchema = z.object({
+  list_id: z.string().uuid().optional(),
+  raw_name: z.string().min(1),
+  quantity: z.coerce.number().positive().optional(),
+  unit: z.string().optional(),
+  unit_price: z.coerce.number().nonnegative().optional(),
+  establishment: z.string().optional(),
+  item_category: z.string().optional(),
+});
+
+export const groceryNoteSchema = z.object({
+  establishment: z.string().optional(),
+  note_date: z.string().optional(),
+  total_amount: z.coerce.number().nonnegative().optional(),
+  raw_extracted_text: z.string().optional(),
+});
+
+export const mileageEntrySchema = z.object({
+  program_id: z.string().uuid(),
+  entry_type: z.enum(["earn", "transfer", "redeem", "expire", "adjustment"]),
+  points: z.coerce.number().int().positive(),
+  occurred_at: z.string(),
+  expires_at: z.string().optional(),
+  source: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export const investmentAssetSchema = z.object({
+  name: z.string().min(2),
+  ticker: z.string().optional(),
+  asset_class: z.enum(["fixed_income", "fii", "stock", "crypto"]),
+  asset_subtype: z.string().optional(),
+  broker: z.string().optional(),
+  currency: z.string().default("BRL"),
+  notes: z.string().optional(),
+});
+
+export const investmentTransactionSchema = z.object({
+  asset_id: z.string().uuid(),
+  transaction_type: z.enum(["buy", "sell", "income", "dividend", "interest", "deposit", "withdraw", "adjustment"]),
+  transaction_date: z.string(),
+  quantity: z.coerce.number().positive().optional(),
+  unit_price: z.coerce.number().nonnegative().optional(),
+  total_amount: z.coerce.number().positive(),
+  fees: z.coerce.number().nonnegative().default(0),
+  notes: z.string().optional(),
+});
+
+export const profileSettingsSchema = z.object({
+  full_name: z.string().min(2),
+  currency: z.enum(["BRL", "USD", "EUR"]),
+  locale: z.enum(["pt-BR", "en-US", "es-ES"]),
+});
+
+export const appSettingsSchema = z.object({
+  theme: z.enum(["system", "light", "dark"]),
+  show_charts: z.boolean().default(true),
+  email_alerts: z.boolean().default(true),
+  weekly_digest: z.boolean().default(false),
 });

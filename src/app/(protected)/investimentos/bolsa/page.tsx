@@ -1,16 +1,13 @@
-import { ModulePage } from "@/components/common/module-page";
+import { InvestmentClassPage } from "@/components/common/investment-class-page";
 
-export default function BolsaPage() {
+export const dynamic = "force-dynamic";
+
+export default async function BolsaPage() {
   return (
-    <ModulePage
-      title="Investimentos > Bolsa"
-      subtitle="Gestao de ativos em renda variavel."
-      bullets={[
-        "Ticker e corretora",
-        "Quantidade e custo medio",
-        "Historico de ordens",
-        "Rentabilidade acumulada",
-      ]}
+    <InvestmentClassPage
+      assetClass="stock"
+      title="Bolsa"
+      subtitle="Acoes, BDRs, ETFs e ativos de renda variavel em bolsa."
     />
   );
 }

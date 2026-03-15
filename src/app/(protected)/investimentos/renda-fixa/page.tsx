@@ -1,16 +1,13 @@
-import { ModulePage } from "@/components/common/module-page";
+import { InvestmentClassPage } from "@/components/common/investment-class-page";
 
-export default function RendaFixaPage() {
+export const dynamic = "force-dynamic";
+
+export default async function RendaFixaPage() {
   return (
-    <ModulePage
-      title="Investimentos > Renda Fixa"
-      subtitle="Cadastro manual de ativos e movimentacoes."
-      bullets={[
-        "Aporte e resgate",
-        "Preco medio",
-        "Rentabilidade nominal",
-        "Proventos e historico",
-      ]}
+    <InvestmentClassPage
+      assetClass="fixed_income"
+      title="Renda Fixa"
+      subtitle="CDB, LCI, LCA, Tesouro Direto, debentures e outros ativos de renda fixa."
     />
   );
 }

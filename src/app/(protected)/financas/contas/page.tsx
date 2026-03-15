@@ -4,6 +4,7 @@ import { InstitutionAvatar } from "@/components/common/institution-avatar";
 import { deleteBankAccount } from "@/actions/finance";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { toMoney } from "@/lib/utils";
@@ -11,12 +12,18 @@ import { toMoney } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 async function getAccounts() {
-  if (!hasSupabaseEnv()) return [];
+  if (!hasSupabaseEnv()) {
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, accounts: [] as any[] };
+  }
 
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return [];
+  if (!userId) {
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, accounts: [] as any[] };
+  }
+
+  const prefs = await getDisplayPrefsForUser(supabase, userId);
 
   const { data } = await supabase
     .from("bank_accounts")
@@ -24,11 +31,12 @@ async function getAccounts() {
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  return data ?? [];
+  return { prefs, accounts: data ?? [] };
 }
 
 export default async function ContasPage() {
-  const accounts = await getAccounts();
+  const { prefs, accounts } = await getAccounts();
+  const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
 
   return (
     <div className="space-y-4">
@@ -74,7 +82,7 @@ export default async function ContasPage() {
                     </td>
                     <td className="border-b border-slate-100 py-2 pr-3">{account.institution}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{account.account_type}</td>
-                    <td className="border-b border-slate-100 py-2 pr-3">{toMoney(Number(account.initial_balance ?? 0))}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">{formatMoney(Number(account.initial_balance ?? 0))}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{account.is_active ? "Ativa" : "Inativa"}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">
                       <form action={deleteBankAccount.bind(null, account.id)}>
