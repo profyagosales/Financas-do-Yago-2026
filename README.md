@@ -1,0 +1,1 @@
+# Financas-do-Yago-2026
