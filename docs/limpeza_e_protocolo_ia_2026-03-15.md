@@ -385,3 +385,10 @@ Bloco adicional de importacao por CSV (blueprint - recurso avancado):
 - Mapeamento de categoria/conta/cartao e feito por nome (case-insensitive) para IDs reais do banco.
 - Nova UI de importacao adicionada em src/app/(protected)/financas/lancamentos/page.tsx com instrucoes de formato.
 - Pos-importacao, o sistema recalcula faturas de cartao e revalida dashboard/cartoes/lancamentos.
+
+Bloco adicional de calendario financeiro mensal (blueprint - Financas):
+
+- Pagina src/app/(protected)/financas/mensal/page.tsx recebeu grade de calendario do mes (segunda a domingo).
+- Cada dia exibe saldo diario (receitas - despesas), quantidade de pendencias e resumo dos principais lancamentos.
+- Dias sem movimento sao renderizados explicitamente para manter leitura completa do mes.
+- O calendario usa os mesmos dados da consolidacao mensal, sem nova chamada ao banco.

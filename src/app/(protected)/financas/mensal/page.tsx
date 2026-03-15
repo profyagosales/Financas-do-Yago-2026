@@ -18,6 +18,15 @@ type TxRow = {
   category_id: string | null;
 };
 
+type CalendarDay = {
+  date: string;
+  day: number;
+  entries: TxRow[];
+  income: number;
+  expense: number;
+  pending: number;
+};
+
 function monthRange() {
   const now = new Date();
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
@@ -26,6 +35,46 @@ function monthRange() {
     start: start.toISOString().slice(0, 10),
     end: end.toISOString().slice(0, 10),
   };
+}
+
+function buildMonthCalendar(rows: TxRow[]) {
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth();
+  const firstDay = new Date(Date.UTC(year, month, 1));
+  const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+
+  const byDate = rows.reduce<Record<string, TxRow[]>>((acc, row) => {
+    if (!acc[row.competency_date]) acc[row.competency_date] = [];
+    acc[row.competency_date].push(row);
+    return acc;
+  }, {});
+
+  const startPad = (firstDay.getUTCDay() + 6) % 7;
+  const cells: Array<CalendarDay | null> = Array.from({ length: startPad }, () => null);
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
+    const entries = byDate[date] ?? [];
+    const income = entries.filter((item) => item.type === "income").reduce((sum, item) => sum + item.amount, 0);
+    const expense = entries.filter((item) => item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
+    const pending = entries.filter((item) => item.status === "pending").length;
+
+    cells.push({
+      date,
+      day,
+      entries: entries.sort((a, b) => b.amount - a.amount),
+      income,
+      expense,
+      pending,
+    });
+  }
+
+  while (cells.length % 7 !== 0) {
+    cells.push(null);
+  }
+
+  return cells;
 }
 
 async function getMonthlyData() {
@@ -114,6 +163,9 @@ export default async function MensalPage() {
     .map(([name, total]) => ({ name, total }))
     .sort((a, b) => b.total - a.total)
     .slice(0, 8);
+
+  const weekdayLabels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"];
+  const calendarCells = buildMonthCalendar(rows);
 
   return (
     <div className="space-y-4">
@@ -248,6 +300,60 @@ export default async function MensalPage() {
           )}
         </Card>
       </div>
+
+      <Card>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h3 className="text-sm font-bold text-slate-700">Calendario financeiro do mes</h3>
+          <p className="text-xs text-slate-500">Visao por dia com volume e pendencias</p>
+        </div>
+
+        <div className="grid grid-cols-7 gap-2">
+          {weekdayLabels.map((label) => (
+            <div key={label} className="rounded-lg bg-slate-100 px-2 py-1 text-center text-xs font-semibold text-slate-600">
+              {label}
+            </div>
+          ))}
+
+          {calendarCells.map((cell, index) => {
+            if (!cell) {
+              return <div key={`empty-${index}`} className="min-h-28 rounded-lg border border-dashed border-slate-200 bg-slate-50/60" />;
+            }
+
+            const net = cell.income - cell.expense;
+
+            return (
+              <div key={cell.date} className="min-h-28 rounded-lg border border-slate-200 bg-white p-2">
+                <div className="mb-1 flex items-center justify-between">
+                  <p className="text-xs font-semibold text-slate-700">{cell.day}</p>
+                  {cell.pending > 0 ? (
+                    <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800">
+                      {cell.pending} pend.
+                    </span>
+                  ) : null}
+                </div>
+
+                {cell.entries.length === 0 ? (
+                  <p className="text-[11px] text-slate-400">Sem lancamentos</p>
+                ) : (
+                  <>
+                    <p className={"text-[11px] font-semibold " + (net >= 0 ? "text-emerald-700" : "text-rose-700")}>{formatMoney(net)}</p>
+                    <div className="mt-1 space-y-1">
+                      {cell.entries.slice(0, 2).map((entry) => (
+                        <p key={entry.id} className="truncate text-[10px] text-slate-600" title={entry.description}>
+                          {entry.description}
+                        </p>
+                      ))}
+                      {cell.entries.length > 2 ? (
+                        <p className="text-[10px] text-slate-500">+{cell.entries.length - 2} itens</p>
+                      ) : null}
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </Card>
     </div>
   );
 }
