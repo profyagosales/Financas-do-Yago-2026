@@ -180,6 +180,10 @@ export default async function AnualPage() {
               defaultStart={startYear}
               defaultEnd={endYear}
               submitLabel="CSV resumo"
+              showTypeFilter
+              showStatusFilter
+              defaultTypeFilter="all"
+              defaultStatusFilter="non_canceled"
             />
 
             <ExportRangeForm
@@ -189,6 +193,10 @@ export default async function AnualPage() {
               defaultEnd={endYear}
               submitLabel="CSV detalhado"
               buttonVariant="secondary"
+              showTypeFilter
+              showStatusFilter
+              defaultTypeFilter="all"
+              defaultStatusFilter="non_canceled"
             />
           </div>
         </div>

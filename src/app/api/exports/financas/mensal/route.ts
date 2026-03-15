@@ -1,4 +1,5 @@
 import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { csvCell, parseDateRange, parseStatusFilter, parseTypeFilter } from "@/lib/exports/finance-export";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function monthRange() {
@@ -9,17 +10,6 @@ function monthRange() {
     start: start.toISOString().slice(0, 10),
     end: end.toISOString().slice(0, 10),
   };
-}
-
-function isIsoDate(value: string | null) {
-  if (!value) return false;
-  return /^\d{4}-\d{2}-\d{2}$/.test(value);
-}
-
-function csvCell(value: unknown) {
-  const raw = String(value ?? "");
-  const escaped = raw.replace(/"/g, '""');
-  return `"${escaped}"`;
 }
 
 export async function GET(request: Request) {
@@ -35,26 +25,37 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
-  const qStart = url.searchParams.get("start");
-  const qEnd = url.searchParams.get("end");
-
   const fallback = monthRange();
-  const start: string = isIsoDate(qStart) ? (qStart as string) : fallback.start;
-  const end: string = isIsoDate(qEnd) ? (qEnd as string) : fallback.end;
+  const range = parseDateRange(url, fallback.start, fallback.end);
+  if (!range.ok) {
+    return new Response(range.error, { status: 400 });
+  }
 
-  if (start >= end) {
-    return new Response("Intervalo invalido", { status: 400 });
+  const start = range.start;
+  const end = range.end;
+  const typeFilter = parseTypeFilter(url);
+  const statusFilter = parseStatusFilter(url, "all");
+
+  let txQuery = supabase
+    .from("transactions")
+    .select("id, competency_date, type, status, description, amount, category_id")
+    .eq("user_id", userId)
+    .gte("competency_date", start)
+    .lt("competency_date", end)
+    .order("competency_date", { ascending: true })
+    .limit(5000);
+
+  if (typeFilter !== "all") {
+    txQuery = txQuery.eq("type", typeFilter);
+  }
+  if (statusFilter === "non_canceled") {
+    txQuery = txQuery.neq("status", "canceled");
+  } else if (statusFilter !== "all") {
+    txQuery = txQuery.eq("status", statusFilter);
   }
 
   const [{ data: txData }, { data: categoriesData }] = await Promise.all([
-    supabase
-      .from("transactions")
-      .select("id, competency_date, type, status, description, amount, category_id")
-      .eq("user_id", userId)
-      .gte("competency_date", start)
-      .lt("competency_date", end)
-      .order("competency_date", { ascending: true })
-      .limit(5000),
+    txQuery,
     supabase.from("categories").select("id, name").eq("user_id", userId),
   ]);
 

@@ -335,3 +335,10 @@ Refatoracao e robustez de UX:
 - Criado componente client compartilhado src/components/finance/export-range-form.tsx.
 - Componente aplica validacao local de intervalo (start < end), bloqueio de submit invalido e estado "Gerando..." no botao.
 - Formularios manuais de /financas/mensal e /financas/anual migrados para o componente unico, reduzindo duplicacao e risco de divergencia.
+
+Bloco adicional de filtros em exportacao:
+
+- Criado utilitario compartilhado src/lib/exports/finance-export.ts para parse de intervalo, parse de filtros e escape de CSV.
+- Rotas de exportacao mensal e anual refatoradas para usar utilitario comum.
+- ExportRangeForm evoluiu para suportar filtros de tipo e status.
+- /financas/mensal e /financas/anual passaram a enviar filtros de tipo/status para exportacoes customizadas.

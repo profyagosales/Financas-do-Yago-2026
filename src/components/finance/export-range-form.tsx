@@ -10,6 +10,10 @@ interface Props {
   submitLabel: string;
   mode?: "summary" | "detailed";
   buttonVariant?: "primary" | "secondary" | "ghost";
+  showTypeFilter?: boolean;
+  showStatusFilter?: boolean;
+  defaultTypeFilter?: "all" | "income" | "expense" | "transfer" | "adjustment";
+  defaultStatusFilter?: "all" | "non_canceled" | "pending" | "paid" | "canceled";
 }
 
 function isIsoDate(value: string) {
@@ -23,9 +27,15 @@ export function ExportRangeForm({
   submitLabel,
   mode,
   buttonVariant = "primary",
+  showTypeFilter = false,
+  showStatusFilter = false,
+  defaultTypeFilter = "all",
+  defaultStatusFilter = "all",
 }: Props) {
   const [start, setStart] = useState(defaultStart);
   const [end, setEnd] = useState(defaultEnd);
+  const [typeFilter, setTypeFilter] = useState(defaultTypeFilter);
+  const [statusFilter, setStatusFilter] = useState(defaultStatusFilter);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -49,7 +59,7 @@ export function ExportRangeForm({
   }
 
   return (
-    <form action={action} method="get" onSubmit={handleSubmit} className="grid gap-2 sm:grid-cols-[1fr_1fr_auto] rounded-xl border border-slate-200 p-2">
+    <form action={action} method="get" onSubmit={handleSubmit} className="grid gap-2 rounded-xl border border-slate-200 p-2 md:grid-cols-[1fr_1fr_auto]">
       {mode ? <input type="hidden" name="mode" value={mode} /> : null}
       <input
         type="date"
@@ -67,10 +77,38 @@ export function ExportRangeForm({
         className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
         required
       />
+      {showTypeFilter ? (
+        <select
+          name="type"
+          value={typeFilter}
+          onChange={(event) => setTypeFilter(event.target.value as typeof typeFilter)}
+          className="rounded-xl border border-slate-300 px-3 py-2 text-sm md:col-span-1"
+        >
+          <option value="all">Todos os tipos</option>
+          <option value="income">Receita</option>
+          <option value="expense">Despesa</option>
+          <option value="transfer">Transferencia</option>
+          <option value="adjustment">Ajuste</option>
+        </select>
+      ) : null}
+      {showStatusFilter ? (
+        <select
+          name="status"
+          value={statusFilter}
+          onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
+          className="rounded-xl border border-slate-300 px-3 py-2 text-sm md:col-span-1"
+        >
+          <option value="all">Todos os status</option>
+          <option value="non_canceled">Somente ativos (sem cancelados)</option>
+          <option value="pending">Pendente</option>
+          <option value="paid">Pago</option>
+          <option value="canceled">Cancelado</option>
+        </select>
+      ) : null}
       <Button type="submit" variant={buttonVariant} disabled={submitting || !isValid}>
         {submitting ? "Gerando..." : submitLabel}
       </Button>
-      {error ? <p className="sm:col-span-3 text-xs text-rose-700">{error}</p> : null}
+      {error ? <p className="md:col-span-3 text-xs text-rose-700">{error}</p> : null}
     </form>
   );
 }

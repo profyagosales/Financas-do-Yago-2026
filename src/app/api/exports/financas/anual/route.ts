@@ -1,18 +1,8 @@
 import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { csvCell, parseDateRange, parseStatusFilter, parseTypeFilter } from "@/lib/exports/finance-export";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-
-function isIsoDate(value: string | null) {
-  if (!value) return false;
-  return /^\d{4}-\d{2}-\d{2}$/.test(value);
-}
-
-function csvCell(value: unknown) {
-  const raw = String(value ?? "");
-  const escaped = raw.replace(/"/g, '""');
-  return `"${escaped}"`;
-}
 
 export async function GET(request: Request) {
   if (!hasSupabaseEnv()) {
@@ -31,24 +21,35 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const mode = url.searchParams.get("mode") ?? "summary";
-  const qStart = url.searchParams.get("start");
-  const qEnd = url.searchParams.get("end");
-  const start: string = isIsoDate(qStart) ? (qStart as string) : `${year}-01-01`;
-  const end: string = isIsoDate(qEnd) ? (qEnd as string) : `${year + 1}-01-01`;
-
-  if (start >= end) {
-    return new Response("Intervalo invalido", { status: 400 });
+  const range = parseDateRange(url, `${year}-01-01`, `${year + 1}-01-01`);
+  if (!range.ok) {
+    return new Response(range.error, { status: 400 });
   }
 
-  const { data } = await supabase
+  const start = range.start;
+  const end = range.end;
+  const typeFilter = parseTypeFilter(url);
+  const statusFilter = parseStatusFilter(url, "non_canceled");
+
+  let txQuery = supabase
     .from("transactions")
     .select("id, competency_date, type, status, description, amount")
     .eq("user_id", userId)
     .gte("competency_date", start)
     .lt("competency_date", end)
-    .neq("status", "canceled")
     .order("competency_date", { ascending: true })
     .limit(20000);
+
+  if (typeFilter !== "all") {
+    txQuery = txQuery.eq("type", typeFilter);
+  }
+  if (statusFilter === "non_canceled") {
+    txQuery = txQuery.neq("status", "canceled");
+  } else if (statusFilter !== "all") {
+    txQuery = txQuery.eq("status", statusFilter);
+  }
+
+  const { data } = await txQuery;
 
   const rows = (data ?? []).map((item) => ({
     ...item,
