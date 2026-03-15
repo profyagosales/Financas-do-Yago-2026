@@ -361,3 +361,10 @@ Bloco adicional de analytics em Configuracoes:
 
 - Configuracoes passou a calcular agregados de exportacao a partir de export_history (janela 7d/30d e historico geral).
 - Novos cards com indicadores de uso: frequencia de exportacao, distribuicao CSV/JSON e volume total/medio de linhas exportadas.
+
+Bloco adicional de historico avancado em Configuracoes:
+
+- Criado componente client dedicado: src/components/finance/export-history-panel.tsx.
+- Historico de exportacoes agora suporta busca textual (nome/modulo/formato/modo/data), filtros por modulo, formato e periodo (7d/30d/90d/todo periodo).
+- Lista ganhou paginacao no cliente (10 itens por pagina) com navegacao Anterior/Proxima e contador de exibicao.
+- Consulta em src/app/(protected)/configuracoes/page.tsx foi simplificada para uma unica carga (ate 500 registros), reutilizada por metricas e painel.

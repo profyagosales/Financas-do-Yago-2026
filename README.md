@@ -124,6 +124,7 @@ Automacao e acesso direto ao Supabase:
 - Exportacoes de financas agora suportam dois formatos (CSV e JSON), com os mesmos filtros de periodo/tipo/status.
 - Exportacoes agora sao auditadas no banco e exibidas em Configuracoes com historico recente (formato, modo, data e quantidade de linhas).
 - Configuracoes agora exibe metricas agregadas de exportacao (7d/30d, mix CSV/JSON, total e media de linhas exportadas).
+- O historico de exportacoes em Configuracoes evoluiu para painel avancado com busca textual, filtros por modulo/formato/periodo e paginacao.
 - Moeda/localidade do perfil agora sao aplicadas de forma consistente no dashboard e modulos de financas, mercado, metas, lista de desejo, investimentos e relatorios.
 - Preferencia de exibir graficos no dashboard agora respeita configuracao do usuario em tempo real.
 - OCR de nota fiscal esta preparado para fluxo assistido por revisao humana.
