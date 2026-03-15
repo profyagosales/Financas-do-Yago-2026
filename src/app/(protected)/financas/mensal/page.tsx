@@ -173,8 +173,10 @@ export default async function MensalPage() {
             submitLabel="Baixar CSV customizado"
             showTypeFilter
             showStatusFilter
+            showFormatFilter
             defaultTypeFilter="all"
             defaultStatusFilter="all"
+            defaultFormat="csv"
           />
         </div>
       </Card>

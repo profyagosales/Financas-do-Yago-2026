@@ -1,5 +1,5 @@
 import { hasSupabaseEnv } from "@/lib/supabase/env";
-import { csvCell, parseDateRange, parseStatusFilter, parseTypeFilter } from "@/lib/exports/finance-export";
+import { csvCell, parseDateRange, parseFormatFilter, parseStatusFilter, parseTypeFilter } from "@/lib/exports/finance-export";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function monthRange() {
@@ -35,6 +35,7 @@ export async function GET(request: Request) {
   const end = range.end;
   const typeFilter = parseTypeFilter(url);
   const statusFilter = parseStatusFilter(url, "all");
+  const format = parseFormatFilter(url, "csv");
 
   let txQuery = supabase
     .from("transactions")
@@ -61,11 +62,41 @@ export async function GET(request: Request) {
 
   const categoriesMap = new Map((categoriesData ?? []).map((c) => [c.id, c.name]));
 
+  const normalized = (txData ?? []).map((tx) => ({
+    id: tx.id,
+    competency_date: tx.competency_date,
+    type: tx.type,
+    status: tx.status,
+    description: tx.description,
+    category: tx.category_id ? categoriesMap.get(tx.category_id) ?? "Sem categoria" : "Sem categoria",
+    amount: Number(tx.amount ?? 0),
+  }));
+
+  if (format === "json") {
+    const filename = `financas-mensal-${start}_a_${end}.json`;
+    const payload = {
+      meta: {
+        range: { start, end },
+        filters: { type: typeFilter, status: statusFilter, format },
+        count: normalized.length,
+      },
+      data: normalized,
+    };
+
+    return new Response(JSON.stringify(payload, null, 2), {
+      status: 200,
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        "content-disposition": `attachment; filename=${filename}`,
+        "cache-control": "no-store",
+      },
+    });
+  }
+
   const header = ["id", "competency_date", "type", "status", "description", "category", "amount"];
   const lines = [header.join(",")];
 
-  for (const tx of txData ?? []) {
-    const categoryName = tx.category_id ? categoriesMap.get(tx.category_id) ?? "Sem categoria" : "Sem categoria";
+  for (const tx of normalized) {
     lines.push(
       [
         csvCell(tx.id),
@@ -73,7 +104,7 @@ export async function GET(request: Request) {
         csvCell(tx.type),
         csvCell(tx.status),
         csvCell(tx.description),
-        csvCell(categoryName),
+        csvCell(tx.category),
         csvCell(Number(tx.amount ?? 0).toFixed(2)),
       ].join(","),
     );

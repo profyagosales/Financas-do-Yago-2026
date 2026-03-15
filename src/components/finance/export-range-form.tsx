@@ -14,6 +14,8 @@ interface Props {
   showStatusFilter?: boolean;
   defaultTypeFilter?: "all" | "income" | "expense" | "transfer" | "adjustment";
   defaultStatusFilter?: "all" | "non_canceled" | "pending" | "paid" | "canceled";
+  showFormatFilter?: boolean;
+  defaultFormat?: "csv" | "json";
 }
 
 function isIsoDate(value: string) {
@@ -31,11 +33,14 @@ export function ExportRangeForm({
   showStatusFilter = false,
   defaultTypeFilter = "all",
   defaultStatusFilter = "all",
+  showFormatFilter = false,
+  defaultFormat = "csv",
 }: Props) {
   const [start, setStart] = useState(defaultStart);
   const [end, setEnd] = useState(defaultEnd);
   const [typeFilter, setTypeFilter] = useState(defaultTypeFilter);
   const [statusFilter, setStatusFilter] = useState(defaultStatusFilter);
+  const [format, setFormat] = useState(defaultFormat);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -103,6 +108,17 @@ export function ExportRangeForm({
           <option value="pending">Pendente</option>
           <option value="paid">Pago</option>
           <option value="canceled">Cancelado</option>
+        </select>
+      ) : null}
+      {showFormatFilter ? (
+        <select
+          name="format"
+          value={format}
+          onChange={(event) => setFormat(event.target.value as typeof format)}
+          className="rounded-xl border border-slate-300 px-3 py-2 text-sm md:col-span-1"
+        >
+          <option value="csv">CSV</option>
+          <option value="json">JSON</option>
         </select>
       ) : null}
       <Button type="submit" variant={buttonVariant} disabled={submitting || !isValid}>

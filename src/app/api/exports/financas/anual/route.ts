@@ -1,5 +1,5 @@
 import { hasSupabaseEnv } from "@/lib/supabase/env";
-import { csvCell, parseDateRange, parseStatusFilter, parseTypeFilter } from "@/lib/exports/finance-export";
+import { csvCell, parseDateRange, parseFormatFilter, parseStatusFilter, parseTypeFilter } from "@/lib/exports/finance-export";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
@@ -30,6 +30,7 @@ export async function GET(request: Request) {
   const end = range.end;
   const typeFilter = parseTypeFilter(url);
   const statusFilter = parseStatusFilter(url, "non_canceled");
+  const format = parseFormatFilter(url, "csv");
 
   let txQuery = supabase
     .from("transactions")
@@ -57,6 +58,28 @@ export async function GET(request: Request) {
   }));
 
   if (mode === "detailed") {
+    if (format === "json") {
+      const filename = `financas-anual-detalhado-${start}_a_${end}.json`;
+      const payload = {
+        meta: {
+          mode,
+          range: { start, end },
+          filters: { type: typeFilter, status: statusFilter, format },
+          count: rows.length,
+        },
+        data: rows,
+      };
+
+      return new Response(JSON.stringify(payload, null, 2), {
+        status: 200,
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          "content-disposition": `attachment; filename=${filename}`,
+          "cache-control": "no-store",
+        },
+      });
+    }
+
     const detailHeader = ["id", "competency_date", "type", "status", "description", "amount"];
     const detailLines = [detailHeader.join(",")];
 
@@ -104,6 +127,28 @@ export async function GET(request: Request) {
       count: monthRows.length,
     };
   });
+
+  if (format === "json") {
+    const filename = `financas-anual-resumo-${start}_a_${end}.json`;
+    const payload = {
+      meta: {
+        mode,
+        range: { start, end },
+        filters: { type: typeFilter, status: statusFilter, format },
+        count: monthly.length,
+      },
+      data: monthly,
+    };
+
+    return new Response(JSON.stringify(payload, null, 2), {
+      status: 200,
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        "content-disposition": `attachment; filename=${filename}`,
+        "cache-control": "no-store",
+      },
+    });
+  }
 
   const header = ["month", "income", "expense", "result", "transactions_count"];
   const lines = [header.join(",")];

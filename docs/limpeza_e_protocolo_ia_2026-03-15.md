@@ -342,3 +342,9 @@ Bloco adicional de filtros em exportacao:
 - Rotas de exportacao mensal e anual refatoradas para usar utilitario comum.
 - ExportRangeForm evoluiu para suportar filtros de tipo e status.
 - /financas/mensal e /financas/anual passaram a enviar filtros de tipo/status para exportacoes customizadas.
+
+Bloco adicional de formatos de exportacao:
+
+- Rotas /api/exports/financas/mensal e /api/exports/financas/anual agora aceitam format=csv|json.
+- Para JSON, respostas incluem metadados (range, filtros, modo e contagem) e payload estruturado em data.
+- ExportRangeForm ganhou seletor de formato para escolha direta na interface.
