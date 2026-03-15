@@ -80,11 +80,22 @@ export default async function MensalPage() {
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
 
   const now = new Date();
+  const today = now.toISOString().slice(0, 10);
   const startCurrentMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
   const endCurrentMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)).toISOString().slice(0, 10);
+  const startLast7 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 7)).toISOString().slice(0, 10);
+  const startLast30 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 30)).toISOString().slice(0, 10);
   const startLast90 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 90)).toISOString().slice(0, 10);
+  const startYtd = `${now.getUTCFullYear()}-01-01`;
+  const endTomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1)).toISOString().slice(0, 10);
   const exportCurrentMonth = `/api/exports/financas/mensal?start=${startCurrentMonth}&end=${endCurrentMonth}`;
   const exportLast90Days = `/api/exports/financas/mensal?start=${startLast90}&end=${endCurrentMonth}`;
+  const presets = [
+    { label: "Hoje", href: `/api/exports/financas/mensal?start=${today}&end=${endTomorrow}` },
+    { label: "7d", href: `/api/exports/financas/mensal?start=${startLast7}&end=${endTomorrow}` },
+    { label: "30d", href: `/api/exports/financas/mensal?start=${startLast30}&end=${endTomorrow}` },
+    { label: "YTD", href: `/api/exports/financas/mensal?start=${startYtd}&end=${endTomorrow}` },
+  ];
 
   const receitas = rows.filter((r) => r.type === "income").reduce((s, r) => s + r.amount, 0);
   const despesas = rows.filter((r) => r.type === "expense").reduce((s, r) => s + r.amount, 0);
@@ -143,6 +154,17 @@ export default async function MensalPage() {
           <div>
             <p className="text-sm font-semibold text-slate-800">Exportacao por intervalo</p>
             <p className="text-xs text-slate-500">Escolha o periodo manualmente para gerar o CSV.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {presets.map((preset) => (
+              <a
+                key={preset.label}
+                href={preset.href}
+                className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                {preset.label}
+              </a>
+            ))}
           </div>
           <form action="/api/exports/financas/mensal" method="get" className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
             <input

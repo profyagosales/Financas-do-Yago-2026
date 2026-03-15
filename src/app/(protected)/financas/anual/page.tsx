@@ -67,9 +67,22 @@ const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "
 export default async function AnualPage() {
   const { hasEnv, prefs, rows } = await getYearlyData();
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
+  const now = new Date();
   const year = new Date().getUTCFullYear();
   const startYear = `${year}-01-01`;
   const endYear = `${year + 1}-01-01`;
+  const today = now.toISOString().slice(0, 10);
+  const endTomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1)).toISOString().slice(0, 10);
+  const startLast7 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 7)).toISOString().slice(0, 10);
+  const startLast30 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 30)).toISOString().slice(0, 10);
+  const startLast90 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 90)).toISOString().slice(0, 10);
+  const presets = [
+    { label: "Hoje", start: today, end: endTomorrow },
+    { label: "7d", start: startLast7, end: endTomorrow },
+    { label: "30d", start: startLast30, end: endTomorrow },
+    { label: "90d", start: startLast90, end: endTomorrow },
+    { label: "YTD", start: startYear, end: endTomorrow },
+  ];
 
   const monthly = Array.from({ length: 12 }, (_, monthIndex) => {
     const monthRows = rows.filter((row) => {
@@ -140,6 +153,25 @@ export default async function AnualPage() {
           <div>
             <p className="text-sm font-semibold text-slate-800">Exportacao por intervalo</p>
             <p className="text-xs text-slate-500">Defina datas customizadas para baixar o resumo ou o detalhado.</p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {presets.map((preset) => (
+              <div key={preset.label} className="flex gap-2">
+                <a
+                  href={`/api/exports/financas/anual?start=${preset.start}&end=${preset.end}`}
+                  className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  {preset.label} resumo
+                </a>
+                <a
+                  href={`/api/exports/financas/anual?mode=detailed&start=${preset.start}&end=${preset.end}`}
+                  className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  {preset.label} detalhado
+                </a>
+              </div>
+            ))}
           </div>
 
           <div className="grid gap-2 xl:grid-cols-2">

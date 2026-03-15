@@ -324,3 +324,8 @@ Evolucao de UX na interface:
 - /financas/mensal recebeu formulario com inputs start/end para exportacao customizada sem montagem manual de URL.
 - /financas/anual recebeu dois formularios customizados por data: resumo e detalhado.
 - Exportacao rapida foi mantida em paralelo aos formularios para manter produtividade no uso diario.
+
+Evolucao adicional de presets:
+
+- /financas/mensal passou a expor atalhos de periodo com um clique (Hoje, 7d, 30d, YTD), alem de mes e 90 dias.
+- /financas/anual passou a expor atalhos de periodo para resumo e detalhado (Hoje, 7d, 30d, 90d e YTD).
