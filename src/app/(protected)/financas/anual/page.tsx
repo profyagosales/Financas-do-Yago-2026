@@ -1,4 +1,5 @@
 import { ModulePage } from "@/components/common/module-page";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -66,6 +67,9 @@ const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "
 export default async function AnualPage() {
   const { hasEnv, prefs, rows } = await getYearlyData();
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
+  const year = new Date().getUTCFullYear();
+  const startYear = `${year}-01-01`;
+  const endYear = `${year + 1}-01-01`;
 
   const monthly = Array.from({ length: 12 }, (_, monthIndex) => {
     const monthRows = rows.filter((row) => {
@@ -111,24 +115,70 @@ export default async function AnualPage() {
       />
 
       <Card>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-slate-800">Exportacao</p>
-            <p className="text-xs text-slate-500">Baixe o consolidado anual ou o detalhado de transacoes em CSV.</p>
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Exportacao rapida</p>
+              <p className="text-xs text-slate-500">Baixe resumo ou detalhado no intervalo anual padrao.</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <a
+                href="/api/exports/financas/anual"
+                className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800"
+              >
+                Baixar CSV anual (resumo)
+              </a>
+              <a
+                href="/api/exports/financas/anual?mode=detailed"
+                className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200"
+              >
+                Baixar CSV anual (detalhado)
+              </a>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <a
-              href="/api/exports/financas/anual"
-              className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800"
-            >
-              Baixar CSV anual (resumo)
-            </a>
-            <a
-              href="/api/exports/financas/anual?mode=detailed"
-              className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200"
-            >
-              Baixar CSV anual (detalhado)
-            </a>
+
+          <div>
+            <p className="text-sm font-semibold text-slate-800">Exportacao por intervalo</p>
+            <p className="text-xs text-slate-500">Defina datas customizadas para baixar o resumo ou o detalhado.</p>
+          </div>
+
+          <div className="grid gap-2 xl:grid-cols-2">
+            <form action="/api/exports/financas/anual" method="get" className="grid gap-2 sm:grid-cols-[1fr_1fr_auto] rounded-xl border border-slate-200 p-2">
+              <input
+                type="date"
+                name="start"
+                defaultValue={startYear}
+                className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
+                required
+              />
+              <input
+                type="date"
+                name="end"
+                defaultValue={endYear}
+                className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
+                required
+              />
+              <Button type="submit">CSV resumo</Button>
+            </form>
+
+            <form action="/api/exports/financas/anual" method="get" className="grid gap-2 sm:grid-cols-[1fr_1fr_auto] rounded-xl border border-slate-200 p-2">
+              <input type="hidden" name="mode" value="detailed" />
+              <input
+                type="date"
+                name="start"
+                defaultValue={startYear}
+                className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
+                required
+              />
+              <input
+                type="date"
+                name="end"
+                defaultValue={endYear}
+                className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
+                required
+              />
+              <Button type="submit" variant="secondary">CSV detalhado</Button>
+            </form>
           </div>
         </div>
       </Card>

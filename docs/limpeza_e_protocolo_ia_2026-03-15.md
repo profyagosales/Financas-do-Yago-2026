@@ -318,3 +318,9 @@ Evolucao adicional no mesmo ciclo:
 - Rota anual passou a aceitar mode=detailed para exportar transacoes detalhadas (id, data, tipo, status, descricao, valor).
 - UI de /financas/anual agora oferece dois downloads: resumo e detalhado.
 - UI de /financas/mensal agora oferece download do mes e atalho de ultimos 90 dias (via start/end).
+
+Evolucao de UX na interface:
+
+- /financas/mensal recebeu formulario com inputs start/end para exportacao customizada sem montagem manual de URL.
+- /financas/anual recebeu dois formularios customizados por data: resumo e detalhado.
+- Exportacao rapida foi mantida em paralelo aos formularios para manter produtividade no uso diario.

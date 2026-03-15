@@ -1,4 +1,5 @@
 import { ModulePage } from "@/components/common/module-page";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -117,25 +118,49 @@ export default async function MensalPage() {
       />
 
       <Card>
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Exportacao rapida</p>
+              <p className="text-xs text-slate-500">Atalhos para periodos mais usados.</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <a
+                href={exportCurrentMonth}
+                className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800"
+              >
+                Baixar CSV do mes
+              </a>
+              <a
+                href={exportLast90Days}
+                className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200"
+              >
+                Baixar CSV ultimos 90 dias
+              </a>
+            </div>
+          </div>
+
           <div>
-            <p className="text-sm font-semibold text-slate-800">Exportacao</p>
-            <p className="text-xs text-slate-500">Baixe os lancamentos do mes atual ou de um intervalo rapido em CSV.</p>
+            <p className="text-sm font-semibold text-slate-800">Exportacao por intervalo</p>
+            <p className="text-xs text-slate-500">Escolha o periodo manualmente para gerar o CSV.</p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <a
-              href={exportCurrentMonth}
-              className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800"
-            >
-              Baixar CSV do mes
-            </a>
-            <a
-              href={exportLast90Days}
-              className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200"
-            >
-              Baixar CSV ultimos 90 dias
-            </a>
-          </div>
+          <form action="/api/exports/financas/mensal" method="get" className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+            <input
+              type="date"
+              name="start"
+              defaultValue={startCurrentMonth}
+              className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
+              required
+            />
+            <input
+              type="date"
+              name="end"
+              defaultValue={endCurrentMonth}
+              className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
+              required
+            />
+            <Button type="submit">Baixar CSV customizado</Button>
+          </form>
         </div>
       </Card>
 
