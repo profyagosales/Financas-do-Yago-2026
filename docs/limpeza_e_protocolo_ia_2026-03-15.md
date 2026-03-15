@@ -392,3 +392,10 @@ Bloco adicional de calendario financeiro mensal (blueprint - Financas):
 - Cada dia exibe saldo diario (receitas - despesas), quantidade de pendencias e resumo dos principais lancamentos.
 - Dias sem movimento sao renderizados explicitamente para manter leitura completa do mes.
 - O calendario usa os mesmos dados da consolidacao mensal, sem nova chamada ao banco.
+
+Bloco adicional de lembretes locais (blueprint - recurso avancado):
+
+- Criado componente client src/components/pwa/local-reminders.tsx com painel de lembretes e botao de notificacao.
+- Dashboard passou a carregar lembretes reais de faturas proximas (card_bills) e pendencias de lancamentos com competencia ate 7 dias.
+- Lembretes sao classificados por severidade (hoje/atrasado vs proximo) e exibidos com contexto de valor/data.
+- Notificacoes do navegador podem ser ativadas pelo usuario e sao deduplicadas por dia via localStorage.

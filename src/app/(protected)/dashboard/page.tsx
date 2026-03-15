@@ -1,4 +1,5 @@
 import { DashboardChartsShell } from "@/components/dashboard/dashboard-charts-shell";
+import { LocalReminders, type ReminderItem } from "@/components/pwa/local-reminders";
 import { Card } from "@/components/ui/card";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -28,6 +29,7 @@ async function getDashboardData() {
         { title: "Lancamentos pendentes", value: 0, kind: "number" as const },
       ],
       latest: [] as Array<{ id: string; description: string; amount: number; competency_date: string }>,
+      reminders: [] as ReminderItem[],
       prefs: { currency: "BRL", locale: "pt-BR", showCharts: true },
       hasEnv: false,
     };
@@ -49,12 +51,14 @@ async function getDashboardData() {
         { title: "Lancamentos pendentes", value: 0, kind: "number" as const },
       ],
       latest: [] as Array<{ id: string; description: string; amount: number; competency_date: string }>,
+      reminders: [] as ReminderItem[],
       prefs: { currency: "BRL", locale: "pt-BR", showCharts: true },
       hasEnv: true,
     };
   }
 
   const { start, end } = monthRange();
+  const today = new Date().toISOString().slice(0, 10);
   const dueLimit = new Date();
   dueLimit.setDate(dueLimit.getDate() + 7);
   const dueLimitDate = dueLimit.toISOString().slice(0, 10);
@@ -67,7 +71,10 @@ async function getDashboardData() {
     { data: goalsData },
     { data: mileageData },
     { data: pendingTxData },
+    { data: pendingSoonData },
     { data: latestData },
+    { data: cardsNameData },
+    { data: cardBillsSoonData },
     { data: profileData },
     { data: settingsData },
   ] = await Promise.all([
@@ -100,8 +107,26 @@ async function getDashboardData() {
       .from("transactions")
       .select("id, description, amount, competency_date")
       .eq("user_id", userId)
+      .eq("status", "pending")
+      .gte("competency_date", today)
+      .lte("competency_date", dueLimitDate)
+      .order("competency_date", { ascending: true })
+      .limit(20),
+    supabase
+      .from("transactions")
+      .select("id, description, amount, competency_date")
+      .eq("user_id", userId)
       .order("competency_date", { ascending: false })
       .limit(8),
+    supabase.from("credit_cards").select("id, name").eq("user_id", userId),
+    supabase
+      .from("card_bills")
+      .select("id, credit_card_id, due_date, total_amount, status")
+      .eq("user_id", userId)
+      .neq("status", "paid")
+      .lte("due_date", dueLimitDate)
+      .order("due_date", { ascending: true })
+      .limit(20),
     supabase.from("profiles").select("currency, locale").eq("id", userId).maybeSingle(),
     supabase.from("settings").select("dashboard_config").eq("user_id", userId).maybeSingle(),
   ]);
@@ -140,6 +165,34 @@ async function getDashboardData() {
   ];
 
   const dashboardConfig = (settingsData?.dashboard_config ?? {}) as Record<string, unknown>;
+  const cardsNameMap = new Map((cardsNameData ?? []).map((item) => [item.id, item.name]));
+
+  const reminders: ReminderItem[] = [
+    ...((cardBillsSoonData ?? []).map((bill) => {
+      const cardName = cardsNameMap.get(bill.credit_card_id) ?? "Cartao";
+      const high = bill.due_date <= today;
+      return {
+        id: `bill-${bill.id}`,
+        title: `${cardName} vence em ${bill.due_date}`,
+        body: `Fatura em aberto: ${toMoney(Number(bill.total_amount ?? 0), (profileData?.locale as string) ?? "pt-BR", (profileData?.currency as string) ?? "BRL")}`,
+        dueDate: bill.due_date,
+        severity: high ? ("high" as const) : ("medium" as const),
+      };
+    }) as ReminderItem[]),
+    ...((pendingSoonData ?? []).map((tx) => {
+      const high = tx.competency_date <= today;
+      return {
+        id: `tx-${tx.id}`,
+        title: `Pendencia: ${tx.description}`,
+        body: `Competencia ${tx.competency_date} • ${toMoney(Number(tx.amount ?? 0), (profileData?.locale as string) ?? "pt-BR", (profileData?.currency as string) ?? "BRL")}`,
+        dueDate: tx.competency_date,
+        severity: high ? ("high" as const) : ("medium" as const),
+      };
+    }) as ReminderItem[]),
+  ]
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+    .slice(0, 20);
+
   const prefs = {
     currency: (profileData?.currency as string) ?? "BRL",
     locale: (profileData?.locale as string) ?? "pt-BR",
@@ -154,13 +207,14 @@ async function getDashboardData() {
       amount: Number(item.amount ?? 0),
       competency_date: item.competency_date,
     })),
+    reminders,
     prefs,
     hasEnv: true,
   };
 }
 
 export default async function DashboardPage() {
-  const { cards, latest, hasEnv, prefs } = await getDashboardData();
+  const { cards, latest, reminders, hasEnv, prefs } = await getDashboardData();
 
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
   const formatNumber = (value: number) =>
@@ -207,6 +261,8 @@ export default async function DashboardPage() {
           </div>
         )}
       </Card>
+
+      <LocalReminders reminders={reminders} />
 
       {prefs.showCharts ? (
         <DashboardChartsShell currency={prefs.currency} locale={prefs.locale} />
