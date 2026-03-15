@@ -356,3 +356,8 @@ Bloco adicional de auditoria de exportacao:
 - Helper src/lib/exports/export-audit.ts implementado para registrar auditoria sem bloquear download em caso de falha.
 - Rotas mensal/anual passaram a registrar log (modulo, formato, modo, filtros e quantidade de linhas exportadas).
 - Tela de configuracoes passou a exibir historico recente de exportacoes para o usuario.
+
+Bloco adicional de analytics em Configuracoes:
+
+- Configuracoes passou a calcular agregados de exportacao a partir de export_history (janela 7d/30d e historico geral).
+- Novos cards com indicadores de uso: frequencia de exportacao, distribuicao CSV/JSON e volume total/medio de linhas exportadas.
