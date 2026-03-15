@@ -12,6 +12,24 @@ import { toMoney } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+type TransactionRow = {
+  id: string;
+  competency_date: string;
+  description: string;
+  type: string;
+  amount: number | string | null;
+  status: string;
+  icon_key: string | null;
+  icon_url: string | null;
+  inferred_icon_key?: string | null;
+  attachments?: Array<{
+    id: string;
+    signed_url: string | null;
+    attachment_kind: string | null;
+    file_name: string;
+  }>;
+};
+
 async function getFormOptions() {
   if (!hasSupabaseEnv()) {
     return { categories: [], accounts: [], cards: [], icons: [] };
@@ -58,14 +76,14 @@ async function getFormOptions() {
 
 async function getTransactions() {
   if (!hasSupabaseEnv()) {
-    return { prefs: { currency: "BRL", locale: "pt-BR" }, transactions: [] as any[] };
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, transactions: [] as TransactionRow[] };
   }
 
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
   if (!userId) {
-    return { prefs: { currency: "BRL", locale: "pt-BR" }, transactions: [] as any[] };
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, transactions: [] as TransactionRow[] };
   }
 
   const prefs = await getDisplayPrefsForUser(supabase, userId);
@@ -77,7 +95,7 @@ async function getTransactions() {
     .order("competency_date", { ascending: false })
     .limit(100);
 
-  const transactions = data ?? [];
+  const transactions = (data ?? []) as TransactionRow[];
   const withInferred = transactions.map((item) => {
     const inferred = findIconByText(item.description, [
       "expense",
@@ -210,9 +228,9 @@ export default async function LancamentosPage() {
                           <input type="file" name="file" required className="block w-full max-w-[250px] text-xs" />
                           <Button type="submit" variant="secondary">Upload comprovante</Button>
                         </form>
-                        {tx.attachments.length > 0 ? (
+                        {(tx.attachments ?? []).length > 0 ? (
                           <ul className="space-y-1 text-xs text-slate-600">
-                            {tx.attachments.map((att: { id: string; signed_url: string | null; attachment_kind: string | null; file_name: string }) => (
+                            {(tx.attachments ?? []).map((att: { id: string; signed_url: string | null; attachment_kind: string | null; file_name: string }) => (
                               <li key={att.id}>
                                 {att.signed_url ? (
                                   <a href={att.signed_url} target="_blank" rel="noreferrer" className="text-sky-700 underline">

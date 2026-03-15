@@ -11,16 +11,26 @@ import { toMoney } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+type AccountRow = {
+  id: string;
+  name: string;
+  institution: string;
+  account_type: string;
+  icon_key: string | null;
+  initial_balance: number | string | null;
+  is_active: boolean;
+};
+
 async function getAccounts() {
   if (!hasSupabaseEnv()) {
-    return { prefs: { currency: "BRL", locale: "pt-BR" }, accounts: [] as any[] };
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, accounts: [] as AccountRow[] };
   }
 
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
   if (!userId) {
-    return { prefs: { currency: "BRL", locale: "pt-BR" }, accounts: [] as any[] };
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, accounts: [] as AccountRow[] };
   }
 
   const prefs = await getDisplayPrefsForUser(supabase, userId);
@@ -31,7 +41,7 @@ async function getAccounts() {
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  return { prefs, accounts: data ?? [] };
+  return { prefs, accounts: (data ?? []) as AccountRow[] };
 }
 
 export default async function ContasPage() {
