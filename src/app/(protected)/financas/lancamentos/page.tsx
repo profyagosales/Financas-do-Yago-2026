@@ -1,7 +1,7 @@
 import { ModulePage } from "@/components/common/module-page";
 import { InstitutionAvatar } from "@/components/common/institution-avatar";
 import { TransactionForm } from "@/components/forms/transaction-form";
-import { deleteTransaction, setTransactionStatus, uploadTransactionAttachment } from "@/actions/finance";
+import { deleteTransaction, importTransactionsCsv, setTransactionStatus, uploadTransactionAttachment } from "@/actions/finance";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { findIconByText, getIconsByDomains } from "@/lib/icon-registry";
@@ -181,6 +181,21 @@ export default async function LancamentosPage() {
         ]}
       />
       <TransactionForm categories={options.categories} accounts={options.accounts} cards={options.cards} icons={options.icons} />
+
+      <Card>
+        <h3 className="mb-2 text-sm font-bold text-slate-700">Importacao por CSV</h3>
+        <p className="mb-3 text-xs text-slate-600">
+          Colunas obrigatorias: competency_date, description, type, amount. Colunas opcionais: category, account, destination_account, credit_card, status, payment_date, notes.
+        </p>
+        <form action={importTransactionsCsv} className="flex flex-wrap items-center gap-2">
+          <input type="file" name="file" accept=".csv,text/csv" required className="block w-full max-w-[360px] text-sm" />
+          <Button type="submit" variant="secondary">Importar CSV</Button>
+        </form>
+        <p className="mt-2 text-xs text-slate-500">
+          Tipos aceitos: income/expense/transfer/adjustment (ou receita/despesa/transferencia/ajuste). Status aceitos: pending/paid/canceled.
+        </p>
+      </Card>
+
       <Card>
         <h3 className="mb-3 text-sm font-bold text-slate-700">Tabela de lancamentos</h3>
         {!hasSupabaseEnv() ? (

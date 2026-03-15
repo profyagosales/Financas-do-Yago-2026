@@ -9,6 +9,99 @@ function sanitizeFileName(value: string) {
   return value.normalize("NFKD").replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
+function normalizeCsvHeader(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function parseCsvRow(line: string, delimiter: "," | ";") {
+  const cells: string[] = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+
+    if (char === '"') {
+      const next = line[i + 1];
+      if (inQuotes && next === '"') {
+        current += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (!inQuotes && char === delimiter) {
+      cells.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  cells.push(current.trim());
+  return cells;
+}
+
+function parseCsvContent(content: string) {
+  const normalized = content.replace(/^\uFEFF/, "");
+  const lines = normalized
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  if (lines.length < 2) {
+    return { headers: [] as string[], rows: [] as Array<Record<string, string>> };
+  }
+
+  const firstLine = lines[0];
+  const semicolonCount = (firstLine.match(/;/g) ?? []).length;
+  const commaCount = (firstLine.match(/,/g) ?? []).length;
+  const delimiter: "," | ";" = semicolonCount > commaCount ? ";" : ",";
+
+  const rawHeaders = parseCsvRow(firstLine, delimiter).map((value) => normalizeCsvHeader(value));
+  const rows = lines.slice(1).map((line) => {
+    const values = parseCsvRow(line, delimiter);
+    return rawHeaders.reduce<Record<string, string>>((acc, header, index) => {
+      acc[header] = values[index] ?? "";
+      return acc;
+    }, {});
+  });
+
+  return { headers: rawHeaders, rows };
+}
+
+function parseCsvMoney(value: string) {
+  const cleaned = value.replace(/\s/g, "").replace(/\./g, "").replace(/,/g, ".");
+  const parsed = Number(cleaned);
+  if (Number.isNaN(parsed)) return null;
+  return parsed;
+}
+
+function normalizeCsvType(value: string) {
+  const v = value.trim().toLowerCase();
+  if (["income", "receita"].includes(v)) return "income" as const;
+  if (["expense", "despesa"].includes(v)) return "expense" as const;
+  if (["transfer", "transferencia"].includes(v)) return "transfer" as const;
+  if (["adjustment", "ajuste"].includes(v)) return "adjustment" as const;
+  return null;
+}
+
+function normalizeCsvStatus(value: string) {
+  const v = value.trim().toLowerCase();
+  if (["paid", "pago"].includes(v)) return "paid" as const;
+  if (["canceled", "cancelado"].includes(v)) return "canceled" as const;
+  if (["pending", "pendente", ""].includes(v)) return "pending" as const;
+  return null;
+}
+
 function toMonthStart(dateValue: string) {
   const date = new Date(`${dateValue}T00:00:00Z`);
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1)).toISOString().slice(0, 10);
@@ -312,6 +405,153 @@ export async function uploadCustomTransactionIcon(formData: FormData) {
   }
 
   return { ok: true, icon_url: iconUrl };
+}
+
+export async function importTransactionsCsv(formData: FormData) {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return;
+  }
+
+  if (!file.name.toLowerCase().endsWith(".csv")) {
+    return;
+  }
+
+  const maxBytes = 2 * 1024 * 1024;
+  if (file.size > maxBytes) {
+    return;
+  }
+
+  const content = await file.text();
+  const { headers, rows } = parseCsvContent(content);
+
+  const requiredHeaders = ["competency_date", "description", "type", "amount"];
+  const missing = requiredHeaders.filter((header) => !headers.includes(header));
+  if (missing.length > 0) {
+    return;
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return;
+
+  const [{ data: categoriesData }, { data: accountsData }, { data: cardsData }] = await Promise.all([
+    supabase.from("categories").select("id, name").eq("user_id", userId),
+    supabase.from("bank_accounts").select("id, name").eq("user_id", userId),
+    supabase.from("credit_cards").select("id, name").eq("user_id", userId),
+  ]);
+
+  const categoryByName = new Map(
+    (categoriesData ?? []).map((item) => [item.name.trim().toLowerCase(), item.id]),
+  );
+  const accountByName = new Map(
+    (accountsData ?? []).map((item) => [item.name.trim().toLowerCase(), item.id]),
+  );
+  const cardByName = new Map(
+    (cardsData ?? []).map((item) => [item.name.trim().toLowerCase(), item.id]),
+  );
+
+  const validRows: Array<{
+    user_id: string;
+    type: "income" | "expense" | "transfer" | "adjustment";
+    description: string;
+    amount: number;
+    category_id: string | null;
+    account_id: string | null;
+    destination_account_id: string | null;
+    credit_card_id: string | null;
+    competency_date: string;
+    payment_date: string | null;
+    notes: string | null;
+    status: "pending" | "paid" | "canceled";
+  }> = [];
+
+  const errors: string[] = [];
+
+  rows.forEach((row, index) => {
+    const line = index + 2;
+    const type = normalizeCsvType(row.type ?? "");
+    const amount = parseCsvMoney(row.amount ?? "");
+    const description = (row.description ?? "").trim();
+    const competencyDate = (row.competency_date ?? "").trim();
+    const categoryId = categoryByName.get((row.category ?? "").trim().toLowerCase()) ?? null;
+    const accountId = accountByName.get((row.account ?? "").trim().toLowerCase()) ?? null;
+    const destinationAccountId = accountByName.get((row.destination_account ?? "").trim().toLowerCase()) ?? null;
+    const cardId = cardByName.get((row.credit_card ?? "").trim().toLowerCase()) ?? null;
+    const status = normalizeCsvStatus(row.status ?? "pending");
+    const paymentDate = (row.payment_date ?? "").trim() || null;
+    const notes = (row.notes ?? "").trim() || null;
+
+    if (!type) {
+      errors.push(`Linha ${line}: tipo invalido.`);
+      return;
+    }
+    if (!description || description.length < 3) {
+      errors.push(`Linha ${line}: descricao invalida.`);
+      return;
+    }
+    if (!competencyDate) {
+      errors.push(`Linha ${line}: competency_date obrigatoria.`);
+      return;
+    }
+    if (amount === null || amount <= 0) {
+      errors.push(`Linha ${line}: valor invalido.`);
+      return;
+    }
+    if (!status) {
+      errors.push(`Linha ${line}: status invalido.`);
+      return;
+    }
+
+    if (["income", "expense", "adjustment"].includes(type) && !categoryId) {
+      errors.push(`Linha ${line}: categoria obrigatoria e deve existir.`);
+      return;
+    }
+
+    if (type === "transfer" && (!accountId || !destinationAccountId)) {
+      errors.push(`Linha ${line}: transferencia exige account e destination_account validos.`);
+      return;
+    }
+
+    if (type === "expense" && !accountId && !cardId) {
+      errors.push(`Linha ${line}: despesa exige account ou credit_card valido.`);
+      return;
+    }
+
+    validRows.push({
+      user_id: userId,
+      type,
+      description,
+      amount,
+      category_id: categoryId,
+      account_id: accountId,
+      destination_account_id: destinationAccountId,
+      credit_card_id: cardId,
+      competency_date: competencyDate,
+      payment_date: status === "paid" ? paymentDate ?? competencyDate : null,
+      notes,
+      status,
+    });
+  });
+
+  if (errors.length > 0) {
+    return;
+  }
+
+  if (validRows.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase.from("transactions").insert(validRows);
+  if (error) {
+    return;
+  }
+
+  await rebuildCardBillsForUser(userId);
+  revalidatePath("/financas/lancamentos");
+  revalidatePath("/financas/cartoes");
+  revalidatePath("/dashboard");
 }
 
 export async function deleteTransaction(id: string) {

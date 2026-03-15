@@ -127,6 +127,7 @@ Automacao e acesso direto ao Supabase:
 - O historico de exportacoes em Configuracoes evoluiu para painel avancado com busca textual, filtros por modulo/formato/periodo e paginacao.
 - Foi adicionado o modulo de Busca Global (/busca) com pesquisa unificada entre Lancamentos, Investimentos, Metas, Lista de Desejo e Mercado.
 - A busca global suporta filtro por modulo e atalho de busca rapida no topo da aplicacao (desktop).
+- Lancamentos agora possuem importacao por CSV direto na interface, com validacao de cabecalhos e mapeamento por nome de categoria/conta/cartao.
 - Moeda/localidade do perfil agora sao aplicadas de forma consistente no dashboard e modulos de financas, mercado, metas, lista de desejo, investimentos e relatorios.
 - Preferencia de exibir graficos no dashboard agora respeita configuracao do usuario em tempo real.
 - OCR de nota fiscal esta preparado para fluxo assistido por revisao humana.

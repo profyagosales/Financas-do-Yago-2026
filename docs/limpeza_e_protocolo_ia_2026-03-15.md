@@ -376,3 +376,12 @@ Bloco adicional de Busca Global (blueprint - recurso avancado):
 - Implementado filtro de escopo por modulo (all, transactions, investments, goals, wishlist, market).
 - Resultado traz contexto operacional (status/tipo/valores) e atalho para o modulo de origem.
 - Navegacao atualizada com entrada "Busca Global" no menu lateral e atalho de busca no topo (desktop).
+
+Bloco adicional de importacao por CSV (blueprint - recurso avancado):
+
+- Criada server action src/actions/finance.ts::importTransactionsCsv para processar CSV de lancamentos.
+- Parser suporta delimitador "," ou ";" e colunas obrigatorias competency_date, description, type, amount.
+- Campos opcionais suportados: category, account, destination_account, credit_card, status, payment_date, notes.
+- Mapeamento de categoria/conta/cartao e feito por nome (case-insensitive) para IDs reais do banco.
+- Nova UI de importacao adicionada em src/app/(protected)/financas/lancamentos/page.tsx com instrucoes de formato.
+- Pos-importacao, o sistema recalcula faturas de cartao e revalida dashboard/cartoes/lancamentos.
