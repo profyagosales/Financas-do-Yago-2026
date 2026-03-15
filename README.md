@@ -130,6 +130,7 @@ Automacao e acesso direto ao Supabase:
 - Lancamentos agora possuem importacao por CSV direto na interface, com validacao de cabecalhos e mapeamento por nome de categoria/conta/cartao.
 - Financas mensal agora exibe calendario financeiro do mes (grade semanal) com saldo diario, pendencias e resumo dos principais lancamentos por dia.
 - Dashboard agora inclui lembretes locais de vencimentos (faturas e pendencias proximas) com suporte a notificacoes do navegador.
+- Configuracoes agora permite baixar backup completo em JSON da conta (snapshot consolidado de todos os modulos).
 - Moeda/localidade do perfil agora sao aplicadas de forma consistente no dashboard e modulos de financas, mercado, metas, lista de desejo, investimentos e relatorios.
 - Preferencia de exibir graficos no dashboard agora respeita configuracao do usuario em tempo real.
 - OCR de nota fiscal esta preparado para fluxo assistido por revisao humana.

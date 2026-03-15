@@ -236,6 +236,23 @@ export default async function ConfiguracoesPage() {
       </div>
 
       <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Backup completo da conta</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Baixe um snapshot JSON com dados de financas, investimentos, milhas, mercado, metas, lista de desejo e configuracoes.
+            </p>
+          </div>
+          <a
+            href="/api/exports/backup/completo"
+            className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+          >
+            Baixar backup JSON
+          </a>
+        </div>
+      </Card>
+
+      <Card>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Historico de exportacoes</h2>
         {exports.length === 0 ? (
           <p className="mt-3 text-sm text-slate-600">Nenhuma exportacao registrada ainda.</p>

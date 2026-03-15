@@ -399,3 +399,10 @@ Bloco adicional de lembretes locais (blueprint - recurso avancado):
 - Dashboard passou a carregar lembretes reais de faturas proximas (card_bills) e pendencias de lancamentos com competencia ate 7 dias.
 - Lembretes sao classificados por severidade (hoje/atrasado vs proximo) e exibidos com contexto de valor/data.
 - Notificacoes do navegador podem ser ativadas pelo usuario e sao deduplicadas por dia via localStorage.
+
+Bloco adicional de backup/exportacao completa (blueprint - recurso avancado):
+
+- Criada rota autenticada src/app/api/exports/backup/completo/route.ts para download de snapshot JSON completo da conta.
+- Backup consolida dados de perfil/configuracoes, financas, cartoes, investimentos, milhas, mercado, wishlist, metas, anexos e historico de exportacoes.
+- Exportacao e auditada em export_history com modulo backup, formato json e modo full.
+- Configuracoes recebeu card com CTA para baixar backup diretamente pela interface.
