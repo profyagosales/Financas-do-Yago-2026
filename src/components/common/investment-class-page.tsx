@@ -11,6 +11,7 @@ import { FormModal } from "@/components/ui/form-modal";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { ModulePage } from "@/components/common/module-page";
 import { toMoney } from "@/lib/utils";
 
 type AssetClass = "fixed_income" | "fii" | "stock" | "crypto";
@@ -220,10 +221,7 @@ export async function InvestmentClassPage({ assetClass, title, subtitle }: Props
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Investimentos › {title}</h1>
-        <p className="text-sm text-slate-600">{subtitle}</p>
-      </div>
+      <ModulePage title={`Investimentos > ${title}`} />
 
       {!hasEnv && (
         <Card>
@@ -234,17 +232,17 @@ export async function InvestmentClassPage({ assetClass, title, subtitle }: Props
       )}
 
       <div className="grid gap-3 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Ativos</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{assets.length}</p>
         </Card>
 
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Total investido</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{formatMoney(totalInvested)}</p>
         </Card>
 
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Total resgatado</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{formatMoney(totalSold)}</p>
         </Card>
@@ -254,12 +252,12 @@ export async function InvestmentClassPage({ assetClass, title, subtitle }: Props
           <p className="mt-1 text-2xl font-black text-emerald-800">{formatMoney(totalIncome)}</p>
         </Card>
 
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Valor atual</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{formatMoney(totalMarketValue)}</p>
         </Card>
 
-        <Card className="bg-gradient-to-br from-white to-slate-50 lg:col-span-2">
+        <Card className="lg:col-span-2">
           <p className="text-xs uppercase tracking-wide text-slate-500">Rentabilidade nominal</p>
           <p className={`mt-1 text-2xl font-black ${totalNominalReturn >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
             {totalNominalReturn >= 0 ? "+" : ""}{formatMoney(totalNominalReturn)}

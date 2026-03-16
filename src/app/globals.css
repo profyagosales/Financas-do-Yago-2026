@@ -64,6 +64,18 @@ html[data-theme="dark"] {
   --color-foreground: var(--foreground);
   --font-sans: var(--font-manrope);
   --font-mono: var(--font-space-grotesk);
+
+  /* Remapeia slate para tokens do tema — adapta todas as páginas automaticamente */
+  --color-slate-50: var(--muted-surface);
+  --color-slate-100: color-mix(in srgb, var(--border) 42%, var(--surface));
+  --color-slate-200: var(--border);
+  --color-slate-300: color-mix(in srgb, var(--border) 80%, var(--muted));
+  --color-slate-400: var(--muted);
+  --color-slate-500: var(--muted);
+  --color-slate-600: color-mix(in srgb, var(--muted) 85%, var(--foreground));
+  --color-slate-700: color-mix(in srgb, var(--foreground) 80%, var(--muted));
+  --color-slate-800: var(--foreground);
+  --color-slate-900: var(--foreground);
 }
 
 body {

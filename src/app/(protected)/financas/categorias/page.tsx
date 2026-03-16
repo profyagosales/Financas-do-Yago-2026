@@ -79,15 +79,15 @@ export default async function CategoriasPage() {
       ) : null}
 
       <div className="grid gap-3 lg:grid-cols-3">
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Total de categorias</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{rows.length}</p>
         </Card>
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Ativas</p>
           <p className="mt-1 text-2xl font-black text-emerald-700">{active}</p>
         </Card>
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Padrao (seed)</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{defaults}</p>
         </Card>

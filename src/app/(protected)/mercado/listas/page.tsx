@@ -124,19 +124,19 @@ export default async function MercadoListasPage() {
       ) : null}
 
       <div className="grid gap-3 lg:grid-cols-5">
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Listas</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{lists.length}</p>
         </Card>
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Total de itens</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{totalItems}</p>
         </Card>
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">A comprar</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{toBuy}</p>
         </Card>
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Favoritos</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{favorites.length}</p>
         </Card>

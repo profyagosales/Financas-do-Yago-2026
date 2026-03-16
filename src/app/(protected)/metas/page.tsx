@@ -164,15 +164,15 @@ export default async function MetasPage() {
       ) : null}
 
       <div className="grid gap-3 lg:grid-cols-3">
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Metas ativas</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{activeGoals}</p>
         </Card>
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Total planejado</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{formatMoney(totalTarget)}</p>
         </Card>
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Ja aportado</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{formatMoney(totalContributed)}</p>
         </Card>
@@ -206,8 +206,8 @@ export default async function MetasPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <h4 className="text-base font-bold text-slate-900">{goal.name}</h4>
                         <Badge className={statusTone(goal.status)}>{goal.status}</Badge>
-                        <Badge className="border-slate-200 bg-white text-slate-700">{priorityLabel(goal.priority)}</Badge>
-                        {goal.category ? <Badge className="border-slate-200 bg-white text-slate-700">{goal.category}</Badge> : null}
+                        <Badge className="border-[color:var(--border)] bg-[color:var(--muted-surface)] text-[color:var(--foreground)]">{priorityLabel(goal.priority)}</Badge>
+                        {goal.category ? <Badge className="border-[color:var(--border)] bg-[color:var(--muted-surface)] text-[color:var(--foreground)]">{goal.category}</Badge> : null}
                       </div>
                       {goal.description ? <p className="text-sm text-slate-600">{goal.description}</p> : null}
                     </div>

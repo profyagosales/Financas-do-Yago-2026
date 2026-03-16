@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FormModal } from "@/components/ui/form-modal";
+import { ModulePage } from "@/components/common/module-page";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -167,10 +168,7 @@ export async function MileageProgramPage({ programName, subtitle }: Props) {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Milhas › {programName}</h1>
-        <p className="text-sm text-slate-600">{subtitle}</p>
-      </div>
+      <ModulePage title={`Milhas > ${programName}`} />
 
       {!hasEnv && (
         <Card>
@@ -181,21 +179,21 @@ export async function MileageProgramPage({ programName, subtitle }: Props) {
       )}
 
       <div className="grid gap-3 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Saldo atual</p>
           <p className="mt-1 text-2xl font-black text-slate-900">
             {formatPoints(balance)}
           </p>
         </Card>
 
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Total acumulado</p>
           <p className="mt-1 text-2xl font-black text-slate-900">
             {formatPoints(earned)}
           </p>
         </Card>
 
-        <Card className="bg-gradient-to-br from-white to-slate-50">
+        <Card>
           <p className="text-xs uppercase tracking-wide text-slate-500">Total resgatado</p>
           <p className="mt-1 text-2xl font-black text-slate-900">
             {formatPoints(redeemed)}
@@ -206,7 +204,7 @@ export async function MileageProgramPage({ programName, subtitle }: Props) {
           className={
             expiringPoints > 0
               ? "bg-gradient-to-br from-amber-50 to-orange-50"
-              : "bg-gradient-to-br from-white to-slate-50"
+              : undefined
           }
         >
           <p className="text-xs uppercase tracking-wide text-slate-500">Vencem em 90 dias</p>
