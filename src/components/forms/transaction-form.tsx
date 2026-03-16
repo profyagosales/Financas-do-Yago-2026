@@ -142,10 +142,6 @@ export function TransactionForm({ categories, accounts, cards, tags }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 md:p-5">
-      <div className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--muted-surface)] px-4 py-3">
-        <p className="text-sm font-semibold text-[color:var(--foreground)]">Novo lancamento</p>
-      </div>
-
       <div className={sectionCls}>
         <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Descricao</label>
         <Input className={inputCls} placeholder="Ex.: Conta de energia" {...register("description")} />
