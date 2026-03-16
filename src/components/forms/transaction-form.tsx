@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { createTransaction, uploadCustomTransactionIcon, uploadTransactionAttachment } from "@/actions/finance";
+import { createTransaction, uploadTransactionAttachment } from "@/actions/finance";
 import { setTransactionTags } from "@/actions/tags";
 import { transactionSchema } from "@/lib/validators/schemas";
 import { Button } from "@/components/ui/button";
@@ -41,12 +41,10 @@ interface Props {
   categories: Option[];
   accounts: Option[];
   cards: Option[];
-  icons: Option[];
   tags: Tag[];
 }
 
-export function TransactionForm({ categories, accounts, cards, icons, tags }: Props) {
-  const [customIconFile, setCustomIconFile] = useState<File | null>(null);
+export function TransactionForm({ categories, accounts, cards, tags }: Props) {
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
@@ -90,28 +88,18 @@ export function TransactionForm({ categories, accounts, cards, icons, tags }: Pr
 
   const selectCls = "rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-sm text-[color:var(--foreground)]";
 
+  const installmentOptions = Array.from({ length: 150 }, (_, i) => i + 1);
+
   const onSubmit = async (values: FormInput) => {
     const normalize = (value?: string) => {
       if (!value || value.trim() === "") return undefined;
       return value;
     };
 
-    let customIconUrl: string | undefined;
-    if (customIconFile) {
-      const formData = new FormData();
-      formData.append("file", customIconFile);
-      formData.append("label", values.description);
-      const upload = await uploadCustomTransactionIcon(formData);
-      if (upload.ok && upload.icon_url) {
-        customIconUrl = upload.icon_url;
-      }
-    }
-
-    const installments = showInstallments ? Math.max(2, Number(values.installments ?? 2)) : 1;
+    const installments = showInstallments ? Number(values.installments ?? 1) : 1;
 
     const result = await createTransaction({
       ...values,
-      icon_url: customIconUrl,
       category_id: normalize(values.category_id),
       account_id: requireAccount ? normalize(values.account_id) : undefined,
       credit_card_id: isCard ? normalize(values.credit_card_id) : undefined,
@@ -145,14 +133,13 @@ export function TransactionForm({ categories, accounts, cards, icons, tags }: Pr
       await uploadTransactionAttachment(fdProof);
     }
 
-    setCustomIconFile(null);
     setAttachmentFile(null);
     setPaymentProofFile(null);
     setSelectedTagIds([]);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 md:grid-cols-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 md:grid-cols-2">
       <Input placeholder="Descricao" {...register("description")} />
       <Input placeholder="Valor (R$)" type="number" step="0.01" {...register("amount")} />
 
@@ -182,7 +169,7 @@ export function TransactionForm({ categories, accounts, cards, icons, tags }: Pr
             }}
           >
             <option value="single">Unica</option>
-            <option value="fixed">Fixa (pin "Fixo")</option>
+            <option value="fixed">Fixa</option>
           </select>
         </label>
       ) : (
@@ -269,7 +256,13 @@ export function TransactionForm({ categories, accounts, cards, icons, tags }: Pr
           {showInstallments ? (
             <label className="space-y-1 text-sm">
               <span className="text-[color:var(--muted)]">Quantidade de parcelas</span>
-              <Input type="number" min={2} max={48} {...register("installments")} />
+              <select className={selectCls} {...register("installments")}> 
+                {installmentOptions.map((value) => (
+                  <option key={value} value={value}>
+                    {value}x
+                  </option>
+                ))}
+              </select>
             </label>
           ) : null}
         </>
@@ -284,31 +277,8 @@ export function TransactionForm({ categories, accounts, cards, icons, tags }: Pr
         </div>
       )}
 
-      <select className="md:col-span-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-sm" {...register("icon_key")}>
-        <option value="">Icone automatico por descricao</option>
-        {icons.map((item) => (
-          <option key={item.id} value={item.id}>
-            {item.label}
-          </option>
-        ))}
-      </select>
-
-      <div className="md:col-span-2 rounded-lg border border-[color:var(--border)] bg-[color:var(--muted-surface)] p-3 text-sm">
-        <p className="mb-2 font-semibold text-[color:var(--foreground)]">Icone personalizado (opcional)</p>
-        <input
-          type="file"
-          accept="image/*"
-          className="block w-full text-xs"
-          onChange={(event) => {
-            const file = event.currentTarget.files?.[0] ?? null;
-            setCustomIconFile(file);
-          }}
-        />
-      </div>
-
       <div className="md:col-span-2 rounded-lg border border-[color:var(--border)] bg-[color:var(--muted-surface)] p-3 text-sm">
         <p className="mb-2 font-semibold text-[color:var(--foreground)]">Arquivo do lancamento (opcional)</p>
-        <p className="mb-2 text-xs text-[color:var(--muted)]">Ex.: boleto, conta, fatura ou documento complementar.</p>
         <input
           type="file"
           accept="image/*,application/pdf"

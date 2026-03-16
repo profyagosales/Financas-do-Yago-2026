@@ -275,7 +275,6 @@ export default async function FinancasPage({
         categories={options.categories}
         accounts={options.accounts}
         cards={options.cards}
-        icons={options.icons}
         tags={options.tags}
       />
 

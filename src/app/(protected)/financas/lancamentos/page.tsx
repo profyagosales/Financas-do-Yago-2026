@@ -215,7 +215,7 @@ export default async function LancamentosPage() {
             <p className="text-xs text-slate-500">Formulario aberto em modal para manter a listagem sempre visivel.</p>
           </div>
           <FormModal title="Novo lancamento" triggerLabel="Adicionar lancamento" size="xl">
-            <TransactionForm categories={options.categories} accounts={options.accounts} cards={options.cards} icons={options.icons} tags={userTags} />
+            <TransactionForm categories={options.categories} accounts={options.accounts} cards={options.cards} tags={userTags} />
           </FormModal>
         </div>
       </Card>

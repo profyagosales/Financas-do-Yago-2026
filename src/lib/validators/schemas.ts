@@ -47,7 +47,7 @@ export const transactionSchema = z
     notes: z.string().optional(),
     icon_key: z.string().optional(),
     icon_url: z.string().optional(),
-    installments: z.coerce.number().int().min(1).max(48).default(1),
+    installments: z.coerce.number().int().min(1).max(150).default(1),
     is_recurring: z.coerce.boolean().optional(),
     recurring_rule: z.enum(["monthly", "weekly", "yearly"]).optional(),
     fixed_expense: z.coerce.boolean().default(false),

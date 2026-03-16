@@ -27,7 +27,6 @@ interface Props {
   categories: Option[];
   accounts: Option[];
   cards: Option[];
-  icons: Option[];
   tags: Tag[];
 }
 
@@ -38,7 +37,6 @@ export function FinanceHubHero({
   categories,
   accounts,
   cards,
-  icons,
   tags,
 }: Props) {
   const [openSettings, setOpenSettings] = useState(false);
@@ -92,13 +90,11 @@ export function FinanceHubHero({
           triggerLabel={<span className="inline-flex items-center gap-2"><ListPlus size={16} />Cadastrar</span>}
           size="xl"
           triggerVariant="primary"
-          description="Receita, despesa, transferencia e ajuste em um unico formulario."
         >
           <TransactionForm
             categories={categories}
             accounts={accounts}
             cards={cards}
-            icons={icons}
             tags={tags}
           />
         </FormModal>
