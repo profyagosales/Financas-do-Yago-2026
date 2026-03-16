@@ -131,6 +131,7 @@ Automacao e acesso direto ao Supabase:
 - Financas mensal agora exibe calendario financeiro do mes (grade semanal) com saldo diario, pendencias e resumo dos principais lancamentos por dia.
 - Dashboard agora inclui lembretes locais de vencimentos (faturas e pendencias proximas) com suporte a notificacoes do navegador.
 - Configuracoes agora permite baixar backup completo em JSON da conta (snapshot consolidado de todos os modulos).
+- PWA agora possui fila offline parcial: lancamentos simples criados sem conexao sao enfileirados no IndexedDB do Service Worker e sincronizados automaticamente (Background Sync) ou manualmente ao voltar online. Banner fixo indica modo offline e contagem da fila.
 - Moeda/localidade do perfil agora sao aplicadas de forma consistente no dashboard e modulos de financas, mercado, metas, lista de desejo, investimentos e relatorios.
 - Preferencia de exibir graficos no dashboard agora respeita configuracao do usuario em tempo real.
 - OCR de nota fiscal esta preparado para fluxo assistido por revisao humana.
