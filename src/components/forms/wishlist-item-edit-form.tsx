@@ -41,7 +41,7 @@ export function WishlistItemEditForm({ id, initialValues }: Props) {
     });
 
     if (!result.ok) {
-      setMessage(result.message ?? "Nao foi possivel atualizar o item.");
+      setMessage(result.message ?? "Não foi possível atualizar o item.");
       return;
     }
 
@@ -71,7 +71,7 @@ export function WishlistItemEditForm({ id, initialValues }: Props) {
           <option value="discarded">Descartado</option>
         </select>
 
-        <Input className="md:col-span-2" placeholder="Observacoes" {...register("notes")} />
+        <Input className="md:col-span-2" placeholder="Observações" {...register("notes")} />
 
         {message ? <p className="md:col-span-2 text-sm text-slate-600">{message}</p> : null}
 

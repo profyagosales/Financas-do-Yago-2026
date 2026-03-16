@@ -132,10 +132,10 @@ export default async function AnualPage({ searchParams }: { searchParams: Promis
   return (
     <div className="space-y-4">
       <ModulePage
-        title="Financas > Anual"
-        subtitle="Comparativo mes a mes e consolidado anual."
+        title="Finanças > Anual"
+        subtitle="Comparativo mês a mês e consolidado anual."
         bullets={[
-          "Grafico receitas x despesas",
+          "Gráfico receitas x despesas",
           "Economia mensal",
           "Ranking de categorias",
           "Total anual consolidado",
@@ -164,12 +164,12 @@ export default async function AnualPage({ searchParams }: { searchParams: Promis
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-slate-800">Impressao da visao anual</p>
+              <p className="text-sm font-semibold text-slate-800">Impressão da visão anual</p>
               <p className="text-xs text-slate-500">Abra os filtros e gere o resumo anual pronto para imprimir.</p>
             </div>
             <PrintFiltersModal
               title="Imprimir painel anual"
-              description="Defina intervalo e filtros da visao anual antes da impressao."
+              description="Defina intervalo e filtros da visão anual antes da impressão."
               defaultStart={startYear}
               defaultEnd={endYear}
             />
@@ -201,7 +201,7 @@ export default async function AnualPage({ searchParams }: { searchParams: Promis
           </p>
         </Card>
         <Card className="bg-gradient-to-br from-white to-slate-50">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Lancamentos no ano</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500">Lançamentos no ano</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{totalTx}</p>
         </Card>
       </div>
@@ -216,11 +216,11 @@ export default async function AnualPage({ searchParams }: { searchParams: Promis
           <table className="w-full text-left text-sm">
             <thead>
               <tr>
-                <th className="border-b border-slate-200 py-2 pr-3">Mes</th>
+                <th className="border-b border-slate-200 py-2 pr-3">Mês</th>
                 <th className="border-b border-slate-200 py-2 pr-3">Receitas</th>
                 <th className="border-b border-slate-200 py-2 pr-3">Despesas</th>
                 <th className="border-b border-slate-200 py-2 pr-3">Resultado</th>
-                <th className="border-b border-slate-200 py-2 pr-3">Lancamentos</th>
+                <th className="border-b border-slate-200 py-2 pr-3">Lançamentos</th>
               </tr>
             </thead>
             <tbody>
@@ -265,7 +265,7 @@ export default async function AnualPage({ searchParams }: { searchParams: Promis
           <p className="text-sm text-slate-700">{best ? formatMoney(best.result) : "-"}</p>
         </Card>
         <Card className="bg-gradient-to-br from-rose-50 to-orange-50">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Mes mais desafiador</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500">Mês mais desafiador</p>
           <p className="mt-1 text-xl font-black text-rose-800">{worst?.month ?? "-"}</p>
           <p className="text-sm text-slate-700">{worst ? formatMoney(worst.result) : "-"}</p>
         </Card>

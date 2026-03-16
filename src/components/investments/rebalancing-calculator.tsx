@@ -178,11 +178,11 @@ export function RebalancingCalculator({ classes, locale, currency }: Props) {
           {saved ? "Metas salvas" : "Salvar metas"}
         </Button>
         {targetError && (
-          <p className="text-xs text-rose-600">A soma dos percentuais alvo nao pode exceder 100%.</p>
+          <p className="text-xs text-rose-600">A soma dos percentuais alvo não pode exceder 100%.</p>
         )}
         {totalTarget > 0 && !targetError && Math.abs(totalTarget - 100) > 0.1 && (
           <p className="text-xs text-amber-600">
-            Soma atual: {formatPct(totalTarget)} — {formatPct(100 - totalTarget)} nao alocados.
+            Soma atual: {formatPct(totalTarget)} — {formatPct(100 - totalTarget)} não alocados.
           </p>
         )}
       </div>

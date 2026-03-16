@@ -89,7 +89,7 @@ export function LocalReminders({ reminders }: Props) {
               Notificar agora
             </Button>
           ) : permission === "unsupported" ? (
-            <span className="text-xs text-slate-500">Notificacao nao suportada neste navegador</span>
+            <span className="text-xs text-slate-500">Notificacao não suportada neste navegador</span>
           ) : (
             <Button type="button" variant="secondary" onClick={() => void enableNotifications()}>
               Ativar notificacoes

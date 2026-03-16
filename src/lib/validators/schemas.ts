@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.email("Email invalido"),
+  email: z.email("Email inválido"),
   password: z.string().min(6, "Senha deve ter ao menos 6 caracteres"),
 });
 
@@ -65,7 +65,7 @@ export const transactionSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["account_id"],
-        message: "Transferencia exige conta origem e destino.",
+        message: "Transferência exige conta origem e destino.",
       });
     }
 

@@ -38,7 +38,7 @@ export function GroceryListForm() {
       className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 md:grid-cols-2"
     >
       <Input placeholder="Nome da lista" {...register("name")} />
-      <Input placeholder="Observacoes" {...register("notes")} />
+      <Input placeholder="Observações" {...register("notes")} />
       {message ? <p className="md:col-span-2 text-sm text-slate-600">{message}</p> : null}
       <div className="md:col-span-2">
         <Button type="submit" disabled={isSubmitting}>

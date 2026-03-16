@@ -52,7 +52,7 @@ export function GoalForm({ accounts }: Props) {
     });
 
     if (!result.ok) {
-      setMessage(result.message ?? "Nao foi possivel criar a meta.");
+      setMessage(result.message ?? "Não foi possível criar a meta.");
       return;
     }
 
@@ -91,7 +91,7 @@ export function GoalForm({ accounts }: Props) {
         ))}
       </select>
 
-      <Input className="md:col-span-2" placeholder="Descricao curta da meta" {...register("description")} />
+      <Input className="md:col-span-2" placeholder="Descrição curta da meta" {...register("description")} />
 
       {message ? <p className="md:col-span-2 text-sm text-slate-600">{message}</p> : null}
 

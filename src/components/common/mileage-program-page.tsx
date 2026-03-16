@@ -26,7 +26,7 @@ type EntryRow = {
 
 const ENTRY_LABELS: Record<EntryType, string> = {
   earn: "Acumulo",
-  transfer: "Transferencia",
+  transfer: "Transferência",
   redeem: "Resgate",
   expire: "Expiracao",
   adjustment: "Ajuste",
@@ -276,7 +276,7 @@ export async function MileageProgramPage({ programName, subtitle }: Props) {
 
       <Card>
         <h3 className="mb-3 text-sm font-bold text-slate-700">
-          Historico de movimentacoes
+          Histórico de movimentacoes
         </h3>
         {entries.length === 0 ? (
           <p className="text-sm text-slate-600">Nenhuma movimentacao registrada ainda.</p>

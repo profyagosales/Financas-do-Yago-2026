@@ -246,7 +246,7 @@ export default async function MetasPage() {
                     </div>
                     <div className="grid gap-2 text-sm text-slate-600 md:grid-cols-2">
                       <span>Prazo: {goal.target_date ?? "Sem data definida"}</span>
-                      <span>Conta destino: {goal.destination_account_id ? accountMap.get(goal.destination_account_id) ?? "Conta removida" : "Nao definida"}</span>
+                      <span>Conta destino: {goal.destination_account_id ? accountMap.get(goal.destination_account_id) ?? "Conta removida" : "Não definida"}</span>
                     </div>
                   </div>
                 </div>
@@ -256,7 +256,7 @@ export default async function MetasPage() {
         </Card>
 
         <Card>
-          <h3 className="mb-3 text-sm font-bold text-slate-700">Ultimos aportes</h3>
+          <h3 className="mb-3 text-sm font-bold text-slate-700">Últimos aportes</h3>
           {recentContributions.length === 0 ? (
             <p className="text-sm text-slate-600">Nenhum aporte registrado ainda.</p>
           ) : (

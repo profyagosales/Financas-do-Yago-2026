@@ -24,7 +24,7 @@ export async function createInvestmentAsset(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase.from("investment_assets").insert({
     user_id: userId,
@@ -99,7 +99,7 @@ export async function createInvestmentTransaction(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { data: assets } = await supabase
     .from("investment_assets")
@@ -108,7 +108,7 @@ export async function createInvestmentTransaction(input: unknown) {
     .eq("user_id", userId)
     .limit(1);
 
-  if (!assets || assets.length === 0) return { ok: false, message: "Ativo nao encontrado" };
+  if (!assets || assets.length === 0) return { ok: false, message: "Ativo não encontrado" };
 
   const { error } = await supabase.from("investment_transactions").insert({
     user_id: userId,
@@ -166,10 +166,10 @@ export async function importInvestmentsCsv(
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, imported: 0, errors: ["Nao autenticado"] };
+  if (!userId) return { ok: false, imported: 0, errors: ["Não autenticado"] };
 
   const file = formData.get("file");
-  if (!(file instanceof Blob)) return { ok: false, imported: 0, errors: ["Arquivo nao encontrado"] };
+  if (!(file instanceof Blob)) return { ok: false, imported: 0, errors: ["Arquivo não encontrado"] };
   const text = await file.text();
   const lines = text.split(/\r?\n/).filter((l) => l.trim());
   if (lines.length < 2) return { ok: false, imported: 0, errors: ["CSV vazio ou sem dados"] };
@@ -201,12 +201,12 @@ export async function importInvestmentsCsv(
       continue;
     }
     if (!VALID_TX_TYPES.has(txType)) {
-      errors.push(`Linha ${lineNum}: transaction_type invalido: "${txType}"`);
+      errors.push(`Linha ${lineNum}: transaction_type inválido: "${txType}"`);
       continue;
     }
     const totalAmount = parseFloat(totalAmountRaw.replace(",", "."));
     if (isNaN(totalAmount)) {
-      errors.push(`Linha ${lineNum}: total_amount invalido`);
+      errors.push(`Linha ${lineNum}: total_amount inválido`);
       continue;
     }
 

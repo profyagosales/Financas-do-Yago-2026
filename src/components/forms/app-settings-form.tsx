@@ -37,7 +37,7 @@ export function AppSettingsForm({ theme, showCharts, emailAlerts, weeklyDigest }
       setMessage(result.message ?? "Erro ao salvar preferencias.");
       return;
     }
-    setMessage("Preferencias atualizadas com sucesso.");
+    setMessage("Preferências atualizadas com sucesso.");
   };
 
   return (

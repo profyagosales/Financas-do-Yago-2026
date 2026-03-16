@@ -19,7 +19,7 @@ export async function createWishlistItem(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase.from("wishlist_items").insert({
     user_id: userId,
@@ -46,7 +46,7 @@ export async function updateWishlistItem(id: string, input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase
     .from("wishlist_items")

@@ -30,7 +30,7 @@ function toLikeQuery(query: string) {
 }
 
 function scopeLabel(scope: Scope) {
-  if (scope === "transactions") return "Lancamentos";
+  if (scope === "transactions") return "Lançamentos";
   if (scope === "investments") return "Investimentos";
   if (scope === "goals") return "Metas";
   if (scope === "wishlist") return "Lista de Desejo";
@@ -192,7 +192,7 @@ async function getSearchData(query: string, scope: Scope) {
       scope: "market",
       title: row.raw_name ?? "Item sem nome",
       subtitle: `${row.was_purchased ? "Comprado" : "Pendente"} • ${row.establishment ?? "Sem estabelecimento"}`,
-      meta: row.unit_price !== null ? `Preco ${toMoney(Number(row.unit_price), prefs.locale, prefs.currency)}` : "Preco nao informado",
+      meta: row.unit_price !== null ? `Preco ${toMoney(Number(row.unit_price), prefs.locale, prefs.currency)}` : "Preco não informado",
       href: "/mercado/listas",
       sortDate: row.created_at,
     });
@@ -245,7 +245,7 @@ export default async function BuscaPage({ searchParams }: { searchParams?: Promi
           />
           <select name="scope" defaultValue={scope} className="rounded-xl border border-slate-300 px-3 py-2 text-sm">
             <option value="all">Todos os modulos</option>
-            <option value="transactions">Lancamentos</option>
+            <option value="transactions">Lançamentos</option>
             <option value="investments">Investimentos</option>
             <option value="goals">Metas</option>
             <option value="wishlist">Lista de Desejo</option>

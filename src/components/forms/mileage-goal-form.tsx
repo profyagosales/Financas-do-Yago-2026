@@ -56,7 +56,7 @@ export function MileageGoalForm({ programId, goalPoints, goalDueDate, goalNotes 
 
       <Input type="number" min={1} placeholder="Meta de pontos" {...register("goal_points")} />
       <Input type="date" placeholder="Data alvo (opcional)" {...register("goal_due_date")} />
-      <Input className="md:col-span-2" placeholder="Observacoes da emissao desejada" {...register("goal_notes")} />
+      <Input className="md:col-span-2" placeholder="Observações da emissao desejada" {...register("goal_notes")} />
 
       {message ? <p className="md:col-span-2 text-sm text-slate-600">{message}</p> : null}
 

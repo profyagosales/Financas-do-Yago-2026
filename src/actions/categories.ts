@@ -14,7 +14,7 @@ export async function createCategory(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase.from("categories").insert({
     user_id: userId,

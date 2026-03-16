@@ -53,7 +53,7 @@ export function GroceryNoteEditForm({ noteId, initialData, onSuccess }: Props) {
       />
       <div className="md:col-span-2">
         <textarea
-          placeholder="Texto da nota fiscal / itens e precos"
+          placeholder="Texto da nota fiscal / itens e preços"
           rows={5}
           className="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-sm text-[color:var(--foreground)] placeholder:text-[color:var(--muted)] outline-none ring-[color:var(--accent)] focus:ring-2"
           {...register("raw_extracted_text")}

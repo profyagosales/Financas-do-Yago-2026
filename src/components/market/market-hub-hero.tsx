@@ -15,7 +15,7 @@ interface ListOption {
 const FLOWS = [
   { href: "/mercado/listas", label: "Listas" },
   { href: "/mercado/notas", label: "Notas" },
-  { href: "/mercado/historico", label: "Historico" },
+  { href: "/mercado/historico", label: "Histórico" },
 ] as const;
 
 export function MarketHubHero({ lists }: { lists: ListOption[] }) {
@@ -23,7 +23,7 @@ export function MarketHubHero({ lists }: { lists: ListOption[] }) {
     <section className="rounded-3xl border border-[color:var(--border)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent)_18%,white),color-mix(in_srgb,#f59e0b_12%,white))] p-5 md:p-6">
       <div className="mb-4">
         <h2 className="text-xl font-black text-slate-900">Mercado</h2>
-        <p className="text-sm text-slate-700">Acoes principais para lista, item e nota no mesmo painel.</p>
+        <p className="text-sm text-slate-700">Ações principais para lista, item e nota no mesmo painel.</p>
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
@@ -52,7 +52,7 @@ export function MarketHubHero({ lists }: { lists: ListOption[] }) {
           triggerLabel="Nova nota"
           size="lg"
           triggerVariant="secondary"
-          description="Registrar nota para revisao e comparativo de preco."
+          description="Registrar nota para revisão e comparativo de preco."
         >
           <GroceryNoteForm />
         </FormModal>

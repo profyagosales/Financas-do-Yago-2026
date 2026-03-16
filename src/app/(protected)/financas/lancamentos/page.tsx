@@ -199,24 +199,24 @@ export default async function LancamentosPage() {
   return (
     <div className="space-y-4">
       <ModulePage
-        title="Financas > Lancamentos"
-        subtitle="CRUD completo de receitas, despesas, transferencias e ajustes."
+        title="Finanças > Lançamentos"
+        subtitle="CRUD completo de receitas, despesas, transferências e ajustes."
         bullets={[
-          "Transferencia sem contaminar resultado mensal",
-          "Parcelamentos automativos por grupo",
-          "Tags e anexos por lancamento",
-          "Filtros por conta, cartao, categoria e tipo",
+          "Transferência sem contaminar resultado mensal",
+          "Parcelamentos automáticos por grupo",
+          "Tags e anexos por lançamento",
+          "Filtros por conta, cartão, categoria e tipo",
         ]}
       />
       <Card>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-slate-700">Novo lancamento</h3>
-            <p className="text-xs text-slate-500">Formulario aberto em modal para manter a listagem sempre visivel.</p>
+            <h3 className="text-sm font-bold text-slate-700">Novo lançamento</h3>
+            <p className="text-xs text-slate-500">Formulário aberto em modal para manter a listagem sempre visível.</p>
           </div>
           <FormModal
-            title="Novo lancamento"
-            triggerLabel="Adicionar lancamento"
+            title="Novo lançamento"
+            triggerLabel="Adicionar lançamento"
             size="lg"
             footer={<div className="flex justify-end"><Button type="submit" form="transaction-create-lancamentos" className="min-w-40">Salvar</Button></div>}
           >
@@ -232,16 +232,16 @@ export default async function LancamentosPage() {
       </Card>
 
       <Card>
-        <h3 className="mb-2 text-sm font-bold text-slate-700">Importacao por CSV</h3>
+        <h3 className="mb-2 text-sm font-bold text-slate-700">Importação por CSV</h3>
         <p className="mb-3 text-xs text-slate-600">
-          Colunas obrigatorias: competency_date, description, type, amount. Colunas opcionais: category, account, destination_account, credit_card, status, payment_date, notes.
+          Colunas obrigatórias: competency_date, description, type, amount. Colunas opcionais: category, account, destination_account, credit_card, status, payment_date, notes.
         </p>
         <form action={importTransactionsCsv} className="flex flex-wrap items-center gap-2">
           <input type="file" name="file" accept=".csv,text/csv" required className="block w-full max-w-[360px] text-sm" />
           <Button type="submit" variant="secondary">Importar CSV</Button>
         </form>
         <p className="mt-2 text-xs text-slate-500">
-          Tipos aceitos: income/expense/transfer/adjustment (ou receita/despesa/transferencia/ajuste). Status aceitos: pending/paid/canceled.
+          Tipos aceitos: income/expense/transfer/adjustment (ou receita/despesa/transferência/ajuste). Status aceitos: pending/paid/canceled.
         </p>
       </Card>
 
@@ -283,24 +283,24 @@ export default async function LancamentosPage() {
       </Card>
 
       <Card>
-        <h3 className="mb-3 text-sm font-bold text-slate-700">Tabela de lancamentos</h3>
+        <h3 className="mb-3 text-sm font-bold text-slate-700">Tabela de lançamentos</h3>
         {!hasSupabaseEnv() ? (
           <p className="text-sm text-slate-600">Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY para carregar dados reais.</p>
         ) : transactions.length === 0 ? (
-          <p className="text-sm text-slate-600">Nenhum lancamento encontrado.</p>
+          <p className="text-sm text-slate-600">Nenhum lançamento encontrado.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr>
                   <th className="border-b border-slate-200 py-2 pr-3">Data</th>
-                  <th className="border-b border-slate-200 py-2 pr-3">Descricao</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Descrição</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Tipo</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Status</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Valor</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Tags</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Anexos</th>
-                  <th className="border-b border-slate-200 py-2 pr-3">Acoes</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -392,7 +392,7 @@ export default async function LancamentosPage() {
                             <Button type="submit" variant="secondary">Voltar pendente</Button>
                           </form>
                         )}
-                        <FormModal title="Editar lancamento" triggerLabel="Editar" size="lg">
+                        <FormModal title="Editar lançamento" triggerLabel="Editar" size="lg">
                           <TransactionEditForm
                             transactionId={tx.id}
                             initialData={{

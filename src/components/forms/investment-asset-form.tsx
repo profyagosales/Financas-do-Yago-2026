@@ -58,7 +58,7 @@ export function InvestmentAssetForm({ assetClass }: Props) {
         <option value="BTC">BTC — Bitcoin</option>
       </select>
 
-      <Input className="md:col-span-2" placeholder="Observacoes" {...register("notes")} />
+      <Input className="md:col-span-2" placeholder="Observações" {...register("notes")} />
 
       {message && <p className="md:col-span-2 text-sm text-slate-600">{message}</p>}
 

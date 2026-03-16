@@ -102,7 +102,7 @@ export default async function ContasPage() {
   return (
     <div className="space-y-4">
       <ModulePage
-        title="Financas > Contas"
+        title="Finanças > Contas"
         subtitle="Cadastro de bancos, carteiras e contas de investimento."
         bullets={[
           "Saldo inicial e saldo atual calculado",
@@ -142,7 +142,7 @@ export default async function ContasPage() {
                   <th className="border-b border-slate-200 py-2 pr-3">Ultima conciliacao</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Divergencia</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Status</th>
-                  <th className="border-b border-slate-200 py-2 pr-3">Acoes</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Ações</th>
                 </tr>
               </thead>
               <tbody>

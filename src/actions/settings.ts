@@ -10,7 +10,7 @@ export async function upsertProfileSettings(input: unknown) {
 
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase.from("profiles").upsert(
     {
@@ -35,7 +35,7 @@ export async function upsertAppSettings(input: unknown) {
 
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase.from("settings").upsert(
     {

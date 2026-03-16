@@ -113,7 +113,7 @@ export function InvestmentsHubHero({ assets }: { assets: AssetOption[] }) {
           triggerLabel="Carteira"
           size="md"
           triggerVariant="secondary"
-          description="Atalhos de revisao da carteira atual."
+          description="Atalhos de revisão da carteira atual."
         >
           <div className="grid gap-2">
             <Link

@@ -204,7 +204,7 @@ async function rebuildCardBillsForUser(userId: string) {
     const [creditCardId, referenceMonth] = key.split("|");
     const card = cardMap.get(creditCardId);
     if (!card) {
-      throw new Error("Cartao nao encontrado para consolidacao de fatura.");
+      throw new Error("Cartão não encontrado para consolidacao de fatura.");
     }
     const dates = buildCardDates(referenceMonth, card.closing_day, card.due_day);
     return {
@@ -226,7 +226,7 @@ export async function createBankAccount(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase.from("bank_accounts").insert({ ...payload, user_id: userId });
   if (error) return { ok: false, message: error.message };
@@ -240,7 +240,7 @@ export async function updateBankAccount(id: string, input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase
     .from("bank_accounts")
@@ -272,7 +272,7 @@ export async function reconcileBankAccount(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase
     .from("bank_accounts")
@@ -296,7 +296,7 @@ export async function createCreditCard(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase.from("credit_cards").insert({ ...payload, user_id: userId });
   if (error) return { ok: false, message: error.message };
@@ -310,7 +310,7 @@ export async function updateCreditCard(id: string, input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase
     .from("credit_cards")
@@ -344,7 +344,7 @@ export async function createTransaction(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { installments, fixed_expense, ...base } = payload;
   let resolvedIconUrl = base.icon_url ?? null;
@@ -426,7 +426,7 @@ export async function uploadCustomTransactionIcon(formData: FormData) {
   const label = String(formData.get("label") ?? "");
 
   if (!(file instanceof File) || file.size === 0) {
-    return { ok: false, message: "Arquivo invalido" };
+    return { ok: false, message: "Arquivo inválido" };
   }
 
   if (!file.type.startsWith("image/")) {
@@ -441,7 +441,7 @@ export async function uploadCustomTransactionIcon(formData: FormData) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const fileExt = file.name.includes(".") ? file.name.split(".").pop() : "png";
   const safeBase = sanitizeFileName(file.name.replace(/\.[^.]+$/, ""));
@@ -553,7 +553,7 @@ export async function importTransactionsCsv(formData: FormData) {
     const notes = (row.notes ?? "").trim() || null;
 
     if (!type) {
-      errors.push(`Linha ${line}: tipo invalido.`);
+      errors.push(`Linha ${line}: tipo inválido.`);
       return;
     }
     if (!description || description.length < 3) {
@@ -565,11 +565,11 @@ export async function importTransactionsCsv(formData: FormData) {
       return;
     }
     if (amount === null || amount <= 0) {
-      errors.push(`Linha ${line}: valor invalido.`);
+      errors.push(`Linha ${line}: valor inválido.`);
       return;
     }
     if (!status) {
-      errors.push(`Linha ${line}: status invalido.`);
+      errors.push(`Linha ${line}: status inválido.`);
       return;
     }
 
@@ -642,7 +642,7 @@ export async function updateTransaction(id: string, input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   function opt(v?: string | null) {
     return v && v.trim() !== "" ? v : null;

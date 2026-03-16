@@ -1,6 +1,10 @@
+import { Plus } from "lucide-react";
 import { ModulePage } from "@/components/common/module-page";
 import { FinanceHubHero } from "@/components/finance/finance-hub-hero";
+import { TransactionForm } from "@/components/forms/transaction-form";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { getUserTags } from "@/actions/tags";
 import { getIconsByDomains } from "@/lib/icon-registry";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
@@ -266,7 +270,7 @@ export default async function FinancasPage({
 
   return (
     <div className="space-y-4">
-      <ModulePage title="Financas" />
+      <ModulePage title="Finanças" />
 
       <FinanceHubHero
         viewMode={viewMode}
@@ -313,7 +317,7 @@ export default async function FinancasPage({
               <p className="mt-1 text-2xl font-black text-slate-900">{data.contasAtivas}</p>
             </Card>
             <Card>
-              <p className="text-xs uppercase tracking-wide text-slate-500">Cartoes ativos</p>
+              <p className="text-xs uppercase tracking-wide text-slate-500">Cartões ativos</p>
               <p className="mt-1 text-2xl font-black text-slate-900">{data.cartoesAtivos}</p>
             </Card>
             <Card>
@@ -342,7 +346,7 @@ export default async function FinancasPage({
 
         <Card>
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h3 className="text-sm font-bold text-slate-700">Lancamentos exibidos</h3>
+            <h3 className="text-sm font-bold text-slate-700">Lançamentos exibidos</h3>
             <span className="text-xs text-slate-500">{data.rows.length} itens no periodo</span>
           </div>
 
@@ -370,7 +374,7 @@ export default async function FinancasPage({
               <option value="all">Todos os tipos</option>
               <option value="income">Receita</option>
               <option value="expense">Despesa</option>
-              <option value="transfer">Transferencia</option>
+              <option value="transfer">Transferência</option>
               <option value="adjustment">Ajuste</option>
             </select>
 
@@ -402,7 +406,7 @@ export default async function FinancasPage({
                     {row.competency_date}
                     {row.category_id ? ` • ${categoriesMap.get(row.category_id) ?? "Sem categoria"}` : ""}
                     {row.account_id ? ` • ${accountsMap.get(row.account_id) ?? "Conta"}` : ""}
-                    {row.credit_card_id ? ` • ${cardsMap.get(row.credit_card_id) ?? "Cartao"}` : ""}
+                    {row.credit_card_id ? ` • ${cardsMap.get(row.credit_card_id) ?? "Cartão"}` : ""}
                     {` • ${row.status}`}
                   </p>
                 </div>
@@ -465,6 +469,23 @@ export default async function FinancasPage({
           })}
         </div>
       </Card>
+
+      <FormModal
+        title="Cadastrar lançamento"
+        triggerLabel={<Plus size={22} />}
+        triggerClassName="no-print !fixed !bottom-20 !right-4 !z-[70] !inline-flex !h-14 !w-14 !items-center !justify-center !rounded-full !border !border-[color:var(--border)] !bg-[linear-gradient(180deg,color-mix(in_srgb,var(--surface)_95%,white),color-mix(in_srgb,var(--muted-surface)_70%,white))] !p-0 !text-[color:var(--foreground)] !shadow-[0_14px_35px_color-mix(in_srgb,var(--foreground)_22%,transparent)] transition hover:!scale-[1.04] hover:!bg-[color:var(--muted-surface)] lg:!bottom-7 lg:!right-7"
+        size="lg"
+        triggerVariant="ghost"
+        footer={<div className="flex justify-end"><Button type="submit" form="transaction-create-hub" className="min-w-40">Salvar</Button></div>}
+      >
+        <TransactionForm
+          categories={options.categories}
+          accounts={options.accounts}
+          cards={options.cards}
+          tags={options.tags}
+          formId="transaction-create-hub"
+        />
+      </FormModal>
     </div>
   );
 }

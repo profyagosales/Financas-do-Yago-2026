@@ -157,13 +157,13 @@ export default async function ConfiguracoesPage() {
   return (
     <div className="space-y-4">
       <ModulePage
-        title="Configuracoes"
-        subtitle="Preferencias visuais, perfil, categorias e exportacoes."
+        title="Configurações"
+        subtitle="Preferências visuais, perfil, categorias e exportações."
         bullets={[
           "Tema claro/escuro/sistema",
-          "Perfil de exibicao (nome, moeda e localidade)",
-          "Preferencias de dashboard e notificacoes",
-          "Diagnostico rapido de cadastros",
+          "Perfil de exibição (nome, moeda e localidade)",
+          "Preferências de dashboard e notificações",
+          "Diagnóstico rápido de cadastros",
         ]}
       />
 
@@ -181,7 +181,7 @@ export default async function ConfiguracoesPage() {
           <p className="mt-1 text-2xl font-black text-slate-900">{stats.accounts}</p>
         </Card>
         <Card className="bg-gradient-to-br from-white to-slate-50">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Cartoes cadastrados</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500">Cartões cadastrados</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{stats.cards}</p>
         </Card>
         <Card className="bg-gradient-to-br from-white to-slate-50">
@@ -205,7 +205,7 @@ export default async function ConfiguracoesPage() {
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Preferencias</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Preferências</h2>
           <AppSettingsForm
             theme={settings.theme}
             showCharts={settings.show_charts}
@@ -218,7 +218,7 @@ export default async function ConfiguracoesPage() {
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Sessao</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Sessão</h2>
             <p className="mt-1 text-sm text-slate-600">Encerrar acesso neste dispositivo.</p>
           </div>
           <form action={signOut}>
@@ -231,7 +231,7 @@ export default async function ConfiguracoesPage() {
         <Card className="bg-gradient-to-br from-white to-slate-50">
           <p className="text-xs uppercase tracking-wide text-slate-500">Exports (30 dias)</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{exportStats.last30d}</p>
-          <p className="text-xs text-slate-500">Ultimos 7 dias: {exportStats.last7d}</p>
+          <p className="text-xs text-slate-500">Últimos 7 dias: {exportStats.last7d}</p>
         </Card>
         <Card className="bg-gradient-to-br from-white to-slate-50">
           <p className="text-xs uppercase tracking-wide text-slate-500">Formato CSV</p>
@@ -241,10 +241,10 @@ export default async function ConfiguracoesPage() {
         <Card className="bg-gradient-to-br from-white to-slate-50">
           <p className="text-xs uppercase tracking-wide text-slate-500">Linhas exportadas</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{exportStats.totalRows}</p>
-          <p className="text-xs text-slate-500">Media por export: {exportStats.avgRows}</p>
+          <p className="text-xs text-slate-500">Média por export: {exportStats.avgRows}</p>
         </Card>
         <Card className="bg-gradient-to-br from-white to-slate-50">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Total historico</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500">Total histórico</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{exportStats.total}</p>
           <p className="text-xs text-slate-500">Todos os formatos e modos</p>
         </Card>
@@ -253,9 +253,9 @@ export default async function ConfiguracoesPage() {
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Impressao completa da conta</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Impressão completa da conta</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Gere uma versao imprimivel com dados de financas, investimentos, milhas, mercado, metas, lista de desejo e configuracoes.
+              Gere uma versão imprimível com dados de finanças, investimentos, milhas, mercado, metas, lista de desejo e configurações.
             </p>
           </div>
           <PrintFiltersModal
@@ -268,7 +268,7 @@ export default async function ConfiguracoesPage() {
       </Card>
 
       <Card>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Historico de exportacoes</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Histórico de exportacoes</h2>
         {exports.length === 0 ? (
           <p className="mt-3 text-sm text-slate-600">Nenhuma exportacao registrada ainda.</p>
         ) : (

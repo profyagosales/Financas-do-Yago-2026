@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, Building2, CalendarDays, CreditCard, ListPlus, Settings2, Tags } from "lucide-react";
+import { ArrowLeft, Building2, CalendarDays, CreditCard, Settings2, Tags } from "lucide-react";
 import { BankAccountForm } from "@/components/forms/bank-account-form";
 import { CategoryForm } from "@/components/forms/category-form";
 import { CreditCardForm } from "@/components/forms/credit-card-form";
-import { TransactionForm } from "@/components/forms/transaction-form";
 import { PrintFiltersModal } from "@/components/common/print-filters-modal";
-import { Button } from "@/components/ui/button";
 import { FormModal } from "@/components/ui/form-modal";
 
 interface Option {
@@ -35,10 +33,10 @@ export function FinanceHubHero({
   viewMode,
   monthParam,
   yearParam,
-  categories,
-  accounts,
-  cards,
-  tags,
+  categories: _categories,
+  accounts: _accounts,
+  cards: _cards,
+  tags: _tags,
 }: Props) {
   const [openSettings, setOpenSettings] = useState(false);
 
@@ -53,14 +51,14 @@ export function FinanceHubHero({
           <ArrowLeft size={18} />
         </a>
 
-        <h2 className="text-xl font-black text-[color:var(--foreground)]">Financas</h2>
+        <h2 className="text-xl font-black text-[color:var(--foreground)]">Finanças</h2>
 
         <div className="relative">
           <button
             type="button"
             onClick={() => setOpenSettings((value) => !value)}
             className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[color:var(--border)] bg-white/85 text-[color:var(--foreground)] transition hover:opacity-80"
-            aria-label="Configuracoes"
+            aria-label="Configurações"
           >
             <Settings2 size={18} />
           </button>
@@ -78,30 +76,14 @@ export function FinanceHubHero({
                 className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:bg-[color:var(--muted-surface)]"
               >
                 <CreditCard size={15} />
-                Gerenciar Cartoes
+                Gerenciar Cartões
               </a>
             </div>
           ) : null}
         </div>
       </div>
 
-      <div className="grid gap-2 md:grid-cols-4">
-        <FormModal
-          title="Cadastrar lancamento"
-          triggerLabel={<span className="inline-flex items-center gap-2"><ListPlus size={16} />Cadastrar</span>}
-          size="lg"
-          triggerVariant="primary"
-          footer={<div className="flex justify-end"><Button type="submit" form="transaction-create-hub" className="min-w-40">Salvar</Button></div>}
-        >
-          <TransactionForm
-            categories={categories}
-            accounts={accounts}
-            cards={cards}
-            tags={tags}
-            formId="transaction-create-hub"
-          />
-        </FormModal>
-
+      <div className="grid gap-2 md:grid-cols-3">
         <FormModal
           title="Gerenciar contas"
           triggerLabel={<span className="inline-flex items-center gap-2"><Building2 size={16} />Contas</span>}
@@ -113,11 +95,11 @@ export function FinanceHubHero({
         </FormModal>
 
         <FormModal
-          title="Gerenciar cartoes"
-          triggerLabel={<span className="inline-flex items-center gap-2"><CreditCard size={16} />Cartoes</span>}
+          title="Gerenciar cartões"
+          triggerLabel={<span className="inline-flex items-center gap-2"><CreditCard size={16} />Cartões</span>}
           size="md"
           triggerVariant="secondary"
-          description="Adicione um novo cartao sem sair do dashboard de financas."
+          description="Adicione um novo cartão sem sair do dashboard de finanças."
         >
           <CreditCardForm />
         </FormModal>
@@ -127,7 +109,7 @@ export function FinanceHubHero({
           triggerLabel={<span className="inline-flex items-center gap-2"><Tags size={16} />Categorias</span>}
           size="md"
           triggerVariant="secondary"
-          description="Cadastro e ajustes de categorias em contexto rapido."
+          description="Cadastro e ajustes de categorias em contexto rápido."
         >
           <CategoryForm />
         </FormModal>
@@ -144,19 +126,20 @@ export function FinanceHubHero({
           href={`?view=month&month=${monthParam}`}
           className={`inline-flex items-center gap-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${viewMode === "month" ? "bg-[color:var(--button-primary-bg)] text-[color:var(--button-primary-fg)]" : "border border-[color:var(--border)] bg-white/85 text-[color:var(--foreground)]"}`}
         >
-          <CalendarDays size={15} /> Mes
+          <CalendarDays size={15} /> Mês
         </a>
 
         <PrintFiltersModal
           iconOnly
           triggerLabel="Imprimir"
-          title="Imprimir visao financeira"
-          description="Ajuste filtros de referencia e gere a impressao da visao atual do hub."
+          title="Imprimir visão financeira"
+          description="Ajuste filtros de referência e gere a impressão da visão atual do hub."
           defaultStart={viewMode === "month" ? `${monthParam}-01` : `${yearParam}-01-01`}
           defaultEnd={viewMode === "month" ? `${monthParam}-31` : `${yearParam}-12-31`}
           triggerVariant="ghost"
         />
       </div>
+
     </section>
   );
 }

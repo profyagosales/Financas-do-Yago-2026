@@ -54,7 +54,7 @@ export function AccountReconciliationForm({
       <input type="hidden" {...register("account_id")} />
       <Input type="number" step="0.01" placeholder="Saldo conciliado" {...register("reconciled_balance")} />
       <Input type="date" placeholder="Data da conciliacao" {...register("reconciled_at")} />
-      <Input className="md:col-span-2" placeholder="Observacoes da conciliacao" {...register("reconciliation_notes")} />
+      <Input className="md:col-span-2" placeholder="Observações da conciliacao" {...register("reconciliation_notes")} />
       {message ? <p className="md:col-span-4 text-sm text-slate-600">{message}</p> : null}
       <div className="md:col-span-4">
         <Button type="submit" disabled={isSubmitting}>

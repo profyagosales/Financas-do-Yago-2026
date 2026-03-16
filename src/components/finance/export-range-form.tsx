@@ -52,7 +52,7 @@ export function ExportRangeForm({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     if (!isValid) {
       event.preventDefault();
-      setError("Intervalo invalido: a data inicial deve ser menor que a final.");
+      setError("Intervalo inválido: a data inicial deve ser menor que a final.");
       return;
     }
 
@@ -92,7 +92,7 @@ export function ExportRangeForm({
           <option value="all">Todos os tipos</option>
           <option value="income">Receita</option>
           <option value="expense">Despesa</option>
-          <option value="transfer">Transferencia</option>
+          <option value="transfer">Transferência</option>
           <option value="adjustment">Ajuste</option>
         </select>
       ) : null}

@@ -111,7 +111,7 @@ export default async function MercadoListasPage() {
           "Itens favoritos reutilizaveis",
           "Marcar como comprado",
           "Preco por item",
-          "Historico de precos automatico",
+          "Histórico de preços automatico",
         ]}
       />
 
@@ -190,7 +190,7 @@ export default async function MercadoListasPage() {
                   <th className="border-b border-slate-200 py-2 pr-3">Status</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Itens</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Comprados</th>
-                  <th className="border-b border-slate-200 py-2 pr-3">Acoes</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -232,7 +232,7 @@ export default async function MercadoListasPage() {
                   <th className="border-b border-slate-200 py-2 pr-3">Preco un.</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Estabelecimento</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Status</th>
-                  <th className="border-b border-slate-200 py-2 pr-3">Acoes</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Ações</th>
                 </tr>
               </thead>
               <tbody>

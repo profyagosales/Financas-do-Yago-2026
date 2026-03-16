@@ -107,9 +107,9 @@ export function ExportHistoryPanel({ rows, nowIso }: Props) {
           className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
         >
           <option value="all">Todo periodo</option>
-          <option value="7d">Ultimos 7 dias</option>
-          <option value="30d">Ultimos 30 dias</option>
-          <option value="90d">Ultimos 90 dias</option>
+          <option value="7d">Últimos 7 dias</option>
+          <option value="30d">Últimos 30 dias</option>
+          <option value="90d">Últimos 90 dias</option>
         </select>
       </div>
 

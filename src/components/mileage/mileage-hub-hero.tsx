@@ -70,7 +70,7 @@ export function MileageHubHero({ programs }: { programs: ProgramOption[] }) {
     <section className="rounded-3xl border border-[color:var(--border)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent)_18%,white),color-mix(in_srgb,#f59e0b_12%,white))] p-5 md:p-6">
       <div className="mb-4">
         <h2 className="text-xl font-black text-slate-900">Milhas</h2>
-        <p className="text-sm text-slate-700">Acoes principais por programa sem sair da visao geral.</p>
+        <p className="text-sm text-slate-700">Ações principais por programa sem sair da visao geral.</p>
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
@@ -123,7 +123,7 @@ export function MileageHubHero({ programs }: { programs: ProgramOption[] }) {
           triggerLabel="Atalhos"
           size="md"
           triggerVariant="secondary"
-          description="Acompanhe vencimento e revisao de saldo."
+          description="Acompanhe vencimento e revisão de saldo."
         >
           <div className="space-y-2 text-sm text-slate-700">
             <p className="rounded-xl bg-white/75 px-3 py-2">Use a acao de movimentacao para registrar expiracoes rapidamente.</p>

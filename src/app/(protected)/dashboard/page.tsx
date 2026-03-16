@@ -23,10 +23,10 @@ async function getDashboardData() {
         { title: "Total investido", value: 0, kind: "money" as const },
         { title: "Patrimonio total", value: 0, kind: "money" as const },
         { title: "Resultado do mes", value: 0, kind: "money" as const },
-        { title: "Cartoes a vencer", value: 0, kind: "number" as const },
+        { title: "Cartões a vencer", value: 0, kind: "number" as const },
         { title: "Metas ativas", value: 0, kind: "number" as const },
         { title: "Milhas totais", value: 0, kind: "number" as const },
-        { title: "Lancamentos pendentes", value: 0, kind: "number" as const },
+        { title: "Lançamentos pendentes", value: 0, kind: "number" as const },
       ],
       latest: [] as Array<{ id: string; description: string; amount: number; competency_date: string }>,
       reminders: [] as ReminderItem[],
@@ -46,10 +46,10 @@ async function getDashboardData() {
         { title: "Total investido", value: 0, kind: "money" as const },
         { title: "Patrimonio total", value: 0, kind: "money" as const },
         { title: "Resultado do mes", value: 0, kind: "money" as const },
-        { title: "Cartoes a vencer", value: 0, kind: "number" as const },
+        { title: "Cartões a vencer", value: 0, kind: "number" as const },
         { title: "Metas ativas", value: 0, kind: "number" as const },
         { title: "Milhas totais", value: 0, kind: "number" as const },
-        { title: "Lancamentos pendentes", value: 0, kind: "number" as const },
+        { title: "Lançamentos pendentes", value: 0, kind: "number" as const },
       ],
       latest: [] as Array<{ id: string; description: string; amount: number; competency_date: string }>,
       reminders: [] as ReminderItem[],
@@ -211,10 +211,10 @@ async function getDashboardData() {
     { title: "Total investido", value: totalInvestido, kind: "money" as const },
     { title: "Patrimonio total", value: saldoConsolidado + totalInvestido, kind: "money" as const },
     { title: "Resultado do mes", value: receitasMes - despesasMes, kind: "money" as const },
-    { title: "Cartoes a vencer", value: (cardBillsData ?? []).length, kind: "number" as const },
+    { title: "Cartões a vencer", value: (cardBillsData ?? []).length, kind: "number" as const },
     { title: "Metas ativas", value: (goalsData ?? []).length, kind: "number" as const },
     { title: "Milhas totais", value: milhasTotais, kind: "number" as const },
-    { title: "Lancamentos pendentes", value: (pendingTxData ?? []).length, kind: "number" as const },
+    { title: "Lançamentos pendentes", value: (pendingTxData ?? []).length, kind: "number" as const },
   ];
 
   const dashboardConfig = (settingsData?.dashboard_config ?? {}) as Record<string, unknown>;
@@ -222,7 +222,7 @@ async function getDashboardData() {
 
   const reminders: ReminderItem[] = [
     ...((cardBillsSoonData ?? []).map((bill) => {
-      const cardName = cardsNameMap.get(bill.credit_card_id) ?? "Cartao";
+      const cardName = cardsNameMap.get(bill.credit_card_id) ?? "Cartão";
       const high = bill.due_date <= today;
       return {
         id: `bill-${bill.id}`,
@@ -322,7 +322,7 @@ export default async function DashboardPage() {
       </div>
 
       <Card>
-        <h3 className="mb-3 text-sm font-bold text-slate-700">Ultimos lancamentos</h3>
+        <h3 className="mb-3 text-sm font-bold text-slate-700">Últimos lancamentos</h3>
         {latest.length === 0 ? (
           <p className="text-sm text-slate-600">Sem lancamentos recentes.</p>
         ) : (
@@ -367,7 +367,7 @@ export default async function DashboardPage() {
       ) : (
         <Card>
           <p className="text-sm text-slate-600">
-            Graficos ocultos nas configuracoes. Ative em Configuracoes &gt; Preferencias.
+            Graficos ocultos nas configuracoes. Ative em Configurações &gt; Preferências.
           </p>
         </Card>
       )}

@@ -45,7 +45,7 @@ async function getCategoriesData() {
 function typeLabel(type: CategoryRow["type"]) {
   if (type === "income") return "Receita";
   if (type === "expense") return "Despesa";
-  if (type === "transfer") return "Transferencia";
+  if (type === "transfer") return "Transferência";
   if (type === "investment") return "Investimento";
   if (type === "mileage") return "Milhas";
   if (type === "grocery") return "Mercado";
@@ -60,7 +60,7 @@ export default async function CategoriasPage() {
   return (
     <div className="space-y-4">
       <ModulePage
-        title="Financas > Categorias"
+        title="Finanças > Categorias"
         subtitle="Categorias base para receitas, despesas e modulos extras."
         bullets={[
           "Tipos obrigatorios de categoria",
@@ -119,7 +119,7 @@ export default async function CategoriasPage() {
                   <th className="border-b border-slate-200 py-2 pr-3">Cor</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Icone</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Status</th>
-                  <th className="border-b border-slate-200 py-2 pr-3">Acoes</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Ações</th>
                 </tr>
               </thead>
               <tbody>

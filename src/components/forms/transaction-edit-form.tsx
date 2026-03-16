@@ -93,7 +93,7 @@ export function TransactionEditForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-3 md:grid-cols-2">
-      <Input placeholder="Descricao" {...register("description")} />
+      <Input placeholder="Descrição" {...register("description")} />
       <Input placeholder="Valor" type="number" step="0.01" {...register("amount")} />
       <Input placeholder="Data de competencia" type="date" {...register("competency_date")} />
       <Input placeholder="Data de pagamento" type="date" {...register("payment_date")} />
@@ -101,7 +101,7 @@ export function TransactionEditForm({
       <select className={selectCls} {...register("type")}>
         <option value="expense">Despesa</option>
         <option value="income">Receita</option>
-        <option value="transfer">Transferencia</option>
+        <option value="transfer">Transferência</option>
         <option value="adjustment">Ajuste</option>
       </select>
 
@@ -140,7 +140,7 @@ export function TransactionEditForm({
       </select>
 
       <select className={selectCls} {...register("credit_card_id")} disabled={!isExpense}>
-        <option value="">Cartao de credito</option>
+        <option value="">Cartão de credito</option>
         {cards.map((c) => (
           <option key={c.id} value={c.id}>
             {c.label}
@@ -148,7 +148,7 @@ export function TransactionEditForm({
         ))}
       </select>
 
-      <Input className="md:col-span-2" placeholder="Observacoes" {...register("notes")} />
+      <Input className="md:col-span-2" placeholder="Observações" {...register("notes")} />
 
       {errors.root?.message ? (
         <p className="md:col-span-2 text-xs text-red-600">{errors.root.message}</p>

@@ -12,8 +12,8 @@ export const dynamic = "force-dynamic";
 
 const items = [
   { label: "Listas", href: "/mercado/listas", desc: "Listas de compra e itens recorrentes.", icon: ListTodo, tone: "from-emerald-50 to-lime-50" },
-  { label: "Notas", href: "/mercado/notas", desc: "Registro/revisao de notas com anexos.", icon: FileText, tone: "from-sky-50 to-cyan-50" },
-  { label: "Historico", href: "/mercado/historico", desc: "Historico de precos e comparativos.", icon: ScanSearch, tone: "from-amber-50 to-orange-50" },
+  { label: "Notas", href: "/mercado/notas", desc: "Registro/revisão de notas com anexos.", icon: FileText, tone: "from-sky-50 to-cyan-50" },
+  { label: "Histórico", href: "/mercado/historico", desc: "Histórico de preços e comparativos.", icon: ScanSearch, tone: "from-amber-50 to-orange-50" },
 ] as const;
 
 type ItemRow = { was_purchased: boolean; unit_price: number | string | null };

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 interface FormModalProps {
   title: string;
   triggerLabel: ReactNode;
+  triggerClassName?: string;
   description?: string;
   children: ReactNode;
   footer?: ReactNode;
@@ -24,6 +25,7 @@ const WIDTH_BY_SIZE: Record<NonNullable<FormModalProps["size"]>, string> = {
 export function FormModal({
   title,
   triggerLabel,
+  triggerClassName,
   description,
   children,
   footer,
@@ -43,7 +45,7 @@ export function FormModal({
 
   return (
     <>
-      <Button type="button" variant={triggerVariant} onClick={() => setOpen(true)}>
+      <Button type="button" variant={triggerVariant} onClick={() => setOpen(true)} className={triggerClassName}>
         {triggerLabel}
       </Button>
 

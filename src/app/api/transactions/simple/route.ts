@@ -14,27 +14,27 @@ const simpleSchema = z.object({
 
 export async function POST(request: NextRequest) {
   if (!hasSupabaseEnv()) {
-    return NextResponse.json({ ok: false, message: "Configuracao ausente" }, { status: 503 });
+    return NextResponse.json({ ok: false, message: "Configuração ausente" }, { status: 503 });
   }
 
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
   if (!userId) {
-    return NextResponse.json({ ok: false, message: "Nao autenticado" }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Não autenticado" }, { status: 401 });
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ ok: false, message: "JSON invalido" }, { status: 400 });
+    return NextResponse.json({ ok: false, message: "JSON inválido" }, { status: 400 });
   }
 
   const parsed = simpleSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { ok: false, message: "Dados invalidos", errors: parsed.error.flatten() },
+      { ok: false, message: "Dados inválidos", errors: parsed.error.flatten() },
       { status: 400 },
     );
   }

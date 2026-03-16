@@ -40,7 +40,7 @@ export function WishlistItemForm() {
     });
 
     if (!result.ok) {
-      setMessage(result.message ?? "Nao foi possivel criar o item.");
+      setMessage(result.message ?? "Não foi possível criar o item.");
       return;
     }
 
@@ -82,7 +82,7 @@ export function WishlistItemForm() {
         <option value="discarded">Descartado</option>
       </select>
 
-      <Input className="md:col-span-2" placeholder="Observacoes" {...register("notes")} />
+      <Input className="md:col-span-2" placeholder="Observações" {...register("notes")} />
 
       {message ? <p className="md:col-span-2 text-sm text-slate-600">{message}</p> : null}
 

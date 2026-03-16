@@ -11,7 +11,7 @@ export async function addMileageEntry(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { data: programs } = await supabase
     .from("mileage_programs")
@@ -20,7 +20,7 @@ export async function addMileageEntry(input: unknown) {
     .eq("user_id", userId)
     .limit(1);
 
-  if (!programs || programs.length === 0) return { ok: false, message: "Programa nao encontrado" };
+  if (!programs || programs.length === 0) return { ok: false, message: "Programa não encontrado" };
 
   const { error } = await supabase.from("mileage_entries").insert({
     user_id: userId,
@@ -55,7 +55,7 @@ export async function upsertMileageGoal(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase
     .from("mileage_programs")
@@ -96,10 +96,10 @@ export async function importMileageCsv(
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, imported: 0, errors: ["Nao autenticado"] };
+  if (!userId) return { ok: false, imported: 0, errors: ["Não autenticado"] };
 
   const file = formData.get("file");
-  if (!(file instanceof Blob)) return { ok: false, imported: 0, errors: ["Arquivo nao encontrado"] };
+  if (!(file instanceof Blob)) return { ok: false, imported: 0, errors: ["Arquivo não encontrado"] };
   const text = await file.text();
   const lines = text.split(/\r?\n/).filter((l) => l.trim());
   if (lines.length < 2) return { ok: false, imported: 0, errors: ["CSV vazio ou sem dados"] };
@@ -131,12 +131,12 @@ export async function importMileageCsv(
       continue;
     }
     if (!VALID_ENTRY_TYPES.has(entryType)) {
-      errors.push(`Linha ${lineNum}: entry_type invalido: "${entryType}"`);
+      errors.push(`Linha ${lineNum}: entry_type inválido: "${entryType}"`);
       continue;
     }
     const points = parseInt(pointsRaw.replace(/[^0-9-]/g, ""), 10);
     if (isNaN(points)) {
-      errors.push(`Linha ${lineNum}: points invalido`);
+      errors.push(`Linha ${lineNum}: points inválido`);
       continue;
     }
 

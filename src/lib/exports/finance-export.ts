@@ -15,7 +15,7 @@ export function parseDateRange(input: URL, fallbackStart: string, fallbackEnd: s
   const end: string = isIsoDate(qEnd) ? (qEnd as string) : fallbackEnd;
 
   if (start >= end) {
-    return { ok: false as const, error: "Intervalo invalido" };
+    return { ok: false as const, error: "Intervalo inválido" };
   }
 
   return {

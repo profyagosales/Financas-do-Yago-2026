@@ -17,7 +17,7 @@ interface Props {
 
 const ENTRY_TYPE_LABELS: [string, string][] = [
   ["earn", "Acumulo"],
-  ["transfer", "Transferencia recebida"],
+  ["transfer", "Transferência recebida"],
   ["redeem", "Resgate"],
   ["expire", "Expiracao"],
   ["adjustment", "Ajuste"],
@@ -85,7 +85,7 @@ export function MileageEntryForm({ programId }: Props) {
 
       <Input
         className={entryType === "earn" ? "" : "md:col-span-2"}
-        placeholder="Observacoes"
+        placeholder="Observações"
         {...register("notes")}
       />
 

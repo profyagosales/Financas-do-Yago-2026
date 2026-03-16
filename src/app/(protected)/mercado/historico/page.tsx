@@ -61,7 +61,7 @@ type AggregatedItem = {
   establishments: string[];
 };
 
-// precos medios por estabelecimento para cada produto
+// preços medios por estabelecimento para cada produto
 type ComparisonRow = {
   name: string;
   byEstablishment: Record<string, { avg: number; count: number; min: number }>;
@@ -136,7 +136,7 @@ export default async function MercadoHistoricoPage() {
   return (
     <div className="space-y-4">
       <ModulePage
-        title="Mercado > Historico de precos"
+        title="Mercado > Histórico de preços"
         subtitle="Variacao por item e estabelecimento. Alimentado automaticamente ao marcar itens como comprados."
         bullets={[
           "Preco medio por item",
@@ -172,7 +172,7 @@ export default async function MercadoHistoricoPage() {
       </div>
 
       <Card>
-        <h3 className="mb-3 text-sm font-bold text-slate-700">Historico agregado por produto</h3>
+        <h3 className="mb-3 text-sm font-bold text-slate-700">Histórico agregado por produto</h3>
         {items.length === 0 ? (
           <p className="text-sm text-slate-600">
             Nenhum registro ainda. Marque itens como comprados nas listas para gerar historico automaticamente.

@@ -7,7 +7,7 @@ export default async function BolsaPage() {
     <InvestmentClassPage
       assetClass="stock"
       title="Bolsa"
-      subtitle="Acoes, BDRs, ETFs e ativos de renda variavel em bolsa."
+      subtitle="Ações, BDRs, ETFs e ativos de renda variavel em bolsa."
     />
   );
 }

@@ -20,14 +20,14 @@ type NavLink = {
 const links: NavLink[] = [
   { label: "Dashboard", href: "/dashboard", icon: ChartColumnBig },
   { label: "Busca Global", href: "/busca", icon: Search },
-  { label: "Financas", href: "/financas", prefix: "/financas", icon: CircleDollarSign },
+  { label: "Finanças", href: "/financas", prefix: "/financas", icon: CircleDollarSign },
   { label: "Investimentos", href: "/investimentos", prefix: "/investimentos", icon: TrendingUp },
   { label: "Milhas", href: "/milhas", prefix: "/milhas", icon: Plane },
   { label: "Mercado", href: "/mercado", prefix: "/mercado", icon: ShoppingCart },
   { label: "Lista de Desejo", href: "/lista-de-desejo", icon: Heart },
   { label: "Metas", href: "/metas", icon: Goal },
-  { label: "Relatorios", href: "/relatorios", icon: ChartColumnBig },
-  { label: "Configuracoes", href: "/configuracoes", icon: Settings },
+  { label: "Relatórios", href: "/relatorios", icon: ChartColumnBig },
+  { label: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 
 export function MobileNav() {

@@ -36,7 +36,7 @@ export function GroceryNoteForm() {
       return;
     }
     reset({ note_date: new Date().toISOString().slice(0, 10) });
-    setMessage("Nota registrada para revisao.");
+    setMessage("Nota registrada para revisão.");
   };
 
   return (
@@ -50,7 +50,7 @@ export function GroceryNoteForm() {
 
       <div className="md:col-span-2">
         <textarea
-          placeholder="Texto da nota fiscal / itens e precos (revisao manual obrigatoria antes de gravar)"
+          placeholder="Texto da nota fiscal / itens e preços (revisão manual obrigatoria antes de gravar)"
           rows={5}
           className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-sky-400 placeholder:text-slate-400 focus:ring-2"
           {...register("raw_extracted_text")}
@@ -61,7 +61,7 @@ export function GroceryNoteForm() {
 
       <div className="md:col-span-2">
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Salvando..." : "Registrar nota para revisao"}
+          {isSubmitting ? "Salvando..." : "Registrar nota para revisão"}
         </Button>
       </div>
     </form>

@@ -70,7 +70,7 @@ export function CreditCardForm({ initialData, onSuccess }: Props) {
       <Input placeholder="Limite total" type="number" step="0.01" {...register("credit_limit")} />
       <Input placeholder="Dia de fechamento" type="number" min={1} max={31} {...register("closing_day")} />
       <Input placeholder="Dia de vencimento" type="number" min={1} max={31} {...register("due_day")} />
-      <Input className="md:col-span-2" placeholder="Observacoes" {...register("notes")} />
+      <Input className="md:col-span-2" placeholder="Observações" {...register("notes")} />
       <div className="md:col-span-2">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Salvando..." : isEdit ? "Salvar alteracoes" : "Cadastrar cartao"}

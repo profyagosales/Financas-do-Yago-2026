@@ -180,49 +180,49 @@ export default async function CartoesPage() {
   return (
     <div className="space-y-4">
       <ModulePage
-        title="Financas > Cartoes"
+        title="Finanças > Cartões"
         subtitle="Limite, faturas, vencimento e compras parceladas."
         bullets={[
-          "Multiplos cartoes",
+          "Múltiplos cartões",
           "Alerta de vencimento",
-          "Parcelas por competencia/fatura",
-          "Limite disponivel calculado",
+          "Parcelas por competência/fatura",
+          "Limite disponível calculado",
         ]}
       />
 
       <Card>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-slate-700">Cadastro de cartoes</h3>
-            <p className="text-xs text-slate-500">Abra o formulario em modal para manter foco na analise de faturas.</p>
+            <h3 className="text-sm font-bold text-slate-700">Cadastro de cartões</h3>
+            <p className="text-xs text-slate-500">Abra o formulário em modal para manter foco na análise de faturas.</p>
           </div>
-          <FormModal title="Novo cartao" triggerLabel="Novo cartao" size="md">
+          <FormModal title="Novo cartão" triggerLabel="Novo cartão" size="md">
             <CreditCardForm />
           </FormModal>
         </div>
       </Card>
 
       <Card>
-        <h3 className="mb-3 text-sm font-bold text-slate-700">Cartoes cadastrados</h3>
+        <h3 className="mb-3 text-sm font-bold text-slate-700">Cartões cadastrados</h3>
         {!hasSupabaseEnv() ? (
           <p className="text-sm text-slate-600">
             Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY para carregar dados reais.
           </p>
         ) : cards.length === 0 ? (
-          <p className="text-sm text-slate-600">Nenhum cartao cadastrado ainda.</p>
+          <p className="text-sm text-slate-600">Nenhum cartão cadastrado ainda.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr>
-                  <th className="border-b border-slate-200 py-2 pr-3">Cartao</th>
-                  <th className="border-b border-slate-200 py-2 pr-3">Instituicao</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Cartão</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Instituição</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Bandeira</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Limite total</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Utilizado</th>
-                  <th className="border-b border-slate-200 py-2 pr-3">Disponivel</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Disponível</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Fechamento/Venc.</th>
-                  <th className="border-b border-slate-200 py-2 pr-3">Acoes</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -274,8 +274,8 @@ export default async function CartoesPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr>
-                  <th className="border-b border-slate-200 py-2 pr-3">Referencia</th>
-                  <th className="border-b border-slate-200 py-2 pr-3">Cartao</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Referência</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Cartão</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Fechamento</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Vencimento</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Status</th>
@@ -333,7 +333,7 @@ export default async function CartoesPage() {
                       <table className="w-full text-left text-sm">
                         <thead>
                           <tr>
-                            <th className="border-b border-slate-200 py-2 pr-3">Descricao</th>
+                            <th className="border-b border-slate-200 py-2 pr-3">Descrição</th>
                             <th className="border-b border-slate-200 py-2 pr-3">Parcela</th>
                             <th className="border-b border-slate-200 py-2 pr-3">Status</th>
                             <th className="border-b border-slate-200 py-2 pr-3">Valor</th>
@@ -343,7 +343,7 @@ export default async function CartoesPage() {
                           {items.map((item) => (
                             <tr key={item.id}>
                               <td className="border-b border-slate-100 py-2 pr-3">{item.description}</td>
-                              <td className="border-b border-slate-100 py-2 pr-3">{item.installmentLabel ?? "A vista"}</td>
+                              <td className="border-b border-slate-100 py-2 pr-3">{item.installmentLabel ?? "À vista"}</td>
                               <td className="border-b border-slate-100 py-2 pr-3">{item.status}</td>
                               <td className="border-b border-slate-100 py-2 pr-3 font-medium">{formatMoney(item.amount)}</td>
                             </tr>

@@ -72,12 +72,12 @@ export default async function MercadoNotasPage() {
     <div className="space-y-4">
       <ModulePage
         title="Mercado > Notas fiscais"
-        subtitle="Registro e revisao de notas fiscais de mercado. OCR assistido futuro — por ora entrada manual com revisao obrigatoria."
+        subtitle="Registro e revisão de notas fiscais de mercado. OCR assistido futuro — por ora entrada manual com revisão obrigatoria."
         bullets={[
           "Registro manual de texto/itens",
           "Upload de imagem ou PDF por nota",
-          "Status de revisao obrigatorio",
-          "Historico de precos alimentado apos revisao",
+          "Status de revisão obrigatorio",
+          "Histórico de preços alimentado apos revisão",
         ]}
       />
 
@@ -95,7 +95,7 @@ export default async function MercadoNotasPage() {
           <p className="mt-1 text-2xl font-black text-slate-900">{notes.length}</p>
         </Card>
         <Card className="bg-gradient-to-br from-white to-slate-50">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Pendentes de revisao</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500">Pendentes de revisão</p>
           <p className="mt-1 text-2xl font-black text-slate-900 text-amber-700">{pending}</p>
         </Card>
         <Card className="bg-gradient-to-br from-white to-slate-50">
@@ -108,7 +108,7 @@ export default async function MercadoNotasPage() {
         <div className="flex items-center justify-between gap-3">
           <div>
             <h3 className="text-sm font-bold text-slate-700">Registro de nota</h3>
-            <p className="text-xs text-slate-500">Cadastro em modal para deixar a revisao da lista principal mais limpa.</p>
+            <p className="text-xs text-slate-500">Cadastro em modal para deixar a revisão da lista principal mais limpa.</p>
           </div>
           <FormModal title="Nova nota fiscal" triggerLabel="Nova nota" size="lg">
             <GroceryNoteForm />
@@ -128,7 +128,7 @@ export default async function MercadoNotasPage() {
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-semibold text-slate-900">
-                        {note.establishment ?? "Estabelecimento nao informado"}
+                        {note.establishment ?? "Estabelecimento não informado"}
                       </span>
                       <Badge
                         className={
@@ -137,7 +137,7 @@ export default async function MercadoNotasPage() {
                             : "border-amber-200 bg-amber-50 text-amber-800"
                         }
                       >
-                        {note.review_status === "reviewed" ? "Revisada" : "Pendente de revisao"}
+                        {note.review_status === "reviewed" ? "Revisada" : "Pendente de revisão"}
                       </Badge>
                     </div>
                     <div className="flex flex-wrap gap-4 text-sm text-slate-600">

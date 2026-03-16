@@ -167,7 +167,7 @@ export default async function MensalPage({ searchParams }: { searchParams: Promi
   return (
     <div className="space-y-4">
       <ModulePage
-        title="Financas > Mensal"
+        title="Finanças > Mensal"
         subtitle="Fechamento mensal com filtros e indicadores."
         bullets={[
           "Receitas e despesas do mes",
@@ -236,7 +236,7 @@ export default async function MensalPage({ searchParams }: { searchParams: Promi
           </p>
         </Card>
         <Card className="bg-gradient-to-br from-sky-50 to-cyan-50">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Lancamentos pendentes</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500">Lançamentos pendentes</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{pendentes}</p>
         </Card>
       </div>
@@ -259,7 +259,7 @@ export default async function MensalPage({ searchParams }: { searchParams: Promi
         </Card>
 
         <Card>
-          <h3 className="mb-3 text-sm font-bold text-slate-700">Ultimos lancamentos do mes</h3>
+          <h3 className="mb-3 text-sm font-bold text-slate-700">Últimos lancamentos do mes</h3>
           {rows.length === 0 ? (
             <p className="text-sm text-slate-600">Nenhum lancamento no mes atual.</p>
           ) : (

@@ -51,7 +51,7 @@ export function GoalContributionForm({ goals, accounts }: Props) {
     });
 
     if (!result.ok) {
-      setMessage(result.message ?? "Nao foi possivel registrar o aporte.");
+      setMessage(result.message ?? "Não foi possível registrar o aporte.");
       return;
     }
 
@@ -85,7 +85,7 @@ export function GoalContributionForm({ goals, accounts }: Props) {
           </option>
         ))}
       </select>
-      <Input className="md:col-span-2" placeholder="Observacoes" {...register("notes")} />
+      <Input className="md:col-span-2" placeholder="Observações" {...register("notes")} />
       {message ? <p className="md:col-span-2 text-sm text-slate-600">{message}</p> : null}
       <div className="md:col-span-2">
         <Button type="submit" disabled={isSubmitting || goals.length === 0}>

@@ -177,7 +177,7 @@ async function getReportsData() {
   for (const card of cardsData ?? []) cardsMap.set(card.id, card.name);
 
   const bills = (billsData ?? []).map((row) => ({
-    card_name: cardsMap.get(row.credit_card_id) ?? "Cartao removido",
+    card_name: cardsMap.get(row.credit_card_id) ?? "Cartão removido",
     reference_month: row.reference_month,
     total_amount: Number(row.total_amount ?? 0),
     status: row.status,
@@ -265,12 +265,12 @@ export default async function RelatoriosPage() {
   return (
     <div className="space-y-4">
       <ModulePage
-        title="Relatorios"
+        title="Relatórios"
         subtitle="Consolidacao de indicadores financeiros por modulo."
         bullets={[
           "Fluxo do mes (receitas, despesas e resultado)",
           "Top categorias de despesa",
-          "Cartoes por referencia e status",
+          "Cartões por referencia e status",
           "Investimentos por classe e milhas por programa",
         ]}
       />
@@ -360,7 +360,7 @@ export default async function RelatoriosPage() {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <Card>
-          <h3 className="mb-3 text-sm font-bold text-slate-700">Cartoes por referencia</h3>
+          <h3 className="mb-3 text-sm font-bold text-slate-700">Cartões por referencia</h3>
           {bills.length === 0 ? (
             <p className="text-sm text-slate-600">Sem faturas encontradas.</p>
           ) : (
@@ -368,7 +368,7 @@ export default async function RelatoriosPage() {
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="text-slate-500">
-                    <th className="border-b border-slate-200 py-2 pr-3 font-medium">Cartao</th>
+                    <th className="border-b border-slate-200 py-2 pr-3 font-medium">Cartão</th>
                     <th className="border-b border-slate-200 py-2 pr-3 font-medium">Referencia</th>
                     <th className="border-b border-slate-200 py-2 pr-3 font-medium">Total</th>
                     <th className="border-b border-slate-200 py-2 pr-3 font-medium">Status</th>

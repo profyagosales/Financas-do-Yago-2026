@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 const items = [
   { label: "Renda Fixa", href: "/investimentos/renda-fixa", desc: "Titulos, CDBs, LCIs, LCAs e outros ativos de renda fixa.", icon: Landmark, tone: "from-emerald-50 to-teal-50" },
   { label: "FIIs", href: "/investimentos/fiis", desc: "Fundos imobiliarios e proventos.", icon: Building2, tone: "from-sky-50 to-cyan-50" },
-  { label: "Bolsa", href: "/investimentos/bolsa", desc: "Acoes, ETFs, BDRs e demais ativos de bolsa.", icon: Banknote, tone: "from-indigo-50 to-blue-50" },
+  { label: "Bolsa", href: "/investimentos/bolsa", desc: "Ações, ETFs, BDRs e demais ativos de bolsa.", icon: Banknote, tone: "from-indigo-50 to-blue-50" },
   { label: "Cripto", href: "/investimentos/cripto", desc: "Criptoativos e movimentacoes manuais.", icon: Coins, tone: "from-amber-50 to-orange-50" },
   { label: "Rebalanceamento", href: "/investimentos/rebalanceamento", desc: "Comparativo da alocacao atual com metas da carteira.", icon: PieChart, tone: "from-violet-50 to-fuchsia-50" },
 ] as const;

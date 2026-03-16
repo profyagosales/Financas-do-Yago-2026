@@ -7,14 +7,14 @@ const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "
 
 export async function GET(request: Request) {
   if (!hasSupabaseEnv()) {
-    return new Response("Supabase nao configurado", { status: 503 });
+    return new Response("Supabase não configurado", { status: 503 });
   }
 
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
   if (!userId) {
-    return new Response("Nao autenticado", { status: 401 });
+    return new Response("Não autenticado", { status: 401 });
   }
 
   const now = new Date();

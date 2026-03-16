@@ -36,7 +36,7 @@ export function CategoryForm() {
     });
 
     if (!result.ok) {
-      setMessage(result.message ?? "Nao foi possivel criar categoria.");
+      setMessage(result.message ?? "Não foi possível criar categoria.");
       return;
     }
 
@@ -51,7 +51,7 @@ export function CategoryForm() {
       <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" {...register("type")}>
         <option value="expense">Despesa</option>
         <option value="income">Receita</option>
-        <option value="transfer">Transferencia</option>
+        <option value="transfer">Transferência</option>
         <option value="investment">Investimento</option>
         <option value="mileage">Milhas</option>
         <option value="grocery">Mercado</option>

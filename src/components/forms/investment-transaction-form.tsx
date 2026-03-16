@@ -101,7 +101,7 @@ export function InvestmentTransactionForm({ assets }: Props) {
       <Input type="number" step="0.00000001" placeholder="Preco unitario (opcional)" {...register("unit_price")} />
       <Input type="number" step="0.01" placeholder="Valor total *" {...register("total_amount")} />
       <Input type="number" step="0.01" placeholder="Taxas e custos" {...register("fees")} />
-      <Input placeholder="Observacoes" {...register("notes")} />
+      <Input placeholder="Observações" {...register("notes")} />
 
       {message && <p className="md:col-span-2 text-sm text-slate-600">{message}</p>}
 

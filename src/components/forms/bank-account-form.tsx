@@ -82,7 +82,7 @@ export function BankAccountForm({ initialData, onSuccess }: Props) {
         ))}
       </select>
       <Input placeholder="Saldo inicial" type="number" step="0.01" {...register("initial_balance")} />
-      <Input className="md:col-span-2" placeholder="Observacoes" {...register("notes")} />
+      <Input className="md:col-span-2" placeholder="Observações" {...register("notes")} />
       <div className="md:col-span-2">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Salvando..." : isEdit ? "Salvar alteracoes" : "Cadastrar conta"}

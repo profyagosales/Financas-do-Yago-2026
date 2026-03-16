@@ -22,7 +22,7 @@ export async function createGroceryList(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase.from("grocery_lists").insert({
     user_id: userId,
@@ -50,7 +50,7 @@ export async function addGroceryItem(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const normalized = normalizeItemName(payload.raw_name);
   const qty = payload.quantity && !Number.isNaN(payload.quantity) ? payload.quantity : undefined;
@@ -161,7 +161,7 @@ export async function createGroceryNote(input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase.from("grocery_notes").insert({
     user_id: userId,
@@ -183,7 +183,7 @@ export async function updateGroceryNote(id: string, input: unknown) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
-  if (!userId) return { ok: false, message: "Nao autenticado" };
+  if (!userId) return { ok: false, message: "Não autenticado" };
 
   const { error } = await supabase
     .from("grocery_notes")

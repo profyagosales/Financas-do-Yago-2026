@@ -28,6 +28,6 @@ export async function logExportAudit(supabase: Fromable, input: ExportAuditInput
       row_count: input.rowCount,
     }) as Promise<unknown>);
   } catch {
-    // Nao bloquear download por falha de auditoria.
+    // Não bloquear download por falha de auditoria.
   }
 }

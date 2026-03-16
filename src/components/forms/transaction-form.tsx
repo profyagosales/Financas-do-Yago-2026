@@ -143,7 +143,7 @@ export function TransactionForm({ categories, accounts, cards, tags, formId }: P
   return (
     <form id={formId} onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className={sectionCls}>
-        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Descricao</label>
+        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Descrição</label>
         <Input className={inputCls} placeholder="Ex.: Conta de energia" {...register("description")} />
 
         <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Valor</label>
@@ -207,11 +207,11 @@ export function TransactionForm({ categories, accounts, cards, tags, formId }: P
       <div className={sectionCls}>
         <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Forma de pagamento</label>
         <select className={selectCls} {...register("payment_method")}>
-          <option value="card">Cartao</option>
+          <option value="card">Cartão</option>
           <option value="pix">Pix</option>
           <option value="debit">Debito</option>
           <option value="cash">Dinheiro</option>
-          <option value="bank_transfer">Transferencia bancaria</option>
+          <option value="bank_transfer">Transferência bancaria</option>
           <option value="other">Outro</option>
         </select>
 
@@ -231,9 +231,9 @@ export function TransactionForm({ categories, accounts, cards, tags, formId }: P
 
         {isCard ? (
           <>
-            <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Cartao</label>
+            <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Cartão</label>
             <select className={selectCls} {...register("credit_card_id")}>
-              <option value="">Selecione cartao</option>
+              <option value="">Selecione cartão</option>
               {cards.map((card) => (
                 <option key={card.id} value={card.id}>
                   {card.label}
@@ -241,9 +241,9 @@ export function TransactionForm({ categories, accounts, cards, tags, formId }: P
               ))}
             </select>
 
-            <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Pagamento no cartao</label>
+            <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Pagamento no cartão</label>
             <select className={selectCls} {...register("payment_plan")}>
-              <option value="single">A vista</option>
+              <option value="single">À vista</option>
               <option value="installment">Parcelado</option>
             </select>
 
@@ -264,8 +264,8 @@ export function TransactionForm({ categories, accounts, cards, tags, formId }: P
       </div>
 
       <div className={sectionCls}>
-        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Observacoes</label>
-        <Input className={inputCls} placeholder="Detalhes relevantes do lancamento" {...register("notes")} />
+        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Observações</label>
+        <Input className={inputCls} placeholder="Detalhes relevantes do lançamento" {...register("notes")} />
       </div>
 
       {tags.length > 0 ? (
@@ -276,7 +276,7 @@ export function TransactionForm({ categories, accounts, cards, tags, formId }: P
       ) : null}
 
       <div className={sectionCls}>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Arquivo do lancamento</p>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Arquivo do lançamento</p>
         <input
           type="file"
           accept="image/*,application/pdf"

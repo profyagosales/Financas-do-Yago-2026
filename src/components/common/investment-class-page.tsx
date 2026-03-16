@@ -301,7 +301,7 @@ export async function InvestmentClassPage({ assetClass, title, subtitle }: Props
                   <th className="border-b border-slate-200 py-2 pr-3 font-medium">Qtd liq.</th>
                   <th className="border-b border-slate-200 py-2 pr-3 font-medium">Custo medio</th>
                   <th className="border-b border-slate-200 py-2 pr-3 font-medium">Ultima mov.</th>
-                  <th className="border-b border-slate-200 py-2 pr-3 font-medium">Acoes</th>
+                  <th className="border-b border-slate-200 py-2 pr-3 font-medium">Ações</th>
                 </tr>
               </thead>
               <tbody>

@@ -170,9 +170,9 @@ export default async function ListaDesejoPage() {
                         {dealReady ? <Badge className="border-emerald-200 bg-emerald-50 text-emerald-800">Preco no alvo</Badge> : null}
                       </div>
                       <div className="grid gap-1 text-sm text-slate-600">
-                        <span>Loja: {item.store_name ?? "Nao informada"}</span>
-                        <span>Preco atual: {item.current_price !== null ? formatMoney(item.current_price) : "Nao informado"}</span>
-                        <span>Preco desejado: {item.target_price !== null ? formatMoney(item.target_price) : "Nao informado"}</span>
+                        <span>Loja: {item.store_name ?? "Não informada"}</span>
+                        <span>Preco atual: {item.current_price !== null ? formatMoney(item.current_price) : "Não informado"}</span>
+                        <span>Preco desejado: {item.target_price !== null ? formatMoney(item.target_price) : "Não informado"}</span>
                         {priceGap !== null ? (
                           <span>{priceGap <= 0 ? `Abaixo do alvo em ${formatMoney(Math.abs(priceGap))}` : `Faltam ${formatMoney(priceGap)} para atingir o alvo`}</span>
                         ) : null}
