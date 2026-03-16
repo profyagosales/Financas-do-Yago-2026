@@ -14,9 +14,9 @@ interface FormModalProps {
 }
 
 const WIDTH_BY_SIZE: Record<NonNullable<FormModalProps["size"]>, string> = {
-  md: "max-w-2xl",
-  lg: "max-w-4xl",
-  xl: "max-w-6xl",
+  md: "max-w-xl",
+  lg: "max-w-2xl",
+  xl: "max-w-4xl",
 };
 
 export function FormModal({
@@ -48,7 +48,7 @@ export function FormModal({
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 md:p-8">
           <button
             type="button"
-            className="absolute inset-0 bg-black/45 backdrop-blur-[1px]"
+            className="absolute inset-0 bg-[color:color-mix(in_srgb,var(--foreground)_30%,transparent)] backdrop-blur-sm"
             aria-label="Fechar modal"
             onClick={() => setOpen(false)}
           />
@@ -57,7 +57,7 @@ export function FormModal({
             role="dialog"
             aria-modal="true"
             className={cn(
-              "relative z-10 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 shadow-2xl md:p-6",
+              "relative z-10 flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-[color:color-mix(in_srgb,var(--border)_82%,var(--accent))] bg-[color:color-mix(in_srgb,var(--surface)_90%,transparent)] p-4 shadow-[0_30px_80px_color-mix(in_srgb,var(--foreground)_18%,transparent)] backdrop-blur-xl md:max-h-[calc(100vh-4rem)] md:p-6",
               WIDTH_BY_SIZE[size],
             )}
           >
@@ -71,7 +71,7 @@ export function FormModal({
               </Button>
             </div>
 
-            <div>{children}</div>
+            <div className="min-h-0 flex-1 overflow-y-auto pr-1">{children}</div>
           </div>
         </div>
       ) : null}
