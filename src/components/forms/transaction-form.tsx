@@ -7,7 +7,6 @@ import { z } from "zod";
 import { createTransaction, uploadTransactionAttachment } from "@/actions/finance";
 import { setTransactionTags } from "@/actions/tags";
 import { transactionSchema } from "@/lib/validators/schemas";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TagsSelector } from "@/components/forms/tags-selector";
 
@@ -42,9 +41,10 @@ interface Props {
   accounts: Option[];
   cards: Option[];
   tags: Tag[];
+  formId?: string;
 }
 
-export function TransactionForm({ categories, accounts, cards, tags }: Props) {
+export function TransactionForm({ categories, accounts, cards, tags, formId }: Props) {
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
@@ -141,7 +141,7 @@ export function TransactionForm({ categories, accounts, cards, tags }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pb-20">
+    <form id={formId} onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className={sectionCls}>
         <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Descricao</label>
         <Input className={inputCls} placeholder="Ex.: Conta de energia" {...register("description")} />
@@ -304,13 +304,7 @@ export function TransactionForm({ categories, accounts, cards, tags }: Props) {
       ) : null}
 
       {errors.root?.message ? <p className="text-xs text-red-600">{errors.root.message}</p> : null}
-      <div className="sticky bottom-0 z-10 border-t border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_94%,transparent)] py-3 backdrop-blur">
-        <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting} className="min-w-52">
-            {isSubmitting ? "Salvando..." : "Salvar"}
-          </Button>
-        </div>
-      </div>
+      {isSubmitting ? <p className="text-xs text-[color:var(--muted)]">Salvando...</p> : null}
     </form>
   );
 }

@@ -7,6 +7,7 @@ import { CategoryForm } from "@/components/forms/category-form";
 import { CreditCardForm } from "@/components/forms/credit-card-form";
 import { TransactionForm } from "@/components/forms/transaction-form";
 import { PrintFiltersModal } from "@/components/common/print-filters-modal";
+import { Button } from "@/components/ui/button";
 import { FormModal } from "@/components/ui/form-modal";
 
 interface Option {
@@ -90,12 +91,14 @@ export function FinanceHubHero({
           triggerLabel={<span className="inline-flex items-center gap-2"><ListPlus size={16} />Cadastrar</span>}
           size="lg"
           triggerVariant="primary"
+          footer={<div className="flex justify-end"><Button type="submit" form="transaction-create-hub" className="min-w-40">Salvar</Button></div>}
         >
           <TransactionForm
             categories={categories}
             accounts={accounts}
             cards={cards}
             tags={tags}
+            formId="transaction-create-hub"
           />
         </FormModal>
 

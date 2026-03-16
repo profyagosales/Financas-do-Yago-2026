@@ -214,8 +214,19 @@ export default async function LancamentosPage() {
             <h3 className="text-sm font-bold text-slate-700">Novo lancamento</h3>
             <p className="text-xs text-slate-500">Formulario aberto em modal para manter a listagem sempre visivel.</p>
           </div>
-          <FormModal title="Novo lancamento" triggerLabel="Adicionar lancamento" size="lg">
-            <TransactionForm categories={options.categories} accounts={options.accounts} cards={options.cards} tags={userTags} />
+          <FormModal
+            title="Novo lancamento"
+            triggerLabel="Adicionar lancamento"
+            size="lg"
+            footer={<div className="flex justify-end"><Button type="submit" form="transaction-create-lancamentos" className="min-w-40">Salvar</Button></div>}
+          >
+            <TransactionForm
+              categories={options.categories}
+              accounts={options.accounts}
+              cards={options.cards}
+              tags={userTags}
+              formId="transaction-create-lancamentos"
+            />
           </FormModal>
         </div>
       </Card>

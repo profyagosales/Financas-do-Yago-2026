@@ -10,6 +10,7 @@ interface FormModalProps {
   triggerLabel: ReactNode;
   description?: string;
   children: ReactNode;
+  footer?: ReactNode;
   triggerVariant?: "primary" | "secondary" | "ghost";
   size?: "md" | "lg" | "xl";
 }
@@ -25,6 +26,7 @@ export function FormModal({
   triggerLabel,
   description,
   children,
+  footer,
   triggerVariant = "secondary",
   size = "lg",
 }: FormModalProps) {
@@ -73,6 +75,12 @@ export function FormModal({
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto pr-1">{children}</div>
+
+            {footer ? (
+              <div className="mt-3 border-t border-[color:var(--border)] pt-3">
+                {footer}
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}
