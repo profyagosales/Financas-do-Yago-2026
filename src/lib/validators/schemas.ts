@@ -14,6 +14,13 @@ export const bankAccountSchema = z.object({
   notes: z.string().optional(),
 });
 
+export const bankAccountReconciliationSchema = z.object({
+  account_id: z.string().uuid(),
+  reconciled_balance: z.coerce.number(),
+  reconciled_at: z.string(),
+  reconciliation_notes: z.string().optional(),
+});
+
 export const creditCardSchema = z.object({
   name: z.string().min(2),
   institution: z.string().min(2),

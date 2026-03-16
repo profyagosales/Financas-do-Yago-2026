@@ -22,6 +22,9 @@ export interface BankAccount {
   icon_key?: string | null;
   color?: string | null;
   initial_balance: number;
+  reconciled_balance?: number | null;
+  reconciled_at?: string | null;
+  reconciliation_notes?: string | null;
   is_active: boolean;
   notes?: string | null;
   created_at: string;

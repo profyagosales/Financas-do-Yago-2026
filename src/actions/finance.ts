@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { normalizeIconQuery, resolveAndCacheIcon } from "@/lib/icon-discovery";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { bankAccountSchema, creditCardSchema, transactionSchema } from "@/lib/validators/schemas";
+import { bankAccountReconciliationSchema, bankAccountSchema, creditCardSchema, transactionSchema } from "@/lib/validators/schemas";
 
 function sanitizeFileName(value: string) {
   return value.normalize("NFKD").replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -244,6 +244,30 @@ export async function deleteBankAccount(id: string) {
 
   revalidatePath("/financas/contas");
   revalidatePath("/dashboard");
+}
+
+export async function reconcileBankAccount(input: unknown) {
+  const payload = bankAccountReconciliationSchema.parse(input);
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return { ok: false, message: "Nao autenticado" };
+
+  const { error } = await supabase
+    .from("bank_accounts")
+    .update({
+      reconciled_balance: payload.reconciled_balance,
+      reconciled_at: payload.reconciled_at,
+      reconciliation_notes: payload.reconciliation_notes?.trim() || null,
+    })
+    .eq("id", payload.account_id)
+    .eq("user_id", userId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/financas/contas");
+  revalidatePath("/dashboard");
+  return { ok: true };
 }
 
 export async function createCreditCard(input: unknown) {
