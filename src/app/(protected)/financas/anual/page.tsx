@@ -1,4 +1,5 @@
 import { ModulePage } from "@/components/common/module-page";
+import { AnnualAnalyticsShell } from "@/components/finance/annual-analytics-shell";
 import { ExportRangeForm } from "@/components/finance/export-range-form";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
@@ -12,7 +13,10 @@ type TxRow = {
   type: "income" | "expense" | "transfer" | "adjustment";
   amount: number;
   competency_date: string;
+  category_id: string | null;
 };
+
+type CategoryAgg = { name: string; total: number };
 
 async function getYearlyData() {
   if (!hasSupabaseEnv()) {
@@ -20,6 +24,7 @@ async function getYearlyData() {
       hasEnv: false,
       prefs: { currency: "BRL", locale: "pt-BR" },
       rows: [] as TxRow[],
+      categories: [] as Array<{ id: string; name: string }>,
     };
   }
 
@@ -31,6 +36,7 @@ async function getYearlyData() {
       hasEnv: true,
       prefs: { currency: "BRL", locale: "pt-BR" },
       rows: [] as TxRow[],
+      categories: [] as Array<{ id: string; name: string }>,
     };
   }
 
@@ -40,15 +46,18 @@ async function getYearlyData() {
   const start = `${year}-01-01`;
   const end = `${year + 1}-01-01`;
 
-  const { data } = await supabase
-    .from("transactions")
-    .select("type, amount, competency_date")
-    .eq("user_id", userId)
-    .gte("competency_date", start)
-    .lt("competency_date", end)
-    .neq("status", "canceled")
-    .order("competency_date", { ascending: true })
-    .limit(5000);
+  const [{ data }, { data: categoriesData }] = await Promise.all([
+    supabase
+      .from("transactions")
+      .select("type, amount, competency_date, category_id")
+      .eq("user_id", userId)
+      .gte("competency_date", start)
+      .lt("competency_date", end)
+      .neq("status", "canceled")
+      .order("competency_date", { ascending: true })
+      .limit(5000),
+    supabase.from("categories").select("id, name").eq("user_id", userId),
+  ]);
 
   const rows = (data ?? []).map((item) => ({
     ...item,
@@ -59,13 +68,14 @@ async function getYearlyData() {
     hasEnv: true,
     prefs,
     rows,
+    categories: (categoriesData ?? []).map((item) => ({ id: item.id, name: item.name })),
   };
 }
 
 const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
 export default async function AnualPage() {
-  const { hasEnv, prefs, rows } = await getYearlyData();
+  const { hasEnv, prefs, rows, categories } = await getYearlyData();
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
   const now = new Date();
   const year = new Date().getUTCFullYear();
@@ -110,6 +120,19 @@ export default async function AnualPage() {
   const annualExpense = monthly.reduce((sum, item) => sum + item.expense, 0);
   const annualResult = annualIncome - annualExpense;
   const totalTx = monthly.reduce((sum, item) => sum + item.count, 0);
+
+  const categoryMap = new Map(categories.map((item) => [item.id, item.name]));
+  const categoryRankingMap = rows
+    .filter((row) => row.type === "expense")
+    .reduce<Record<string, number>>((acc, row) => {
+      const name = row.category_id ? (categoryMap.get(row.category_id) ?? "Sem categoria") : "Sem categoria";
+      acc[name] = (acc[name] ?? 0) + row.amount;
+      return acc;
+    }, {});
+  const categoryRanking: CategoryAgg[] = Object.entries(categoryRankingMap)
+    .map(([name, total]) => ({ name, total }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 8);
 
   const best = [...monthly].sort((a, b) => b.result - a.result)[0];
   const worst = [...monthly].sort((a, b) => a.result - b.result)[0];
@@ -235,6 +258,10 @@ export default async function AnualPage() {
         </Card>
       </div>
 
+      {hasEnv ? (
+        <AnnualAnalyticsShell monthly={monthly} currency={prefs.currency} locale={prefs.locale} />
+      ) : null}
+
       <Card>
         <h3 className="mb-3 text-sm font-bold text-slate-700">Comparativo mensal</h3>
         <div className="overflow-x-auto">
@@ -263,6 +290,24 @@ export default async function AnualPage() {
             </tbody>
           </table>
         </div>
+      </Card>
+
+      <Card>
+        <h3 className="mb-3 text-sm font-bold text-slate-700">Ranking de categorias (ano)</h3>
+        {categoryRanking.length === 0 ? (
+          <p className="text-sm text-slate-600">Sem despesas categorizadas no ano.</p>
+        ) : (
+          <div className="space-y-2">
+            {categoryRanking.map((item, index) => (
+              <div key={item.name} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+                <span className="text-slate-700">
+                  {index + 1}. {item.name}
+                </span>
+                <span className="font-semibold text-slate-900">{formatMoney(item.total)}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
 
       <div className="grid gap-3 lg:grid-cols-2">
