@@ -42,7 +42,7 @@ export function Sidebar() {
   const isActive = (item: NavLink) => pathname === item.href || (item.prefix ? pathname.startsWith(item.prefix) : false);
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-72 shrink-0 overflow-y-auto border-r border-[color:var(--border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--surface)_97%,transparent),color-mix(in_srgb,var(--surface)_86%,var(--accent)_14%))] px-4 py-6 lg:block">
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 overflow-y-auto border-r border-[color:var(--border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--surface)_97%,transparent),color-mix(in_srgb,var(--surface)_86%,var(--accent)_14%))] px-3 py-6 lg:block">
       <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">Painel</p>
       <p className="mb-6 text-xl font-black tracking-tight text-[color:var(--accent)]">Financeiro do Yago</p>
       <nav className="space-y-1">

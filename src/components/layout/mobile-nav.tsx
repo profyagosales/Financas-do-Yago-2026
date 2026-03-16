@@ -33,8 +33,8 @@ export function MobileNav() {
   const isActive = (item: NavLink) => pathname === item.href || (item.prefix ? pathname.startsWith(item.prefix) : false);
 
   return (
-    <div className="lg:hidden">
-      <Button type="button" variant="secondary" onClick={() => setOpen(true)}>
+    <div className="fixed bottom-4 right-4 z-40 lg:hidden">
+      <Button type="button" variant="secondary" onClick={() => setOpen(true)} className="shadow-xl">
         Menu
       </Button>
 

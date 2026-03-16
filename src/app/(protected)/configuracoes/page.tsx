@@ -1,7 +1,9 @@
+import { signOut } from "@/actions/auth";
 import { ModulePage } from "@/components/common/module-page";
 import { ExportHistoryPanel, type ExportHistoryRow } from "@/components/finance/export-history-panel";
 import { AppSettingsForm } from "@/components/forms/app-settings-form";
 import { ProfileSettingsForm } from "@/components/forms/profile-settings-form";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -211,6 +213,18 @@ export default async function ConfiguracoesPage() {
           />
         </div>
       </div>
+
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Sessao</h2>
+            <p className="mt-1 text-sm text-slate-600">Encerrar acesso neste dispositivo.</p>
+          </div>
+          <form action={signOut}>
+            <Button type="submit" variant="secondary">Sair da conta</Button>
+          </form>
+        </div>
+      </Card>
 
       <div className="grid gap-3 lg:grid-cols-4">
         <Card className="bg-gradient-to-br from-white to-slate-50">
