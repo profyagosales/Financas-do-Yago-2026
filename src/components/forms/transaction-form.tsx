@@ -5,9 +5,11 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createTransaction, uploadCustomTransactionIcon } from "@/actions/finance";
+import { setTransactionTags } from "@/actions/tags";
 import { transactionSchema } from "@/lib/validators/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TagsSelector } from "@/components/forms/tags-selector";
 
 const formSchema = transactionSchema.safeExtend({
   category_id: z.string().uuid().optional(),
@@ -22,15 +24,23 @@ interface Option {
   label: string;
 }
 
+interface Tag {
+  id: string;
+  name: string;
+  color: string | null;
+}
+
 interface Props {
   categories: Option[];
   accounts: Option[];
   cards: Option[];
   icons: Option[];
+  tags: Tag[];
 }
 
-export function TransactionForm({ categories, accounts, cards, icons }: Props) {
+export function TransactionForm({ categories, accounts, cards, icons, tags }: Props) {
   const [customIconFile, setCustomIconFile] = useState<File | null>(null);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
 
   const {
     control,
@@ -64,7 +74,7 @@ export function TransactionForm({ categories, accounts, cards, icons }: Props) {
       }
     }
 
-    await createTransaction({
+    const result = await createTransaction({
       ...values,
       icon_url: customIconUrl,
       category_id: normalize(values.category_id),
@@ -73,7 +83,13 @@ export function TransactionForm({ categories, accounts, cards, icons }: Props) {
       credit_card_id: normalize(values.credit_card_id),
     });
 
+    // Vincular tags se o lancamento foi criado com sucesso
+    if (result?.ok && result.id && selectedTagIds.length > 0) {
+      await setTransactionTags(result.id, selectedTagIds);
+    }
+
     setCustomIconFile(null);
+    setSelectedTagIds([]);
   };
 
   const currentType = useWatch({ control, name: "type" });
@@ -138,6 +154,13 @@ export function TransactionForm({ categories, accounts, cards, icons }: Props) {
         ))}
       </select>
       <Input className="md:col-span-2" placeholder="Observacoes" {...register("notes")} />
+
+      {tags.length > 0 && (
+        <div className="md:col-span-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+          <p className="mb-2 text-xs font-semibold text-slate-700">Tags</p>
+          <TagsSelector tags={tags} selectedIds={selectedTagIds} onChange={setSelectedTagIds} />
+        </div>
+      )}
 
       <select className="md:col-span-2 rounded-xl border border-slate-300 px-3 py-2 text-sm" {...register("icon_key")}>
         <option value="">Icone automatico por descricao</option>

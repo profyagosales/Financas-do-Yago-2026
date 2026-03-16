@@ -2,6 +2,7 @@ import { ModulePage } from "@/components/common/module-page";
 import { InstitutionAvatar } from "@/components/common/institution-avatar";
 import { TransactionForm } from "@/components/forms/transaction-form";
 import { deleteTransaction, importTransactionsCsv, setTransactionStatus, uploadTransactionAttachment } from "@/actions/finance";
+import { createTag, deleteTag, getUserTags, toggleTransactionTag } from "@/actions/tags";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { findIconByText, getIconsByDomains } from "@/lib/icon-registry";
@@ -11,6 +12,8 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { toMoney } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+type Tag = { id: string; name: string; color: string | null };
 
 type TransactionRow = {
   id: string;
@@ -22,6 +25,7 @@ type TransactionRow = {
   icon_key: string | null;
   icon_url: string | null;
   inferred_icon_key?: string | null;
+  tags?: Tag[];
   attachments?: Array<{
     id: string;
     signed_url: string | null;
@@ -124,17 +128,23 @@ async function getTransactions() {
   if (ids.length === 0) {
     return {
       prefs,
-      transactions: withInferred.map((item) => ({ ...item, attachments: [] })),
+      transactions: withInferred.map((item) => ({ ...item, attachments: [], tags: [] })),
     };
   }
 
-  const { data: attachmentsData } = await supabase
-    .from("attachments")
-    .select("id, related_id, file_name, file_path, attachment_kind, created_at")
-    .eq("user_id", userId)
-    .eq("related_type", "transaction")
-    .in("related_id", ids)
-    .order("created_at", { ascending: false });
+  const [{ data: attachmentsData }, { data: transactionTagsData }] = await Promise.all([
+    supabase
+      .from("attachments")
+      .select("id, related_id, file_name, file_path, attachment_kind, created_at")
+      .eq("user_id", userId)
+      .eq("related_type", "transaction")
+      .in("related_id", ids)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("transaction_tags")
+      .select("transaction_id, tags(id, name, color)")
+      .in("transaction_id", ids),
+  ]);
 
   const attachmentsWithUrl = await Promise.all(
     (attachmentsData ?? []).map(async (row) => {
@@ -154,11 +164,20 @@ async function getTransactions() {
     return acc;
   }, {});
 
+  type TxTagRow = { transaction_id: string; tags: Tag | Tag[] | null };
+  const tagsByTransaction = (transactionTagsData as TxTagRow[] ?? []).reduce<Record<string, Tag[]>>((acc, row) => {
+    if (!acc[row.transaction_id]) acc[row.transaction_id] = [];
+    const tagData = row.tags;
+    if (tagData && !Array.isArray(tagData)) acc[row.transaction_id].push(tagData);
+    return acc;
+  }, {});
+
   return {
     prefs,
     transactions: withInferred.map((item) => ({
       ...item,
       attachments: byTransaction[item.id] ?? [],
+      tags: tagsByTransaction[item.id] ?? [],
     })),
   };
 }
@@ -166,6 +185,7 @@ async function getTransactions() {
 export default async function LancamentosPage() {
   const { prefs, transactions } = await getTransactions();
   const options = await getFormOptions();
+  const userTags = await getUserTags();
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
 
   return (
@@ -180,7 +200,7 @@ export default async function LancamentosPage() {
           "Filtros por conta, cartao, categoria e tipo",
         ]}
       />
-      <TransactionForm categories={options.categories} accounts={options.accounts} cards={options.cards} icons={options.icons} />
+      <TransactionForm categories={options.categories} accounts={options.accounts} cards={options.cards} icons={options.icons} tags={userTags} />
 
       <Card>
         <h3 className="mb-2 text-sm font-bold text-slate-700">Importacao por CSV</h3>
@@ -194,6 +214,43 @@ export default async function LancamentosPage() {
         <p className="mt-2 text-xs text-slate-500">
           Tipos aceitos: income/expense/transfer/adjustment (ou receita/despesa/transferencia/ajuste). Status aceitos: pending/paid/canceled.
         </p>
+      </Card>
+
+      <Card>
+        <h3 className="mb-3 text-sm font-bold text-slate-700">Gerenciar tags</h3>
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          {userTags.map((tag) => (
+            <span
+              key={tag.id}
+              style={tag.color ? { backgroundColor: tag.color + "22", borderColor: tag.color, color: tag.color } : undefined}
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700"
+            >
+              {tag.name}
+              <form action={deleteTag.bind(null, tag.id)} className="inline">
+                <button type="submit" className="text-slate-400 hover:text-red-500" title="Excluir tag">×</button>
+              </form>
+            </span>
+          ))}
+          {userTags.length === 0 && <p className="text-xs text-slate-500 italic">Nenhuma tag criada.</p>}
+        </div>
+        <form action={createTag} className="flex items-center gap-2">
+          <input
+            type="text"
+            name="name"
+            placeholder="Nome da tag"
+            required
+            maxLength={40}
+            className="rounded-xl border border-slate-300 px-3 py-1.5 text-sm w-52"
+          />
+          <input
+            type="color"
+            name="color"
+            defaultValue="#6366f1"
+            title="Cor da tag"
+            className="h-9 w-10 cursor-pointer rounded border border-slate-300 p-0.5"
+          />
+          <Button type="submit" variant="secondary">Criar tag</Button>
+        </form>
       </Card>
 
       <Card>
@@ -212,6 +269,7 @@ export default async function LancamentosPage() {
                   <th className="border-b border-slate-200 py-2 pr-3">Tipo</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Status</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Valor</th>
+                  <th className="border-b border-slate-200 py-2 pr-3">Tags</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Anexos</th>
                   <th className="border-b border-slate-200 py-2 pr-3">Acoes</th>
                 </tr>
@@ -229,6 +287,40 @@ export default async function LancamentosPage() {
                     <td className="border-b border-slate-100 py-2 pr-3">{tx.type}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{tx.status}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{formatMoney(Number(tx.amount ?? 0))}</td>
+                    <td className="border-b border-slate-100 py-2 pr-3">
+                      <div className="flex flex-wrap gap-1 min-w-[120px]">
+                        {(tx.tags ?? []).map((tag) => (
+                          <span
+                            key={tag.id}
+                            style={tag.color ? { backgroundColor: tag.color + "22", borderColor: tag.color, color: tag.color } : undefined}
+                            className="inline-flex items-center gap-1 rounded-full border border-slate-300 px-2 py-0.5 text-xs text-slate-600"
+                          >
+                            {tag.name}
+                            <form action={toggleTransactionTag} className="inline">
+                              <input type="hidden" name="transaction_id" value={tx.id} />
+                              <input type="hidden" name="tag_id" value={tag.id} />
+                              <input type="hidden" name="action" value="remove" />
+                              <button type="submit" className="ml-0.5 text-slate-400 hover:text-red-500" title="Remover tag">×</button>
+                            </form>
+                          </span>
+                        ))}
+                        {userTags.filter((t) => !(tx.tags ?? []).some((tt) => tt.id === t.id)).slice(0, 5).map((tag) => (
+                          <form key={tag.id} action={toggleTransactionTag} className="inline">
+                            <input type="hidden" name="transaction_id" value={tx.id} />
+                            <input type="hidden" name="tag_id" value={tag.id} />
+                            <input type="hidden" name="action" value="add" />
+                            <button
+                              type="submit"
+                              style={tag.color ? { borderColor: tag.color, color: tag.color } : undefined}
+                              className="rounded-full border border-dashed border-slate-300 px-2 py-0.5 text-xs text-slate-400 hover:text-slate-600"
+                              title={`Adicionar tag ${tag.name}`}
+                            >
+                              + {tag.name}
+                            </button>
+                          </form>
+                        ))}
+                      </div>
+                    </td>
                     <td className="border-b border-slate-100 py-2 pr-3">
                       <div className="space-y-2">
                         <form action={uploadTransactionAttachment} className="flex items-center gap-2">

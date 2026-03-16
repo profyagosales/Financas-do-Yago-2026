@@ -349,7 +349,7 @@ export async function createTransaction(input: unknown) {
   revalidatePath("/financas/lancamentos");
   revalidatePath("/financas/cartoes");
   revalidatePath("/dashboard");
-  return { ok: true };
+  return { ok: true, id: inserted.id };
 }
 
 export async function uploadCustomTransactionIcon(formData: FormData) {
