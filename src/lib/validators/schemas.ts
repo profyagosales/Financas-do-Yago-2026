@@ -142,6 +142,13 @@ export const mileageEntrySchema = z.object({
   notes: z.string().optional(),
 });
 
+export const mileageGoalSchema = z.object({
+  program_id: z.string().uuid(),
+  goal_points: z.coerce.number().int().positive(),
+  goal_due_date: z.string().optional(),
+  goal_notes: z.string().optional(),
+});
+
 export const investmentAssetSchema = z.object({
   name: z.string().min(2),
   ticker: z.string().optional(),

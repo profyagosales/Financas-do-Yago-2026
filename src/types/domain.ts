@@ -170,6 +170,9 @@ export interface MileageProgram {
   user_id: ID;
   name: string;
   is_active: boolean;
+  goal_points?: number | null;
+  goal_due_date?: string | null;
+  goal_notes?: string | null;
   created_at: string;
   updated_at: string;
 }

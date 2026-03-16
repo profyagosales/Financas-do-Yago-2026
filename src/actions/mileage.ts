@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { mileageEntrySchema } from "@/lib/validators/schemas";
+import { mileageEntrySchema, mileageGoalSchema } from "@/lib/validators/schemas";
 
 const PATHS = ["/milhas/livelo", "/milhas/latam-pass", "/milhas/azul", "/dashboard"];
 
@@ -46,6 +46,44 @@ export async function deleteMileageEntry(id: string) {
   if (!userId) return;
 
   await supabase.from("mileage_entries").delete().eq("id", id).eq("user_id", userId);
+
+  for (const path of PATHS) revalidatePath(path);
+}
+
+export async function upsertMileageGoal(input: unknown) {
+  const payload = mileageGoalSchema.parse(input);
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return { ok: false, message: "Nao autenticado" };
+
+  const { error } = await supabase
+    .from("mileage_programs")
+    .update({
+      goal_points: payload.goal_points,
+      goal_due_date: payload.goal_due_date?.trim() || null,
+      goal_notes: payload.goal_notes?.trim() || null,
+    })
+    .eq("id", payload.program_id)
+    .eq("user_id", userId);
+
+  if (error) return { ok: false, message: error.message };
+
+  for (const path of PATHS) revalidatePath(path);
+  return { ok: true };
+}
+
+export async function clearMileageGoal(programId: string) {
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return;
+
+  await supabase
+    .from("mileage_programs")
+    .update({ goal_points: null, goal_due_date: null, goal_notes: null })
+    .eq("id", programId)
+    .eq("user_id", userId);
 
   for (const path of PATHS) revalidatePath(path);
 }

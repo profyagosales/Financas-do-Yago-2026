@@ -2,6 +2,7 @@ import { deleteMileageEntry } from "@/actions/mileage";
 import { importMileageCsv } from "@/actions/mileage";
 import { CsvImportCard } from "@/components/common/csv-import-card";
 import { MileageEntryForm } from "@/components/forms/mileage-entry-form";
+import { MileageGoalForm } from "@/components/forms/mileage-goal-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -61,6 +62,9 @@ async function getData(programName: string) {
       hasEnv: false,
       prefs: { locale: "pt-BR" },
       programId: null as string | null,
+      goalPoints: null as number | null,
+      goalDueDate: null as string | null,
+      goalNotes: null as string | null,
       entries: [] as EntryRow[],
     };
   }
@@ -73,6 +77,9 @@ async function getData(programName: string) {
       hasEnv: true,
       prefs: { locale: "pt-BR" },
       programId: null as string | null,
+      goalPoints: null as number | null,
+      goalDueDate: null as string | null,
+      goalNotes: null as string | null,
       entries: [] as EntryRow[],
     };
   }
@@ -81,20 +88,28 @@ async function getData(programName: string) {
 
   const { data: programs } = await supabase
     .from("mileage_programs")
-    .select("id")
+    .select("id, goal_points, goal_due_date, goal_notes")
     .eq("user_id", userId)
     .eq("name", programName)
     .limit(1);
 
   let programId = programs?.[0]?.id ?? null;
+  let goalPoints = programs?.[0]?.goal_points === null || programs?.[0]?.goal_points === undefined
+    ? null
+    : Number(programs[0].goal_points);
+  let goalDueDate = programs?.[0]?.goal_due_date ?? null;
+  let goalNotes = programs?.[0]?.goal_notes ?? null;
 
   if (!programId) {
     const { data: created } = await supabase
       .from("mileage_programs")
       .insert({ user_id: userId, name: programName })
-      .select("id")
+      .select("id, goal_points, goal_due_date, goal_notes")
       .single();
     programId = created?.id ?? null;
+    goalPoints = created?.goal_points === null || created?.goal_points === undefined ? null : Number(created.goal_points);
+    goalDueDate = created?.goal_due_date ?? null;
+    goalNotes = created?.goal_notes ?? null;
   }
 
   if (!programId) {
@@ -102,6 +117,9 @@ async function getData(programName: string) {
       hasEnv: true,
       prefs,
       programId: null as string | null,
+      goalPoints: null as number | null,
+      goalDueDate: null as string | null,
+      goalNotes: null as string | null,
       entries: [] as EntryRow[],
     };
   }
@@ -119,7 +137,7 @@ async function getData(programName: string) {
     points: Number(e.points),
   })) as EntryRow[];
 
-  return { hasEnv: true, prefs, programId, entries };
+  return { hasEnv: true, prefs, programId, goalPoints, goalDueDate, goalNotes, entries };
 }
 
 interface Props {
@@ -128,7 +146,7 @@ interface Props {
 }
 
 export async function MileageProgramPage({ programName, subtitle }: Props) {
-  const { hasEnv, prefs, programId, entries } = await getData(programName);
+  const { hasEnv, prefs, programId, goalPoints, goalDueDate, goalNotes, entries } = await getData(programName);
   const formatPoints = (value: number) => value.toLocaleString(prefs.locale);
 
   const balance = calcBalance(entries);
@@ -140,6 +158,8 @@ export async function MileageProgramPage({ programName, subtitle }: Props) {
     .reduce((s, e) => s + e.points, 0);
   const expiring = getExpiringWithin90Days(entries);
   const expiringPoints = expiring.reduce((s, e) => s + e.points, 0);
+  const goalProgress = goalPoints && goalPoints > 0 ? Math.min(100, Math.round((balance / goalPoints) * 100)) : null;
+  const goalRemaining = goalPoints && goalPoints > 0 ? Math.max(goalPoints - balance, 0) : null;
 
   const ninety = new Date();
   ninety.setDate(ninety.getDate() + 90);
@@ -198,6 +218,45 @@ export async function MileageProgramPage({ programName, subtitle }: Props) {
           </p>
         </Card>
       </div>
+
+      {programId ? (
+        <Card>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-bold text-slate-700">Meta de emissao</h3>
+              <p className="mt-1 text-xs text-slate-500">
+                Defina quantos pontos deseja acumular para a proxima emissao nesse programa.
+              </p>
+              {goalPoints ? (
+                <div className="mt-3 space-y-1">
+                  <p className="text-sm font-semibold text-slate-800">
+                    {formatPoints(balance)} / {formatPoints(goalPoints)} pontos
+                  </p>
+                  <div className="h-2 w-full max-w-sm overflow-hidden rounded-full bg-slate-200">
+                    <div className="h-full rounded-full bg-emerald-500" style={{ width: `${goalProgress ?? 0}%` }} />
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    {goalRemaining === 0 ? "Meta atingida." : `Faltam ${formatPoints(goalRemaining ?? 0)} pontos.`}
+                    {goalDueDate ? ` Data alvo: ${goalDueDate}.` : ""}
+                  </p>
+                  {goalNotes ? <p className="text-xs text-slate-500">{goalNotes}</p> : null}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-slate-600">Nenhuma meta definida ainda.</p>
+              )}
+            </div>
+
+            <div className="w-full max-w-xl">
+              <MileageGoalForm
+                programId={programId}
+                goalPoints={goalPoints}
+                goalDueDate={goalDueDate}
+                goalNotes={goalNotes}
+              />
+            </div>
+          </div>
+        </Card>
+      ) : null}
 
       {programId && (
         <div className="space-y-2">
