@@ -4,19 +4,15 @@ import { Button } from "@/components/ui/button";
 
 export function Topbar() {
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between border-b px-4 py-3 backdrop-blur md:px-6 border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_88%,transparent)]">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Painel financeiro pessoal</p>
-        <p className="text-sm text-[color:var(--foreground)]">Controle completo em um unico lugar</p>
-      </div>
-      <div className="flex items-center gap-2">
+    <header className="sticky top-0 z-30 border-b border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_90%,transparent)] px-4 py-3 backdrop-blur md:px-6">
+      <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between gap-2">
         <MobileNav />
-        <form action="/busca" method="get" className="hidden items-center gap-2 lg:flex">
+        <form action="/busca" method="get" className="hidden flex-1 items-center gap-2 lg:flex">
           <input
             type="text"
             name="q"
             placeholder="Buscar em todo o app"
-            className="w-64 rounded-xl border px-3 py-2 text-sm border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--foreground)]"
+            className="w-full max-w-md rounded-xl border px-3 py-2 text-sm border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--foreground)]"
           />
           <Button variant="secondary" type="submit">Buscar</Button>
         </form>

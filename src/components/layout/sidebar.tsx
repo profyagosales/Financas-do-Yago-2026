@@ -29,7 +29,8 @@ export function Sidebar() {
   const isActive = (item: NavLink) => pathname === item.href || (item.prefix ? pathname.startsWith(item.prefix) : false);
 
   return (
-    <aside className="hidden h-screen w-72 overflow-y-auto border-r px-4 py-6 lg:block border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_96%,transparent)]">
+    <aside className="sticky top-0 hidden h-screen w-72 shrink-0 overflow-y-auto border-r border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_98%,transparent)] px-4 py-6 lg:block">
+      <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">Painel</p>
       <p className="mb-6 text-xl font-black tracking-tight text-[color:var(--accent)]">Financeiro do Yago</p>
       <nav className="space-y-1">
         {links.map((item) => (
@@ -37,7 +38,7 @@ export function Sidebar() {
             key={item.href}
             href={item.href}
             className={cn(
-              "block rounded-lg px-3 py-2 text-sm transition",
+              "block rounded-xl px-3 py-2.5 text-sm font-semibold transition",
               isActive(item)
                 ? "bg-[color:var(--button-primary-bg)] text-[color:var(--button-primary-fg)]"
                 : "text-[color:var(--foreground)] hover:bg-[color:var(--button-ghost-hover)]",
