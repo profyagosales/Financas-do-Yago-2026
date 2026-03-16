@@ -1,4 +1,5 @@
 import { ModulePage } from "@/components/common/module-page";
+import { ReportsAnalyticsShell } from "@/components/reports/reports-analytics-shell";
 import { Card } from "@/components/ui/card";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -22,6 +23,9 @@ type CategoryAgg = { name: string; total: number };
 type BillAgg = { card_name: string; reference_month: string; total_amount: number; status: string };
 type InvClassAgg = { asset_class: string; invested: number; sold: number; income: number };
 type MileageAgg = { name: string; balance: number; earned: number; redeemed: number };
+type MonthlyTrend = { month: string; income: number; expense: number; result: number };
+
+const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
 async function getReportsData() {
   if (!hasSupabaseEnv()) {
@@ -29,6 +33,7 @@ async function getReportsData() {
       hasEnv: false,
       prefs: { currency: "BRL", locale: "pt-BR" },
       monthly: { income: 0, expense: 0, result: 0 },
+      monthlyTrend: [] as MonthlyTrend[],
       categories: [] as CategoryAgg[],
       bills: [] as BillAgg[],
       invByClass: [] as InvClassAgg[],
@@ -45,6 +50,7 @@ async function getReportsData() {
       hasEnv: true,
       prefs: { currency: "BRL", locale: "pt-BR" },
       monthly: { income: 0, expense: 0, result: 0 },
+      monthlyTrend: [] as MonthlyTrend[],
       categories: [] as CategoryAgg[],
       bills: [] as BillAgg[],
       invByClass: [] as InvClassAgg[],
@@ -53,9 +59,13 @@ async function getReportsData() {
   }
 
   const { start, end } = monthRange();
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setUTCMonth(sixMonthsAgo.getUTCMonth() - 5);
+  const trendStart = new Date(Date.UTC(sixMonthsAgo.getUTCFullYear(), sixMonthsAgo.getUTCMonth(), 1)).toISOString().slice(0, 10);
 
   const [
     { data: monthTxData },
+    { data: trendTxData },
     { data: expenseTxData },
     { data: categoriesData },
     { data: billsData },
@@ -72,6 +82,13 @@ async function getReportsData() {
       .gte("competency_date", start)
       .lt("competency_date", end)
       .neq("status", "canceled"),
+    supabase
+      .from("transactions")
+      .select("type, amount, competency_date")
+      .eq("user_id", userId)
+      .gte("competency_date", trendStart)
+      .neq("status", "canceled")
+      .order("competency_date", { ascending: true }),
     supabase
       .from("transactions")
       .select("amount, category_id")
@@ -113,6 +130,30 @@ async function getReportsData() {
   const monthlyExpense = monthRows
     .filter((row) => row.type === "expense")
     .reduce((sum, row) => sum + row.amount, 0);
+
+  const monthlyTrend = Array.from({ length: 6 }, (_, index) => {
+    const pointDate = new Date(Date.UTC(sixMonthsAgo.getUTCFullYear(), sixMonthsAgo.getUTCMonth() + index, 1));
+    const year = pointDate.getUTCFullYear();
+    const month = pointDate.getUTCMonth();
+    const rows = (trendTxData ?? []).filter((row) => {
+      const rowDate = new Date(`${row.competency_date}T00:00:00Z`);
+      return rowDate.getUTCFullYear() === year && rowDate.getUTCMonth() === month;
+    });
+
+    const income = rows
+      .filter((row) => row.type === "income")
+      .reduce((sum, row) => sum + Number(row.amount ?? 0), 0);
+    const expense = rows
+      .filter((row) => row.type === "expense")
+      .reduce((sum, row) => sum + Number(row.amount ?? 0), 0);
+
+    return {
+      month: MONTHS[month],
+      income,
+      expense,
+      result: income - expense,
+    };
+  });
 
   const categoriesMap = new Map((categoriesData ?? []).map((c) => [c.id, c.name]));
   const expenseRows = (expenseTxData ?? []).map((item) => ({
@@ -199,6 +240,7 @@ async function getReportsData() {
       expense: monthlyExpense,
       result: monthlyIncome - monthlyExpense,
     },
+    monthlyTrend,
     categories,
     bills,
     invByClass,
@@ -215,7 +257,7 @@ function classLabel(assetClass: string) {
 }
 
 export default async function RelatoriosPage() {
-  const { hasEnv, prefs, monthly, categories, bills, invByClass, mileageByProgram } = await getReportsData();
+  const { hasEnv, prefs, monthly, monthlyTrend, categories, bills, invByClass, mileageByProgram } = await getReportsData();
 
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
   const formatNumber = (value: number) => new Intl.NumberFormat(prefs.locale).format(value);
@@ -257,6 +299,16 @@ export default async function RelatoriosPage() {
           </p>
         </Card>
       </div>
+
+      {hasEnv ? (
+        <ReportsAnalyticsShell
+          currency={prefs.currency}
+          locale={prefs.locale}
+          monthlyTrend={monthlyTrend}
+          categories={categories}
+          invByClass={invByClass}
+        />
+      ) : null}
 
       <div className="grid gap-4 xl:grid-cols-2">
         <Card>
