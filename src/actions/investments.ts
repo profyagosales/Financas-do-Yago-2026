@@ -34,6 +34,7 @@ export async function createInvestmentAsset(input: unknown) {
     asset_subtype: opt(payload.asset_subtype),
     broker: opt(payload.broker),
     currency: payload.currency || "BRL",
+    current_value: payload.current_value ?? null,
     notes: opt(payload.notes),
   });
 
@@ -42,6 +43,36 @@ export async function createInvestmentAsset(input: unknown) {
   revalidatePath(assetClassToPath(payload.asset_class));
   revalidatePath("/dashboard");
   return { ok: true };
+}
+
+export async function setInvestmentAssetCurrentValue(assetId: string, formData: FormData) {
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return;
+
+  const raw = String(formData.get("current_value") ?? "").trim();
+  const parsed = raw === "" ? null : Number(raw.replace(",", "."));
+  if (parsed !== null && (!Number.isFinite(parsed) || parsed < 0)) return;
+
+  const { data: assets } = await supabase
+    .from("investment_assets")
+    .select("asset_class")
+    .eq("id", assetId)
+    .eq("user_id", userId)
+    .limit(1);
+
+  const { error } = await supabase
+    .from("investment_assets")
+    .update({ current_value: parsed })
+    .eq("id", assetId)
+    .eq("user_id", userId);
+
+  if (error) return;
+
+  if (assets?.[0]) revalidatePath(assetClassToPath(assets[0].asset_class));
+  revalidatePath("/investimentos/rebalanceamento");
+  revalidatePath("/dashboard");
 }
 
 export async function deleteInvestmentAsset(id: string) {
@@ -183,6 +214,8 @@ export async function importInvestmentsCsv(
     const rawClass = cell(row, "asset_class");
     const assetClass = VALID_ASSET_CLASSES.has(rawClass) ? rawClass : "stock";
     const broker = opt(cell(row, "broker"));
+    const currentValueRaw = cell(row, "current_value");
+    const currentValue = currentValueRaw ? parseFloat(currentValueRaw.replace(",", ".")) : null;
 
     const cacheKey = `${assetName}|${ticker ?? ""}`;
     let assetId = assetCache.get(cacheKey);
@@ -199,7 +232,15 @@ export async function importInvestmentsCsv(
       } else {
         const { data: inserted, error: insertErr } = await supabase
           .from("investment_assets")
-          .insert({ user_id: userId, name: assetName, ticker, asset_class: assetClass, broker, currency: "BRL" })
+          .insert({
+            user_id: userId,
+            name: assetName,
+            ticker,
+            asset_class: assetClass,
+            broker,
+            currency: "BRL",
+            current_value: currentValue && Number.isFinite(currentValue) ? currentValue : null,
+          })
           .select("id")
           .single();
         if (insertErr || !inserted) {

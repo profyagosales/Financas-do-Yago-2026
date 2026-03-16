@@ -1,4 +1,8 @@
-import { deleteInvestmentAsset, deleteInvestmentTransaction } from "@/actions/investments";
+import {
+  deleteInvestmentAsset,
+  deleteInvestmentTransaction,
+  setInvestmentAssetCurrentValue,
+} from "@/actions/investments";
 import { InvestmentAssetForm } from "@/components/forms/investment-asset-form";
 import { InvestmentTransactionForm } from "@/components/forms/investment-transaction-form";
 import { Button } from "@/components/ui/button";
@@ -17,6 +21,7 @@ type AssetRow = {
   asset_subtype: string | null;
   broker: string | null;
   currency: string;
+  current_value: number | null;
 };
 
 type TxRow = {
@@ -39,6 +44,11 @@ type AssetPosition = AssetRow & {
   qty_sold: number;
   net_qty: number;
   avg_cost: number;
+  cost_basis: number;
+  market_value: number;
+  nominal_return: number;
+  return_pct: number;
+  participation_pct: number;
   last_date: string | null;
 };
 
@@ -53,7 +63,7 @@ function computePositions(assets: AssetRow[], txs: TxRow[]): AssetPosition[] {
     return acc;
   }, {});
 
-  return assets.map((asset) => {
+  const basePositions = assets.map((asset) => {
     const assetTxs = txByAsset[asset.id] ?? [];
 
     const buyTxs = assetTxs.filter((t) => BUY_TYPES.has(t.transaction_type));
@@ -68,6 +78,11 @@ function computePositions(assets: AssetRow[], txs: TxRow[]): AssetPosition[] {
     const qty_sold = sellTxs.reduce((s, t) => s + (t.quantity ?? 0), 0);
     const net_qty = qty_bought - qty_sold;
     const avg_cost = qty_bought > 0 ? total_invested / qty_bought : 0;
+    const sold_cost = qty_bought > 0 ? avg_cost * qty_sold : 0;
+    const cost_basis = Math.max(total_invested - sold_cost, 0);
+    const market_value = asset.current_value ?? (net_qty > 0 ? avg_cost * net_qty : 0);
+    const nominal_return = market_value + total_sold + income_total - total_invested;
+    const return_pct = total_invested > 0 ? (nominal_return / total_invested) * 100 : 0;
 
     const sorted = [...assetTxs].sort((a, b) =>
       b.transaction_date.localeCompare(a.transaction_date),
@@ -83,9 +98,20 @@ function computePositions(assets: AssetRow[], txs: TxRow[]): AssetPosition[] {
       qty_sold,
       net_qty,
       avg_cost,
+      cost_basis,
+      market_value,
+      nominal_return,
+      return_pct,
+      participation_pct: 0,
       last_date,
     };
   });
+
+  const totalMarketValue = basePositions.reduce((sum, p) => sum + p.market_value, 0);
+  return basePositions.map((position) => ({
+    ...position,
+    participation_pct: totalMarketValue > 0 ? (position.market_value / totalMarketValue) * 100 : 0,
+  }));
 }
 
 async function getPageData(assetClass: AssetClass) {
@@ -117,7 +143,7 @@ async function getPageData(assetClass: AssetClass) {
   const [{ data: assetsData }, { data: txsData }] = await Promise.all([
     supabase
       .from("investment_assets")
-      .select("id, name, ticker, asset_subtype, broker, currency")
+      .select("id, name, ticker, asset_subtype, broker, currency, current_value")
       .eq("user_id", userId)
       .eq("asset_class", assetClass)
       .order("name", { ascending: true }),
@@ -172,6 +198,9 @@ export async function InvestmentClassPage({ assetClass, title, subtitle }: Props
   const totalInvested = positions.reduce((s, p) => s + p.total_invested, 0);
   const totalSold = positions.reduce((s, p) => s + p.total_sold, 0);
   const totalIncome = positions.reduce((s, p) => s + p.income_total, 0);
+  const totalMarketValue = positions.reduce((s, p) => s + p.market_value, 0);
+  const totalNominalReturn = positions.reduce((s, p) => s + p.nominal_return, 0);
+  const totalReturnPct = totalInvested > 0 ? (totalNominalReturn / totalInvested) * 100 : 0;
 
   const assetOptions = assets.map((a) => ({
     id: a.id,
@@ -219,6 +248,22 @@ export async function InvestmentClassPage({ assetClass, title, subtitle }: Props
           <p className="text-xs uppercase tracking-wide text-slate-500">Proventos recebidos</p>
           <p className="mt-1 text-2xl font-black text-emerald-800">{formatMoney(totalIncome)}</p>
         </Card>
+
+        <Card className="bg-gradient-to-br from-white to-slate-50">
+          <p className="text-xs uppercase tracking-wide text-slate-500">Valor atual</p>
+          <p className="mt-1 text-2xl font-black text-slate-900">{formatMoney(totalMarketValue)}</p>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-white to-slate-50 lg:col-span-2">
+          <p className="text-xs uppercase tracking-wide text-slate-500">Rentabilidade nominal</p>
+          <p className={`mt-1 text-2xl font-black ${totalNominalReturn >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
+            {totalNominalReturn >= 0 ? "+" : ""}{formatMoney(totalNominalReturn)}
+          </p>
+          <p className={`text-xs font-semibold ${totalNominalReturn >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
+            {totalReturnPct >= 0 ? "+" : ""}
+            {totalReturnPct.toLocaleString(prefs.locale, { maximumFractionDigits: 2 })}%
+          </p>
+        </Card>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
@@ -252,6 +297,9 @@ export async function InvestmentClassPage({ assetClass, title, subtitle }: Props
                   <th className="border-b border-slate-200 py-2 pr-3 font-medium">Investido</th>
                   <th className="border-b border-slate-200 py-2 pr-3 font-medium">Resgatado</th>
                   <th className="border-b border-slate-200 py-2 pr-3 font-medium">Proventos</th>
+                  <th className="border-b border-slate-200 py-2 pr-3 font-medium">Valor atual</th>
+                  <th className="border-b border-slate-200 py-2 pr-3 font-medium">Rentab.</th>
+                  <th className="border-b border-slate-200 py-2 pr-3 font-medium">Partic.</th>
                   <th className="border-b border-slate-200 py-2 pr-3 font-medium">Qtd liq.</th>
                   <th className="border-b border-slate-200 py-2 pr-3 font-medium">Custo medio</th>
                   <th className="border-b border-slate-200 py-2 pr-3 font-medium">Ultima mov.</th>
@@ -276,6 +324,29 @@ export async function InvestmentClassPage({ assetClass, title, subtitle }: Props
                     </td>
                     <td className="border-b border-slate-100 py-2 pr-3 tabular-nums text-emerald-700">
                       {formatMoney(pos.income_total)}
+                    </td>
+                    <td className="border-b border-slate-100 py-2 pr-3 tabular-nums">
+                      <form className="flex items-center gap-2" action={setInvestmentAssetCurrentValue.bind(null, pos.id)}>
+                        <input
+                          name="current_value"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          defaultValue={pos.current_value ?? undefined}
+                          placeholder={pos.market_value > 0 ? pos.market_value.toFixed(2) : "0.00"}
+                          className="w-28 rounded-lg border border-slate-300 px-2 py-1 text-xs"
+                        />
+                        <Button type="submit" variant="secondary">
+                          Salvar
+                        </Button>
+                      </form>
+                    </td>
+                    <td className={`border-b border-slate-100 py-2 pr-3 tabular-nums ${pos.nominal_return >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
+                      {pos.nominal_return >= 0 ? "+" : ""}
+                      {formatMoney(pos.nominal_return)}
+                    </td>
+                    <td className="border-b border-slate-100 py-2 pr-3 tabular-nums">
+                      {pos.participation_pct.toLocaleString(prefs.locale, { maximumFractionDigits: 2 })}%
                     </td>
                     <td className="border-b border-slate-100 py-2 pr-3 tabular-nums">
                       {pos.net_qty > 0

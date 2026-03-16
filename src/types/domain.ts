@@ -140,6 +140,7 @@ export interface InvestmentAsset {
   asset_subtype?: string | null;
   broker?: string | null;
   currency: string;
+  current_value?: number | null;
   notes?: string | null;
   created_at: string;
   updated_at: string;

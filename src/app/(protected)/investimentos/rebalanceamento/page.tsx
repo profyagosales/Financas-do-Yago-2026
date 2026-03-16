@@ -123,7 +123,7 @@ export default async function RebalanceamentoPage() {
 
             <CsvImportCard
               title="Importar lançamentos CSV"
-              exampleColumns={["asset_name", "transaction_type", "transaction_date", "total_amount", "ticker?", "asset_class?", "broker?", "quantity?", "unit_price?", "fees?", "notes?"]}
+              exampleColumns={["asset_name", "transaction_type", "transaction_date", "total_amount", "ticker?", "asset_class?", "broker?", "current_value?", "quantity?", "unit_price?", "fees?", "notes?"]}
               action={importInvestmentsCsv}
             />
         </>

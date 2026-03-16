@@ -41,6 +41,36 @@ export async function createWishlistItem(input: unknown) {
   return { ok: true };
 }
 
+export async function updateWishlistItem(id: string, input: unknown) {
+  const payload = wishlistItemSchema.parse(input);
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return { ok: false, message: "Nao autenticado" };
+
+  const { error } = await supabase
+    .from("wishlist_items")
+    .update({
+      name: payload.name,
+      category: normalizeOptional(payload.category),
+      url: normalizeOptional(payload.url),
+      image_url: normalizeOptional(payload.image_url),
+      current_price: normalizeNumber(payload.current_price),
+      target_price: normalizeNumber(payload.target_price),
+      priority: payload.priority,
+      store_name: normalizeOptional(payload.store_name),
+      status: payload.status,
+      notes: normalizeOptional(payload.notes),
+    })
+    .eq("id", id)
+    .eq("user_id", userId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/lista-de-desejo");
+  return { ok: true };
+}
+
 export async function setWishlistItemStatus(id: string, status: "active" | "bought" | "paused" | "discarded") {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();

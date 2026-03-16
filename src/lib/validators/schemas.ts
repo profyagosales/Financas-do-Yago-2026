@@ -163,6 +163,7 @@ export const investmentAssetSchema = z.object({
   asset_subtype: z.string().optional(),
   broker: z.string().optional(),
   currency: z.string().default("BRL"),
+  current_value: z.coerce.number().nonnegative().optional(),
   notes: z.string().optional(),
 });
 

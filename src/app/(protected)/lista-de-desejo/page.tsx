@@ -1,5 +1,6 @@
 import { deleteWishlistItem, setWishlistItemStatus } from "@/actions/wishlist";
 import { ModulePage } from "@/components/common/module-page";
+import { WishlistItemEditForm } from "@/components/forms/wishlist-item-edit-form";
 import { WishlistItemForm } from "@/components/forms/wishlist-item-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -178,6 +179,17 @@ export default async function ListaDesejoPage() {
                           </a>
                         ) : null}
                       </div>
+
+                      {item.image_url ? (
+                        <a href={item.image_url} target="_blank" rel="noreferrer" className="block w-fit">
+                          <img
+                            src={item.image_url}
+                            alt={`Imagem de ${item.name}`}
+                            className="h-24 w-24 rounded-xl border border-slate-200 object-cover"
+                            loading="lazy"
+                          />
+                        </a>
+                      ) : null}
                     </div>
 
                     <div className="flex flex-wrap gap-2">
@@ -205,6 +217,24 @@ export default async function ListaDesejoPage() {
                         <Button type="submit" variant="ghost">Excluir</Button>
                       </form>
                     </div>
+                  </div>
+
+                  <div className="mt-3">
+                    <WishlistItemEditForm
+                      id={item.id}
+                      initialValues={{
+                        name: item.name,
+                        category: item.category ?? "",
+                        url: item.url ?? "",
+                        image_url: item.image_url ?? "",
+                        current_price: item.current_price ?? undefined,
+                        target_price: item.target_price ?? undefined,
+                        priority: item.priority,
+                        store_name: item.store_name ?? "",
+                        status: item.status,
+                        notes: item.notes ?? "",
+                      }}
+                    />
                   </div>
                 </div>
               );

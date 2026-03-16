@@ -21,7 +21,7 @@ export function InvestmentAssetForm({ assetClass }: Props) {
 
   const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(investmentAssetSchema),
-    defaultValues: { asset_class: assetClass, currency: "BRL" },
+    defaultValues: { asset_class: assetClass, currency: "BRL", current_value: undefined },
   });
 
   const onSubmit = async (values: FormData) => {
@@ -31,7 +31,7 @@ export function InvestmentAssetForm({ assetClass }: Props) {
       setMessage(result.message ?? "Erro ao cadastrar ativo.");
       return;
     }
-    reset({ asset_class: assetClass, currency: "BRL" });
+    reset({ asset_class: assetClass, currency: "BRL", current_value: undefined });
     setMessage("Ativo cadastrado com sucesso.");
   };
 
@@ -46,6 +46,7 @@ export function InvestmentAssetForm({ assetClass }: Props) {
       <Input placeholder="Ticker (PETR4, BTC, TESOURO SELIC 2027...)" {...register("ticker")} />
       <Input placeholder="Subtipo (CDB, LCI, ETF, PN...)" {...register("asset_subtype")} />
       <Input placeholder="Corretora / Banco" {...register("broker")} />
+      <Input type="number" step="0.01" placeholder="Valor atual manual (opcional)" {...register("current_value")} />
 
       <select
         className="rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
