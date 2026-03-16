@@ -114,6 +114,30 @@ h3 {
   background: color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
+.modal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted) 35%, transparent) transparent;
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 9px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  background-color: color-mix(in srgb, var(--muted) 32%, transparent);
+}
+
+.modal-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--muted) 48%, transparent);
+}
+
 @media print {
   body {
     background: #ffffff !important;

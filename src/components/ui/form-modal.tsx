@@ -60,27 +60,40 @@ export function FormModal({
             role="dialog"
             aria-modal="true"
             className={cn(
-              "relative z-10 flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-[color:color-mix(in_srgb,var(--border)_82%,var(--accent))] bg-[color:color-mix(in_srgb,var(--surface)_90%,transparent)] p-3 shadow-[0_30px_80px_color-mix(in_srgb,var(--foreground)_18%,transparent)] backdrop-blur-xl md:max-h-[calc(100vh-4rem)] md:p-4",
+              "relative z-10 w-full overflow-visible",
               WIDTH_BY_SIZE[size],
             )}
           >
-            <div className="mb-3 flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-lg font-bold text-[color:var(--foreground)]">{title}</h2>
-                {description ? <p className="mt-1 text-sm text-[color:var(--muted)]">{description}</p> : null}
+            <div className="pointer-events-none absolute -inset-2 rounded-[28px] bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--accent)_18%,transparent),transparent_55%)] opacity-90" />
+
+            <div className="relative flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-3xl border border-[color:color-mix(in_srgb,var(--border)_78%,var(--accent))] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--surface)_94%,white),color-mix(in_srgb,var(--muted-surface)_40%,white))] shadow-[0_28px_75px_color-mix(in_srgb,var(--foreground)_16%,transparent)] backdrop-blur-xl md:max-h-[calc(100vh-4rem)]">
+              <div className="flex items-start justify-between gap-3 border-b border-[color:var(--border)] px-4 py-3 md:px-5 md:py-4">
+                <div>
+                  <h2 className="text-lg font-bold text-[color:var(--foreground)]">{title}</h2>
+                  {description ? <p className="mt-0.5 text-sm text-[color:var(--muted)]">{description}</p> : null}
+                </div>
               </div>
-              <Button type="button" variant="ghost" onClick={() => setOpen(false)} aria-label="Fechar modal" className="h-9 w-9 p-0">
-                <X size={18} />
-              </Button>
+
+              <div className="modal-scroll min-h-0 flex-1 overflow-y-auto px-4 py-3 md:px-5 md:py-4">
+                {children}
+              </div>
+
+              {footer ? (
+                <div className="border-t border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_93%,transparent)] px-4 py-3 md:px-5">
+                  {footer}
+                </div>
+              ) : null}
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto pr-1">{children}</div>
-
-            {footer ? (
-              <div className="mt-3 border-t border-[color:var(--border)] pt-3">
-                {footer}
-              </div>
-            ) : null}
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setOpen(false)}
+              aria-label="Fechar modal"
+              className="absolute -right-3 -top-3 h-10 w-10 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] p-0 shadow-lg"
+            >
+              <X size={18} />
+            </Button>
           </div>
         </div>
       ) : null}
