@@ -56,14 +56,7 @@ export function FormModal({
             onClick={() => setOpen(false)}
           />
 
-          <div
-            role="dialog"
-            aria-modal="true"
-            className={cn(
-              "relative z-10 w-full overflow-visible",
-              WIDTH_BY_SIZE[size],
-            )}
-          >
+          <div className={cn("relative z-10 w-full overflow-visible", WIDTH_BY_SIZE[size])}>
             <div className="pointer-events-none absolute -inset-2 rounded-[28px] bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--accent)_18%,transparent),transparent_55%)] opacity-90" />
 
             <div className="relative flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-3xl border border-[color:color-mix(in_srgb,var(--border)_78%,var(--accent))] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--surface)_94%,white),color-mix(in_srgb,var(--muted-surface)_40%,white))] shadow-[0_28px_75px_color-mix(in_srgb,var(--foreground)_16%,transparent)] backdrop-blur-xl md:max-h-[calc(100vh-4rem)]">
@@ -79,21 +72,20 @@ export function FormModal({
               </div>
 
               {footer ? (
-                <div className="border-t border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_93%,transparent)] px-4 py-3 md:px-5">
+                <div className="bg-[linear-gradient(180deg,color-mix(in_srgb,var(--surface)_10%,transparent),color-mix(in_srgb,var(--surface)_96%,transparent))] px-4 pb-3 pt-3 md:px-5">
                   {footer}
                 </div>
               ) : null}
             </div>
 
-            <Button
+            <button
               type="button"
-              variant="ghost"
               onClick={() => setOpen(false)}
               aria-label="Fechar modal"
-              className="absolute -right-3 -top-3 h-10 w-10 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] p-0 shadow-lg"
+              className="absolute -right-3 -top-3 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--foreground)] shadow-lg transition hover:scale-[1.03] hover:bg-[color:var(--muted-surface)]"
             >
-              <X size={18} />
-            </Button>
+              <X size={18} className="shrink-0" />
+            </button>
           </div>
         </div>
       ) : null}
