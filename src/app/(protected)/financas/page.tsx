@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BadgeDollarSign, CalendarDays, CreditCard, FolderKanban, ListChecks, Wallet } from "lucide-react";
 import { ModulePage } from "@/components/common/module-page";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
@@ -9,12 +10,12 @@ import { toMoney } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 const items = [
-  { label: "Mensal", href: "/financas/mensal", desc: "Fechamento mensal com receitas, despesas e saldo." },
-  { label: "Anual", href: "/financas/anual", desc: "Comparativo anual e sazonalidade dos lancamentos." },
-  { label: "Contas", href: "/financas/contas", desc: "Gestao de contas e conciliacao manual." },
-  { label: "Cartoes", href: "/financas/cartoes", desc: "Limites, faturas e compras por cartao." },
-  { label: "Lancamentos", href: "/financas/lancamentos", desc: "CRUD completo de transacoes com anexos e tags." },
-  { label: "Categorias", href: "/financas/categorias", desc: "Cadastro e manutencao de categorias." },
+  { label: "Mensal", href: "/financas/mensal", desc: "Fechamento mensal com receitas, despesas e saldo.", icon: CalendarDays, tone: "from-cyan-50 to-sky-50" },
+  { label: "Anual", href: "/financas/anual", desc: "Comparativo anual e sazonalidade dos lancamentos.", icon: BadgeDollarSign, tone: "from-indigo-50 to-blue-50" },
+  { label: "Contas", href: "/financas/contas", desc: "Gestao de contas e conciliacao manual.", icon: Wallet, tone: "from-emerald-50 to-teal-50" },
+  { label: "Cartoes", href: "/financas/cartoes", desc: "Limites, faturas e compras por cartao.", icon: CreditCard, tone: "from-violet-50 to-fuchsia-50" },
+  { label: "Lancamentos", href: "/financas/lancamentos", desc: "CRUD completo de transacoes com anexos e tags.", icon: ListChecks, tone: "from-amber-50 to-orange-50" },
+  { label: "Categorias", href: "/financas/categorias", desc: "Cadastro e manutencao de categorias.", icon: FolderKanban, tone: "from-slate-100 to-slate-50" },
 ] as const;
 
 type TxRow = {
@@ -138,8 +139,11 @@ export default async function FinancasPage() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:bg-[color:var(--button-ghost-hover)]"
+              className={`rounded-2xl border border-[color:var(--border)] bg-gradient-to-br ${item.tone} p-4 transition hover:-translate-y-0.5`}
             >
+              <div className="mb-2 inline-flex rounded-xl border border-[color:var(--border)] bg-white/80 p-2">
+                <item.icon size={18} className="text-slate-700" />
+              </div>
               <p className="text-base font-bold text-[color:var(--foreground)]">{item.label}</p>
               <p className="mt-1 text-sm text-[color:var(--muted)]">{item.desc}</p>
             </Link>

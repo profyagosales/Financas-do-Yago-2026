@@ -1,3 +1,5 @@
+import { BackButton } from "@/components/common/back-button";
+
 interface Props {
   title: string;
   subtitle: string;
@@ -7,7 +9,10 @@ interface Props {
 export function ModulePage({ title, subtitle, bullets }: Props) {
   return (
     <div className="space-y-3">
-      <div>
+      <div className="rounded-2xl border border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_92%,transparent)] p-4">
+        <div className="mb-2">
+          <BackButton />
+        </div>
         <h1 className="text-2xl font-black tracking-tight text-[color:var(--foreground)]">{title}</h1>
         <p className="mt-1 text-sm text-[color:var(--muted)]">{subtitle}</p>
       </div>

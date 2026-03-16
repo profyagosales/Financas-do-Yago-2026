@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CircleDollarSign, Plane, ShieldCheck } from "lucide-react";
 import { ModulePage } from "@/components/common/module-page";
 import { Card } from "@/components/ui/card";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -7,9 +8,9 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 const programs = [
-  { label: "Livelo", href: "/milhas/livelo", desc: "Saldo, vencimentos e historico do programa Livelo." },
-  { label: "Latam Pass", href: "/milhas/latam-pass", desc: "Acompanhamento de pontos e emissao no Latam Pass." },
-  { label: "Azul", href: "/milhas/azul", desc: "Controle de pontos e expiracao no Azul." },
+  { label: "Livelo", href: "/milhas/livelo", desc: "Saldo, vencimentos e historico do programa Livelo.", icon: CircleDollarSign, tone: "from-sky-50 to-cyan-50" },
+  { label: "Latam Pass", href: "/milhas/latam-pass", desc: "Acompanhamento de pontos e emissao no Latam Pass.", icon: Plane, tone: "from-rose-50 to-orange-50" },
+  { label: "Azul", href: "/milhas/azul", desc: "Controle de pontos e expiracao no Azul.", icon: ShieldCheck, tone: "from-blue-50 to-indigo-50" },
 ] as const;
 
 type EntryRow = {
@@ -114,8 +115,11 @@ export default async function MilhasPage() {
             <Link
               key={program.href}
               href={program.href}
-              className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:bg-[color:var(--button-ghost-hover)]"
+              className={`rounded-2xl border border-[color:var(--border)] bg-gradient-to-br ${program.tone} p-4 transition hover:-translate-y-0.5`}
             >
+              <div className="mb-2 inline-flex rounded-xl border border-[color:var(--border)] bg-white/80 p-2">
+                <program.icon size={18} className="text-slate-700" />
+              </div>
               <p className="text-base font-bold text-[color:var(--foreground)]">{program.label}</p>
               <p className="mt-1 text-sm text-[color:var(--muted)]">{program.desc}</p>
             </Link>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Banknote, Building2, Coins, Landmark, PieChart } from "lucide-react";
 import { ModulePage } from "@/components/common/module-page";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
@@ -9,11 +10,11 @@ import { toMoney } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 const items = [
-  { label: "Renda Fixa", href: "/investimentos/renda-fixa", desc: "Titulos, CDBs, LCIs, LCAs e outros ativos de renda fixa." },
-  { label: "FIIs", href: "/investimentos/fiis", desc: "Fundos imobiliarios e proventos." },
-  { label: "Bolsa", href: "/investimentos/bolsa", desc: "Acoes, ETFs, BDRs e demais ativos de bolsa." },
-  { label: "Cripto", href: "/investimentos/cripto", desc: "Criptoativos e movimentacoes manuais." },
-  { label: "Rebalanceamento", href: "/investimentos/rebalanceamento", desc: "Comparativo da alocacao atual com metas da carteira." },
+  { label: "Renda Fixa", href: "/investimentos/renda-fixa", desc: "Titulos, CDBs, LCIs, LCAs e outros ativos de renda fixa.", icon: Landmark, tone: "from-emerald-50 to-teal-50" },
+  { label: "FIIs", href: "/investimentos/fiis", desc: "Fundos imobiliarios e proventos.", icon: Building2, tone: "from-sky-50 to-cyan-50" },
+  { label: "Bolsa", href: "/investimentos/bolsa", desc: "Acoes, ETFs, BDRs e demais ativos de bolsa.", icon: Banknote, tone: "from-indigo-50 to-blue-50" },
+  { label: "Cripto", href: "/investimentos/cripto", desc: "Criptoativos e movimentacoes manuais.", icon: Coins, tone: "from-amber-50 to-orange-50" },
+  { label: "Rebalanceamento", href: "/investimentos/rebalanceamento", desc: "Comparativo da alocacao atual com metas da carteira.", icon: PieChart, tone: "from-violet-50 to-fuchsia-50" },
 ] as const;
 
 type AssetClass = "fixed_income" | "fii" | "stock" | "crypto";
@@ -145,8 +146,11 @@ export default async function InvestimentosPage() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:bg-[color:var(--button-ghost-hover)]"
+              className={`rounded-2xl border border-[color:var(--border)] bg-gradient-to-br ${item.tone} p-4 transition hover:-translate-y-0.5`}
             >
+              <div className="mb-2 inline-flex rounded-xl border border-[color:var(--border)] bg-white/80 p-2">
+                <item.icon size={18} className="text-slate-700" />
+              </div>
               <p className="text-base font-bold text-[color:var(--foreground)]">{item.label}</p>
               <p className="mt-1 text-sm text-[color:var(--muted)]">{item.desc}</p>
             </Link>

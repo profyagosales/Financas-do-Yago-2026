@@ -1,13 +1,11 @@
 import { signOut } from "@/actions/auth";
-import { MobileNav } from "@/components/layout/mobile-nav";
 import { Button } from "@/components/ui/button";
 
 export function Topbar() {
   return (
-    <header className="sticky top-0 z-30 border-b border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_90%,transparent)] px-4 py-3 backdrop-blur md:px-6">
-      <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between gap-2">
-        <MobileNav />
-        <form action="/busca" method="get" className="hidden flex-1 items-center gap-2 lg:flex">
+    <header className="sticky top-0 z-30 border-b border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_94%,transparent)] px-4 py-3 backdrop-blur md:px-6">
+      <div className="mx-auto flex w-full max-w-[1320px] items-center justify-end gap-2">
+        <form action="/busca" method="get" className="hidden flex-1 items-center gap-2 md:flex">
           <input
             type="text"
             name="q"
