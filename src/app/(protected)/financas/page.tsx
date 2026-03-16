@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { BadgeDollarSign, CalendarDays, CreditCard, FolderKanban, ListChecks, Wallet } from "lucide-react";
 import { ModulePage } from "@/components/common/module-page";
+import { FinanceHubHero } from "@/components/finance/finance-hub-hero";
 import { Card } from "@/components/ui/card";
+import { getUserTags } from "@/actions/tags";
+import { getIconsByDomains } from "@/lib/icon-registry";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -90,21 +93,72 @@ async function getFinancasHubData() {
   };
 }
 
+async function getFinancasFormOptions() {
+  if (!hasSupabaseEnv()) {
+    return { categories: [], accounts: [], cards: [], icons: [], tags: [] };
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) {
+    return { categories: [], accounts: [], cards: [], icons: [], tags: [] };
+  }
+
+  const [{ data: categoriesData }, { data: accountsData }, { data: cardsData }, tagsData] = await Promise.all([
+    supabase
+      .from("categories")
+      .select("id, name")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("name", { ascending: true }),
+    supabase
+      .from("bank_accounts")
+      .select("id, name")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("name", { ascending: true }),
+    supabase
+      .from("credit_cards")
+      .select("id, name")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("name", { ascending: true }),
+    getUserTags(),
+  ]);
+
+  return {
+    categories: (categoriesData ?? []).map((item) => ({ id: item.id, label: item.name })),
+    accounts: (accountsData ?? []).map((item) => ({ id: item.id, label: item.name })),
+    cards: (cardsData ?? []).map((item) => ({ id: item.id, label: item.name })),
+    icons: getIconsByDomains(["expense", "subscription", "saas", "market", "transport", "utility", "telecom", "insurance", "ecommerce", "mileage", "airline", "crypto", "broker", "wallet"]).map((item) => ({
+      id: item.id,
+      label: `${item.name} (${item.domain})`,
+    })),
+    tags: tagsData,
+  };
+}
+
 export default async function FinancasPage() {
   const data = await getFinancasHubData();
+  const options = await getFinancasFormOptions();
   const formatMoney = (value: number) => toMoney(value, data.prefs.locale, data.prefs.currency);
+  const now = new Date();
+  const defaultStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
+  const defaultEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)).toISOString().slice(0, 10);
 
   return (
     <div className="space-y-4">
-      <ModulePage
-        title="Financas"
-        subtitle="Dashboard do modulo. Entre no subdominio desejado pelos atalhos abaixo."
-        bullets={[
-          "Visao mensal e anual",
-          "Contas, cartoes e lancamentos",
-          "Categorias e filtros",
-          "Base central do fluxo financeiro",
-        ]}
+      <ModulePage title="Financas" />
+
+      <FinanceHubHero
+        defaultStart={defaultStart}
+        defaultEnd={defaultEnd}
+        categories={options.categories}
+        accounts={options.accounts}
+        cards={options.cards}
+        icons={options.icons}
+        tags={options.tags}
       />
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
