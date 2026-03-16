@@ -18,7 +18,7 @@ type TxRow = {
 
 type CategoryAgg = { name: string; total: number };
 
-async function getYearlyData() {
+async function getYearlyData(year: number) {
   if (!hasSupabaseEnv()) {
     return {
       hasEnv: false,
@@ -41,8 +41,6 @@ async function getYearlyData() {
   }
 
   const prefs = await getDisplayPrefsForUser(supabase, userId);
-  const now = new Date();
-  const year = now.getUTCFullYear();
   const start = `${year}-01-01`;
   const end = `${year + 1}-01-01`;
 
@@ -74,11 +72,17 @@ async function getYearlyData() {
 
 const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
-export default async function AnualPage() {
-  const { hasEnv, prefs, rows, categories } = await getYearlyData();
-  const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
+export default async function AnualPage({ searchParams }: { searchParams: Promise<{ year?: string }> }) {
+  const params = await searchParams;
   const now = new Date();
-  const year = new Date().getUTCFullYear();
+  let selYear = now.getUTCFullYear();
+  if (params.year && /^\d{4}$/.test(params.year)) {
+    selYear = Number(params.year);
+  }
+
+  const { hasEnv, prefs, rows, categories } = await getYearlyData(selYear);
+  const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
+  const year = selYear;
   const startYear = `${year}-01-01`;
   const endYear = `${year + 1}-01-01`;
   const today = now.toISOString().slice(0, 10);
@@ -149,6 +153,24 @@ export default async function AnualPage() {
           "Total anual consolidado",
         ]}
       />
+
+      <Card>
+        <div className="flex items-center justify-between gap-4">
+          <a
+            href={`?year=${selYear - 1}`}
+            className="rounded-xl border border-[color:var(--border)] px-4 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:opacity-80"
+          >
+            ← {selYear - 1}
+          </a>
+          <span className="text-sm font-bold text-[color:var(--foreground)]">{selYear}</span>
+          <a
+            href={`?year=${selYear + 1}`}
+            className="rounded-xl border border-[color:var(--border)] px-4 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:opacity-80"
+          >
+            {selYear + 1} →
+          </a>
+        </div>
+      </Card>
 
       <Card>
         <div className="space-y-3">

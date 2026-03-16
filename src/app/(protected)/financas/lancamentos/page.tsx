@@ -1,6 +1,7 @@
 import { ModulePage } from "@/components/common/module-page";
 import { InstitutionAvatar } from "@/components/common/institution-avatar";
 import { TransactionForm } from "@/components/forms/transaction-form";
+import { TransactionEditForm } from "@/components/forms/transaction-edit-form";
 import { deleteTransaction, importTransactionsCsv, setTransactionStatus, uploadTransactionAttachment } from "@/actions/finance";
 import { createTag, deleteTag, getUserTags, toggleTransactionTag } from "@/actions/tags";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,12 @@ type TransactionRow = {
   status: string;
   icon_key: string | null;
   icon_url: string | null;
+  category_id: string | null;
+  account_id: string | null;
+  destination_account_id: string | null;
+  credit_card_id: string | null;
+  payment_date: string | null;
+  notes: string | null;
   inferred_icon_key?: string | null;
   tags?: Tag[];
   attachments?: Array<{
@@ -95,7 +102,7 @@ async function getTransactions() {
 
   const { data } = await supabase
     .from("transactions")
-    .select("id, competency_date, description, type, amount, status, icon_key, icon_url")
+    .select("id, competency_date, description, type, amount, status, icon_key, icon_url, category_id, account_id, destination_account_id, credit_card_id, payment_date, notes")
     .eq("user_id", userId)
     .order("competency_date", { ascending: false })
     .limit(100);
@@ -374,6 +381,27 @@ export default async function LancamentosPage() {
                             <Button type="submit" variant="secondary">Voltar pendente</Button>
                           </form>
                         )}
+                        <FormModal title="Editar lancamento" triggerLabel="Editar" size="lg">
+                          <TransactionEditForm
+                            transactionId={tx.id}
+                            initialData={{
+                              type: tx.type as "income" | "expense" | "transfer" | "adjustment",
+                              description: tx.description,
+                              amount: Number(tx.amount ?? 0),
+                              category_id: tx.category_id,
+                              account_id: tx.account_id,
+                              destination_account_id: tx.destination_account_id,
+                              credit_card_id: tx.credit_card_id,
+                              competency_date: tx.competency_date,
+                              payment_date: tx.payment_date,
+                              status: tx.status as "pending" | "paid" | "canceled",
+                              notes: tx.notes,
+                            }}
+                            categories={options.categories}
+                            accounts={options.accounts}
+                            cards={options.cards}
+                          />
+                        </FormModal>
                         <form action={deleteTransaction.bind(null, tx.id)}>
                           <Button type="submit" variant="secondary">Excluir</Button>
                         </form>

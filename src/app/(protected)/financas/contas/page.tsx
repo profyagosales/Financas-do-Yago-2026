@@ -177,9 +177,24 @@ export default async function ContasPage() {
                     </td>
                     <td className="border-b border-slate-100 py-2 pr-3">{account.is_active ? "Ativa" : "Inativa"}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">
-                      <form action={deleteBankAccount.bind(null, account.id)}>
-                        <Button type="submit" variant="secondary">Excluir</Button>
-                      </form>
+                      <div className="flex items-center gap-2">
+                        <FormModal title={`Editar: ${account.name}`} triggerLabel="Editar" size="md">
+                          <BankAccountForm
+                            initialData={{
+                              id: account.id,
+                              name: account.name,
+                              institution: account.institution,
+                              account_type: account.account_type,
+                              icon_key: account.icon_key,
+                              initial_balance: Number(account.initial_balance ?? 0),
+                              notes: null,
+                            }}
+                          />
+                        </FormModal>
+                        <form action={deleteBankAccount.bind(null, account.id)}>
+                          <Button type="submit" variant="secondary">Excluir</Button>
+                        </form>
+                      </div>
                     </td>
                   </tr>
                 ))}

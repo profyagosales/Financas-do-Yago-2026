@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { normalizeIconQuery, resolveAndCacheIcon } from "@/lib/icon-discovery";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { bankAccountReconciliationSchema, bankAccountSchema, creditCardSchema, transactionSchema } from "@/lib/validators/schemas";
@@ -233,6 +234,25 @@ export async function createBankAccount(input: unknown) {
   return { ok: true };
 }
 
+export async function updateBankAccount(id: string, input: unknown) {
+  const payload = bankAccountSchema.parse(input);
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return { ok: false, message: "Nao autenticado" };
+
+  const { error } = await supabase
+    .from("bank_accounts")
+    .update({ ...payload })
+    .eq("id", id)
+    .eq("user_id", userId);
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/financas/contas");
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
 export async function deleteBankAccount(id: string) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
@@ -281,6 +301,25 @@ export async function createCreditCard(input: unknown) {
   if (error) return { ok: false, message: error.message };
 
   revalidatePath("/financas/cartoes");
+  return { ok: true };
+}
+
+export async function updateCreditCard(id: string, input: unknown) {
+  const payload = creditCardSchema.parse(input);
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return { ok: false, message: "Nao autenticado" };
+
+  const { error } = await supabase
+    .from("credit_cards")
+    .update({ ...payload })
+    .eq("id", id)
+    .eq("user_id", userId);
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/financas/cartoes");
+  revalidatePath("/dashboard");
   return { ok: true };
 }
 
@@ -576,6 +615,53 @@ export async function importTransactionsCsv(formData: FormData) {
   revalidatePath("/financas/lancamentos");
   revalidatePath("/financas/cartoes");
   revalidatePath("/dashboard");
+}
+
+export async function updateTransaction(id: string, input: unknown) {
+  const updateSchema = z.object({
+    type: z.enum(["income", "expense", "transfer", "adjustment"]),
+    description: z.string().min(3),
+    amount: z.coerce.number().positive(),
+    category_id: z.string().uuid().nullable().optional(),
+    account_id: z.string().uuid().nullable().optional(),
+    destination_account_id: z.string().uuid().nullable().optional(),
+    credit_card_id: z.string().uuid().nullable().optional(),
+    competency_date: z.string(),
+    payment_date: z.string().nullable().optional(),
+    notes: z.string().nullable().optional(),
+    status: z.enum(["pending", "paid", "canceled"]),
+  });
+  const payload = updateSchema.parse(input);
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return { ok: false, message: "Nao autenticado" };
+
+  function opt(v?: string | null) {
+    return v && v.trim() !== "" ? v : null;
+  }
+
+  const { error } = await supabase
+    .from("transactions")
+    .update({
+      ...payload,
+      category_id: opt(payload.category_id),
+      account_id: opt(payload.account_id),
+      destination_account_id: opt(payload.destination_account_id),
+      credit_card_id: opt(payload.credit_card_id),
+      payment_date: opt(payload.payment_date),
+      notes: opt(payload.notes),
+    })
+    .eq("id", id)
+    .eq("user_id", userId);
+
+  if (error) return { ok: false, message: error.message };
+
+  await rebuildCardBillsForUser(userId);
+  revalidatePath("/financas/lancamentos");
+  revalidatePath("/financas/cartoes");
+  revalidatePath("/dashboard");
+  return { ok: true };
 }
 
 export async function deleteTransaction(id: string) {

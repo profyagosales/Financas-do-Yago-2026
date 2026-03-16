@@ -236,9 +236,24 @@ export default async function CartoesPage() {
                     <td className="border-b border-slate-100 py-2 pr-3">{formatMoney(Number(card.available))}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{card.closing_day}/{card.due_day}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">
-                      <form action={deleteCreditCard.bind(null, card.id)}>
-                        <Button type="submit" variant="secondary">Excluir</Button>
-                      </form>
+                      <div className="flex items-center gap-2">
+                        <FormModal title={`Editar: ${card.name}`} triggerLabel="Editar" size="md">
+                          <CreditCardForm
+                            initialData={{
+                              id: card.id,
+                              name: card.name,
+                              institution: card.institution,
+                              brand: card.brand,
+                              credit_limit: Number(card.credit_limit),
+                              closing_day: card.closing_day,
+                              due_day: card.due_day,
+                            }}
+                          />
+                        </FormModal>
+                        <form action={deleteCreditCard.bind(null, card.id)}>
+                          <Button type="submit" variant="secondary">Excluir</Button>
+                        </form>
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -178,6 +178,30 @@ export async function createGroceryNote(input: unknown) {
   return { ok: true };
 }
 
+export async function updateGroceryNote(id: string, input: unknown) {
+  const payload = groceryNoteSchema.parse(input);
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return { ok: false, message: "Nao autenticado" };
+
+  const { error } = await supabase
+    .from("grocery_notes")
+    .update({
+      establishment: opt(payload.establishment) ?? null,
+      note_date: opt(payload.note_date) ?? null,
+      total_amount:
+        payload.total_amount !== undefined && !Number.isNaN(payload.total_amount) ? payload.total_amount : null,
+      raw_extracted_text: opt(payload.raw_extracted_text) ?? null,
+    })
+    .eq("id", id)
+    .eq("user_id", userId);
+
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/mercado/notas");
+  return { ok: true };
+}
+
 export async function setGroceryNoteReviewed(id: string) {
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();

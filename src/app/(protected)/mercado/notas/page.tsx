@@ -1,6 +1,7 @@
 import { deleteGroceryNote, setGroceryNoteReviewed, uploadGroceryNoteFile } from "@/actions/grocery";
 import { ModulePage } from "@/components/common/module-page";
 import { GroceryNoteForm } from "@/components/forms/grocery-note-form";
+import { GroceryNoteEditForm } from "@/components/forms/grocery-note-edit-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -156,6 +157,17 @@ export default async function MercadoNotasPage() {
                         <Button type="submit">Marcar revisada</Button>
                       </form>
                     ) : null}
+                    <FormModal title="Editar nota fiscal" triggerLabel="Editar" size="lg">
+                      <GroceryNoteEditForm
+                        noteId={note.id}
+                        initialData={{
+                          establishment: note.establishment,
+                          note_date: note.note_date,
+                          total_amount: note.total_amount,
+                          raw_extracted_text: note.raw_extracted_text,
+                        }}
+                      />
+                    </FormModal>
                     <form action={deleteGroceryNote.bind(null, note.id)}>
                       <Button type="submit" variant="ghost">Excluir</Button>
                     </form>

@@ -27,20 +27,16 @@ type CalendarDay = {
   pending: number;
 };
 
-function monthRange() {
-  const now = new Date();
-  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+function monthRange(year: number, month: number) {
+  const start = new Date(Date.UTC(year, month, 1));
+  const end = new Date(Date.UTC(year, month + 1, 1));
   return {
     start: start.toISOString().slice(0, 10),
     end: end.toISOString().slice(0, 10),
   };
 }
 
-function buildMonthCalendar(rows: TxRow[]) {
-  const now = new Date();
-  const year = now.getUTCFullYear();
-  const month = now.getUTCMonth();
+function buildMonthCalendar(rows: TxRow[], year: number, month: number) {
   const firstDay = new Date(Date.UTC(year, month, 1));
   const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
 
@@ -77,7 +73,7 @@ function buildMonthCalendar(rows: TxRow[]) {
   return cells;
 }
 
-async function getMonthlyData() {
+async function getMonthlyData(year: number, month: number) {
   if (!hasSupabaseEnv()) {
     return {
       hasEnv: false,
@@ -100,7 +96,7 @@ async function getMonthlyData() {
   }
 
   const prefs = await getDisplayPrefsForUser(supabase, userId);
-  const { start, end } = monthRange();
+  const { start, end } = monthRange(year, month);
 
   const [{ data: txData }, { data: categoriesData }] = await Promise.all([
     supabase
@@ -124,14 +120,29 @@ async function getMonthlyData() {
   return { hasEnv: true, prefs, rows, categoriesMap };
 }
 
-export default async function MensalPage() {
-  const { hasEnv, prefs, rows, categoriesMap } = await getMonthlyData();
+export default async function MensalPage({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
+  const params = await searchParams;
+  const now = new Date();
+  let selYear = now.getUTCFullYear();
+  let selMonth = now.getUTCMonth();
+  if (params.month && /^\d{4}-\d{2}$/.test(params.month)) {
+    const [py, pm] = params.month.split("-").map(Number);
+    selYear = py;
+    selMonth = pm - 1;
+  }
+
+  const prevDate = new Date(Date.UTC(selYear, selMonth - 1, 1));
+  const nextDate = new Date(Date.UTC(selYear, selMonth + 1, 1));
+  const prevMonthParam = `${prevDate.getUTCFullYear()}-${String(prevDate.getUTCMonth() + 1).padStart(2, "0")}`;
+  const nextMonthParam = `${nextDate.getUTCFullYear()}-${String(nextDate.getUTCMonth() + 1).padStart(2, "0")}`;
+  const monthLabel = new Date(Date.UTC(selYear, selMonth, 1)).toLocaleDateString("pt-BR", { year: "numeric", month: "long" });
+
+  const { hasEnv, prefs, rows, categoriesMap } = await getMonthlyData(selYear, selMonth);
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
 
-  const now = new Date();
   const today = now.toISOString().slice(0, 10);
-  const startCurrentMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
-  const endCurrentMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)).toISOString().slice(0, 10);
+  const startCurrentMonth = new Date(Date.UTC(selYear, selMonth, 1)).toISOString().slice(0, 10);
+  const endCurrentMonth = new Date(Date.UTC(selYear, selMonth + 1, 1)).toISOString().slice(0, 10);
   const startLast7 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 7)).toISOString().slice(0, 10);
   const startLast30 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 30)).toISOString().slice(0, 10);
   const startLast90 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 90)).toISOString().slice(0, 10);
@@ -165,7 +176,7 @@ export default async function MensalPage() {
     .slice(0, 8);
 
   const weekdayLabels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"];
-  const calendarCells = buildMonthCalendar(rows);
+  const calendarCells = buildMonthCalendar(rows, selYear, selMonth);
 
   return (
     <div className="space-y-4">
@@ -179,6 +190,24 @@ export default async function MensalPage() {
           "Exportacao e calendario financeiro",
         ]}
       />
+
+      <Card>
+        <div className="flex items-center justify-between gap-4">
+          <a
+            href={`?month=${prevMonthParam}`}
+            className="rounded-xl border border-[color:var(--border)] px-4 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:opacity-80"
+          >
+            ← Anterior
+          </a>
+          <span className="text-sm font-bold capitalize text-[color:var(--foreground)]">{monthLabel}</span>
+          <a
+            href={`?month=${nextMonthParam}`}
+            className="rounded-xl border border-[color:var(--border)] px-4 py-2 text-sm font-semibold text-[color:var(--foreground)] transition hover:opacity-80"
+          >
+            Proximo →
+          </a>
+        </div>
+      </Card>
 
       <Card className="bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent)_9%,var(--surface)_91%),var(--surface))]">
         <div className="space-y-3">
