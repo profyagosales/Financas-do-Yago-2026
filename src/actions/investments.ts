@@ -156,7 +156,7 @@ export async function deleteInvestmentTransaction(id: string) {
 }
 
 const VALID_TX_TYPES = new Set([
-  "buy", "sell", "income", "dividend", "interest", "deposit", "withdraw", "adjustment",
+  "buy", "sell", "income", "dividend", "interest", "deposit", "withdraw", "adjustment", "bonus",
 ]);
 const VALID_ASSET_CLASSES = new Set(["fixed_income", "fii", "stock", "crypto"]);
 

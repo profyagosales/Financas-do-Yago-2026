@@ -55,6 +55,7 @@ type AssetPosition = AssetRow & {
 const BUY_TYPES = new Set(["buy", "deposit"]);
 const SELL_TYPES = new Set(["sell", "withdraw"]);
 const INCOME_TYPES = new Set(["income", "dividend", "interest"]);
+const BONUS_TYPES = new Set(["bonus"]);
 
 function computePositions(assets: AssetRow[], txs: TxRow[]): AssetPosition[] {
   const txByAsset = txs.reduce<Record<string, TxRow[]>>((acc, tx) => {
@@ -69,6 +70,7 @@ function computePositions(assets: AssetRow[], txs: TxRow[]): AssetPosition[] {
     const buyTxs = assetTxs.filter((t) => BUY_TYPES.has(t.transaction_type));
     const sellTxs = assetTxs.filter((t) => SELL_TYPES.has(t.transaction_type));
     const incomeTxs = assetTxs.filter((t) => INCOME_TYPES.has(t.transaction_type));
+    const bonusTxs = assetTxs.filter((t) => BONUS_TYPES.has(t.transaction_type));
 
     const total_invested = buyTxs.reduce((s, t) => s + t.total_amount + t.fees, 0);
     const total_sold = sellTxs.reduce((s, t) => s + t.total_amount - t.fees, 0);
@@ -76,7 +78,8 @@ function computePositions(assets: AssetRow[], txs: TxRow[]): AssetPosition[] {
 
     const qty_bought = buyTxs.reduce((s, t) => s + (t.quantity ?? 0), 0);
     const qty_sold = sellTxs.reduce((s, t) => s + (t.quantity ?? 0), 0);
-    const net_qty = qty_bought - qty_sold;
+    const qty_bonus = bonusTxs.reduce((s, t) => s + (t.quantity ?? 0), 0);
+    const net_qty = qty_bought + qty_bonus - qty_sold;
     const avg_cost = qty_bought > 0 ? total_invested / qty_bought : 0;
     const sold_cost = qty_bought > 0 ? avg_cost * qty_sold : 0;
     const cost_basis = Math.max(total_invested - sold_cost, 0);
@@ -181,6 +184,7 @@ const TX_TYPE_LABELS: Record<string, string> = {
   dividend: "Dividendo",
   interest: "Juros",
   adjustment: "Ajuste",
+  bonus: "Bonificacao",
 };
 
 interface Props {

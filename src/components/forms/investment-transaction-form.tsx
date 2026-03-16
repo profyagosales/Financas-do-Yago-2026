@@ -28,6 +28,7 @@ const TX_TYPE_LABELS: [string, string][] = [
   ["income", "Rendimento"],
   ["dividend", "Dividendo / Provento"],
   ["interest", "Juros / Cupom"],
+  ["bonus", "Bonificacao"],
   ["adjustment", "Ajuste manual"],
 ];
 

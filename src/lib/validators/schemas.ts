@@ -169,11 +169,11 @@ export const investmentAssetSchema = z.object({
 
 export const investmentTransactionSchema = z.object({
   asset_id: z.string().uuid(),
-  transaction_type: z.enum(["buy", "sell", "income", "dividend", "interest", "deposit", "withdraw", "adjustment"]),
+  transaction_type: z.enum(["buy", "sell", "income", "dividend", "interest", "deposit", "withdraw", "adjustment", "bonus"]),
   transaction_date: z.string(),
   quantity: z.coerce.number().positive().optional(),
   unit_price: z.coerce.number().nonnegative().optional(),
-  total_amount: z.coerce.number().positive(),
+  total_amount: z.coerce.number().nonnegative(),
   fees: z.coerce.number().nonnegative().default(0),
   notes: z.string().optional(),
 });

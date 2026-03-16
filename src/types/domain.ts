@@ -158,7 +158,8 @@ export interface InvestmentTransaction {
     | "interest"
     | "deposit"
     | "withdraw"
-    | "adjustment";
+    | "adjustment"
+    | "bonus";
   transaction_date: string;
   quantity?: number | null;
   unit_price?: number | null;
