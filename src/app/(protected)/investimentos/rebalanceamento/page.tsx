@@ -1,5 +1,7 @@
 import { RebalancingCalculator } from "@/components/investments/rebalancing-calculator";
 import { Card } from "@/components/ui/card";
+import { CsvImportCard } from "@/components/common/csv-import-card";
+import { importInvestmentsCsv } from "@/actions/investments";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -118,6 +120,12 @@ export default async function RebalanceamentoPage() {
             locale={prefs.locale}
             currency={prefs.currency}
           />
+
+            <CsvImportCard
+              title="Importar lançamentos CSV"
+              exampleColumns={["asset_name", "transaction_type", "transaction_date", "total_amount", "ticker?", "asset_class?", "broker?", "quantity?", "unit_price?", "fees?", "notes?"]}
+              action={importInvestmentsCsv}
+            />
         </>
       )}
     </div>

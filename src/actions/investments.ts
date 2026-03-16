@@ -123,3 +123,129 @@ export async function deleteInvestmentTransaction(id: string) {
   }
   revalidatePath("/dashboard");
 }
+
+const VALID_TX_TYPES = new Set([
+  "buy", "sell", "income", "dividend", "interest", "deposit", "withdraw", "adjustment",
+]);
+const VALID_ASSET_CLASSES = new Set(["fixed_income", "fii", "stock", "crypto"]);
+
+export async function importInvestmentsCsv(
+  formData: FormData,
+): Promise<{ ok: boolean; imported: number; errors: string[] }> {
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return { ok: false, imported: 0, errors: ["Nao autenticado"] };
+
+  const file = formData.get("file");
+  if (!(file instanceof Blob)) return { ok: false, imported: 0, errors: ["Arquivo nao encontrado"] };
+  const text = await file.text();
+  const lines = text.split(/\r?\n/).filter((l) => l.trim());
+  if (lines.length < 2) return { ok: false, imported: 0, errors: ["CSV vazio ou sem dados"] };
+
+  const header = lines[0].split(",").map((h) => h.trim().toLowerCase());
+  const required = ["asset_name", "transaction_type", "transaction_date", "total_amount"];
+  const missing = required.filter((r) => !header.includes(r));
+  if (missing.length > 0)
+    return { ok: false, imported: 0, errors: [`Colunas obrigatorias ausentes: ${missing.join(", ")}`] };
+
+  const idx = (col: string) => header.indexOf(col);
+  const cell = (row: string[], col: string) => row[idx(col)]?.trim() ?? "";
+
+  const assetCache = new Map<string, string>();
+  const errors: string[] = [];
+  let imported = 0;
+
+  for (let i = 1; i < lines.length; i++) {
+    const row = lines[i].split(",");
+    const lineNum = i + 1;
+
+    const assetName = cell(row, "asset_name");
+    const txType = cell(row, "transaction_type");
+    const txDate = cell(row, "transaction_date");
+    const totalAmountRaw = cell(row, "total_amount");
+
+    if (!assetName || !txType || !txDate || !totalAmountRaw) {
+      errors.push(`Linha ${lineNum}: campos obrigatorios faltando`);
+      continue;
+    }
+    if (!VALID_TX_TYPES.has(txType)) {
+      errors.push(`Linha ${lineNum}: transaction_type invalido: "${txType}"`);
+      continue;
+    }
+    const totalAmount = parseFloat(totalAmountRaw.replace(",", "."));
+    if (isNaN(totalAmount)) {
+      errors.push(`Linha ${lineNum}: total_amount invalido`);
+      continue;
+    }
+
+    const ticker = opt(cell(row, "ticker"));
+    const rawClass = cell(row, "asset_class");
+    const assetClass = VALID_ASSET_CLASSES.has(rawClass) ? rawClass : "stock";
+    const broker = opt(cell(row, "broker"));
+
+    const cacheKey = `${assetName}|${ticker ?? ""}`;
+    let assetId = assetCache.get(cacheKey);
+
+    if (!assetId) {
+      const { data: existing } = await supabase
+        .from("investment_assets")
+        .select("id")
+        .eq("user_id", userId)
+        .ilike("name", assetName)
+        .limit(1);
+      if (existing && existing.length > 0) {
+        assetId = existing[0].id as string;
+      } else {
+        const { data: inserted, error: insertErr } = await supabase
+          .from("investment_assets")
+          .insert({ user_id: userId, name: assetName, ticker, asset_class: assetClass, broker, currency: "BRL" })
+          .select("id")
+          .single();
+        if (insertErr || !inserted) {
+          errors.push(
+            `Linha ${lineNum}: erro ao criar ativo "${assetName}": ${insertErr?.message ?? "desconhecido"}`,
+          );
+          continue;
+        }
+        assetId = inserted.id as string;
+      }
+      assetCache.set(cacheKey, assetId);
+    }
+
+    const quantityRaw = cell(row, "quantity");
+    const unitPriceRaw = cell(row, "unit_price");
+    const feesRaw = cell(row, "fees");
+    const notes = opt(cell(row, "notes"));
+
+    const quantity = quantityRaw ? parseFloat(quantityRaw.replace(",", ".")) || null : null;
+    const unitPrice = unitPriceRaw ? parseFloat(unitPriceRaw.replace(",", ".")) || null : null;
+    const fees = feesRaw ? parseFloat(feesRaw.replace(",", ".")) || 0 : 0;
+
+    const { error: txErr } = await supabase.from("investment_transactions").insert({
+      user_id: userId,
+      asset_id: assetId,
+      transaction_type: txType,
+      transaction_date: txDate,
+      quantity,
+      unit_price: unitPrice,
+      total_amount: totalAmount,
+      fees,
+      notes,
+    });
+
+    if (txErr) {
+      errors.push(`Linha ${lineNum}: ${txErr.message}`);
+    } else {
+      imported++;
+    }
+  }
+
+  revalidatePath("/investimentos/bolsa");
+  revalidatePath("/investimentos/fiis");
+  revalidatePath("/investimentos/renda-fixa");
+  revalidatePath("/investimentos/cripto");
+  revalidatePath("/investimentos/rebalanceamento");
+  revalidatePath("/dashboard");
+  return { ok: true, imported, errors };
+}

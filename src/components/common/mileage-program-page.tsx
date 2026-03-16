@@ -1,4 +1,6 @@
 import { deleteMileageEntry } from "@/actions/mileage";
+import { importMileageCsv } from "@/actions/mileage";
+import { CsvImportCard } from "@/components/common/csv-import-card";
 import { MileageEntryForm } from "@/components/forms/mileage-entry-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -203,6 +205,12 @@ export async function MileageProgramPage({ programName, subtitle }: Props) {
             Registrar movimentacao
           </h2>
           <MileageEntryForm programId={programId} />
+
+              <CsvImportCard
+                title="Importar movimentações CSV"
+                exampleColumns={["program_name", "entry_type", "points", "occurred_at", "expires_at?", "source?", "notes?"]}
+                action={importMileageCsv}
+              />
         </div>
       )}
 
