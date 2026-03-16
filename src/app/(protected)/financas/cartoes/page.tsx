@@ -3,6 +3,7 @@ import { ModulePage } from "@/components/common/module-page";
 import { CreditCardForm } from "@/components/forms/credit-card-form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -189,7 +190,17 @@ export default async function CartoesPage() {
         ]}
       />
 
-      <CreditCardForm />
+      <Card>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-bold text-slate-700">Cadastro de cartoes</h3>
+            <p className="text-xs text-slate-500">Abra o formulario em modal para manter foco na analise de faturas.</p>
+          </div>
+          <FormModal title="Novo cartao" triggerLabel="Novo cartao" size="md">
+            <CreditCardForm />
+          </FormModal>
+        </div>
+      </Card>
 
       <Card>
         <h3 className="mb-3 text-sm font-bold text-slate-700">Cartoes cadastrados</h3>

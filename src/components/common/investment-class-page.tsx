@@ -7,6 +7,7 @@ import { InvestmentAssetForm } from "@/components/forms/investment-asset-form";
 import { InvestmentTransactionForm } from "@/components/forms/investment-transaction-form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -270,21 +271,16 @@ export async function InvestmentClassPage({ assetClass, title, subtitle }: Props
         </Card>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        <div className="space-y-2">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Cadastrar ativo
-          </h2>
-          <InvestmentAssetForm assetClass={assetClass} />
+      <Card>
+        <div className="flex flex-wrap items-center gap-2">
+          <FormModal title={`Cadastrar ativo em ${title}`} triggerLabel="Novo ativo" size="lg">
+            <InvestmentAssetForm assetClass={assetClass} />
+          </FormModal>
+          <FormModal title={`Registrar movimentacao em ${title}`} triggerLabel="Nova movimentacao" size="lg">
+            <InvestmentTransactionForm assets={assetOptions} />
+          </FormModal>
         </div>
-
-        <div className="space-y-2">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Registrar movimentacao
-          </h2>
-          <InvestmentTransactionForm assets={assetOptions} />
-        </div>
-      </div>
+      </Card>
 
       <Card>
         <h3 className="mb-3 text-sm font-bold text-slate-700">Posicao por ativo</h3>

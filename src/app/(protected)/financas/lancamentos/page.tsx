@@ -5,6 +5,7 @@ import { deleteTransaction, importTransactionsCsv, setTransactionStatus, uploadT
 import { createTag, deleteTag, getUserTags, toggleTransactionTag } from "@/actions/tags";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { findIconByText, getIconsByDomains } from "@/lib/icon-registry";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -200,7 +201,17 @@ export default async function LancamentosPage() {
           "Filtros por conta, cartao, categoria e tipo",
         ]}
       />
-      <TransactionForm categories={options.categories} accounts={options.accounts} cards={options.cards} icons={options.icons} tags={userTags} />
+      <Card>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-bold text-slate-700">Novo lancamento</h3>
+            <p className="text-xs text-slate-500">Formulario aberto em modal para manter a listagem sempre visivel.</p>
+          </div>
+          <FormModal title="Novo lancamento" triggerLabel="Adicionar lancamento" size="xl">
+            <TransactionForm categories={options.categories} accounts={options.accounts} cards={options.cards} icons={options.icons} tags={userTags} />
+          </FormModal>
+        </div>
+      </Card>
 
       <Card>
         <h3 className="mb-2 text-sm font-bold text-slate-700">Importacao por CSV</h3>

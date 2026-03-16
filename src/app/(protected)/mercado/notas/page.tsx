@@ -4,6 +4,7 @@ import { GroceryNoteForm } from "@/components/forms/grocery-note-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -102,7 +103,17 @@ export default async function MercadoNotasPage() {
         </Card>
       </div>
 
-      <GroceryNoteForm />
+      <Card>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-bold text-slate-700">Registro de nota</h3>
+            <p className="text-xs text-slate-500">Cadastro em modal para deixar a revisao da lista principal mais limpa.</p>
+          </div>
+          <FormModal title="Nova nota fiscal" triggerLabel="Nova nota" size="lg">
+            <GroceryNoteForm />
+          </FormModal>
+        </div>
+      </Card>
 
       <Card>
         <h3 className="mb-3 text-sm font-bold text-slate-700">Notas registradas</h3>

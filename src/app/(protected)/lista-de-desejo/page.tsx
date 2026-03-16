@@ -5,6 +5,7 @@ import { WishlistItemForm } from "@/components/forms/wishlist-item-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -133,7 +134,17 @@ export default async function ListaDesejoPage() {
         </Card>
       </div>
 
-      <WishlistItemForm />
+      <Card>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-bold text-slate-700">Cadastro de item</h3>
+            <p className="text-xs text-slate-500">Abertura em modal para manter foco no acompanhamento de oportunidades.</p>
+          </div>
+          <FormModal title="Novo item de desejo" triggerLabel="Novo item" size="lg">
+            <WishlistItemForm />
+          </FormModal>
+        </div>
+      </Card>
 
       <Card>
         <h3 className="mb-3 text-sm font-bold text-slate-700">Itens rastreados</h3>
@@ -220,21 +231,23 @@ export default async function ListaDesejoPage() {
                   </div>
 
                   <div className="mt-3">
-                    <WishlistItemEditForm
-                      id={item.id}
-                      initialValues={{
-                        name: item.name,
-                        category: item.category ?? "",
-                        url: item.url ?? "",
-                        image_url: item.image_url ?? "",
-                        current_price: item.current_price ?? undefined,
-                        target_price: item.target_price ?? undefined,
-                        priority: item.priority,
-                        store_name: item.store_name ?? "",
-                        status: item.status,
-                        notes: item.notes ?? "",
-                      }}
-                    />
+                    <FormModal title={`Editar: ${item.name}`} triggerLabel="Editar item" size="lg" triggerVariant="ghost">
+                      <WishlistItemEditForm
+                        id={item.id}
+                        initialValues={{
+                          name: item.name,
+                          category: item.category ?? "",
+                          url: item.url ?? "",
+                          image_url: item.image_url ?? "",
+                          current_price: item.current_price ?? undefined,
+                          target_price: item.target_price ?? undefined,
+                          priority: item.priority,
+                          store_name: item.store_name ?? "",
+                          status: item.status,
+                          notes: item.notes ?? "",
+                        }}
+                      />
+                    </FormModal>
                   </div>
                 </div>
               );

@@ -5,6 +5,7 @@ import { InstitutionAvatar } from "@/components/common/institution-avatar";
 import { deleteBankAccount } from "@/actions/finance";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -110,7 +111,17 @@ export default async function ContasPage() {
           "Conciliação manual com divergencia por conta",
         ]}
       />
-      <BankAccountForm />
+      <Card>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-bold text-slate-700">Cadastro de contas</h3>
+            <p className="text-xs text-slate-500">Crie contas sem ocupar espaço fixo da tela principal.</p>
+          </div>
+          <FormModal title="Nova conta" triggerLabel="Nova conta" size="md">
+            <BankAccountForm />
+          </FormModal>
+        </div>
+      </Card>
 
       <Card>
         <h3 className="mb-3 text-sm font-bold text-slate-700">Contas cadastradas</h3>
@@ -198,12 +209,14 @@ export default async function ContasPage() {
                   )}
                 </div>
 
-                <AccountReconciliationForm
-                  accountId={account.id}
-                  reconciledBalance={account.reconciled_balance === null ? null : Number(account.reconciled_balance)}
-                  reconciledAt={account.reconciled_at}
-                  reconciliationNotes={account.reconciliation_notes}
-                />
+                <FormModal title={`Conciliar conta: ${account.name}`} triggerLabel="Conciliar conta" size="md">
+                  <AccountReconciliationForm
+                    accountId={account.id}
+                    reconciledBalance={account.reconciled_balance === null ? null : Number(account.reconciled_balance)}
+                    reconciledAt={account.reconciled_at}
+                    reconciliationNotes={account.reconciliation_notes}
+                  />
+                </FormModal>
               </div>
             ))}
           </div>

@@ -6,6 +6,7 @@ import { MileageGoalForm } from "@/components/forms/mileage-goal-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -247,12 +248,14 @@ export async function MileageProgramPage({ programName, subtitle }: Props) {
             </div>
 
             <div className="w-full max-w-xl">
-              <MileageGoalForm
-                programId={programId}
-                goalPoints={goalPoints}
-                goalDueDate={goalDueDate}
-                goalNotes={goalNotes}
-              />
+              <FormModal title={`Meta de emissao - ${programName}`} triggerLabel="Editar meta" size="md">
+                <MileageGoalForm
+                  programId={programId}
+                  goalPoints={goalPoints}
+                  goalDueDate={goalDueDate}
+                  goalNotes={goalNotes}
+                />
+              </FormModal>
             </div>
           </div>
         </Card>
@@ -260,10 +263,10 @@ export async function MileageProgramPage({ programName, subtitle }: Props) {
 
       {programId && (
         <div className="space-y-2">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Registrar movimentacao
-          </h2>
-          <MileageEntryForm programId={programId} />
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Movimentacoes</h2>
+          <FormModal title={`Registrar movimentacao - ${programName}`} triggerLabel="Nova movimentacao" size="lg">
+            <MileageEntryForm programId={programId} />
+          </FormModal>
 
               <CsvImportCard
                 title="Importar movimentações CSV"

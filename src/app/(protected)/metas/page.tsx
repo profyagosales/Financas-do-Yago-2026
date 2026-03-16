@@ -5,6 +5,7 @@ import { GoalForm } from "@/components/forms/goal-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -177,11 +178,19 @@ export default async function MetasPage() {
         </Card>
       </div>
 
-      <GoalForm accounts={accounts} />
-      <GoalContributionForm
-        goals={goalsWithProgress.filter((goal) => goal.status !== "completed").map((goal) => ({ id: goal.id, label: goal.name }))}
-        accounts={accounts}
-      />
+      <Card>
+        <div className="flex flex-wrap items-center gap-2">
+          <FormModal title="Nova meta" triggerLabel="Criar meta" size="lg">
+            <GoalForm accounts={accounts} />
+          </FormModal>
+          <FormModal title="Registrar aporte" triggerLabel="Novo aporte" size="lg">
+            <GoalContributionForm
+              goals={goalsWithProgress.filter((goal) => goal.status !== "completed").map((goal) => ({ id: goal.id, label: goal.name }))}
+              accounts={accounts}
+            />
+          </FormModal>
+        </div>
+      </Card>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
         <Card>

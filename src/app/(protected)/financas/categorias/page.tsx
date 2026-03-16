@@ -4,6 +4,7 @@ import { CategoryForm } from "@/components/forms/category-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -92,7 +93,17 @@ export default async function CategoriasPage() {
         </Card>
       </div>
 
-      <CategoryForm />
+      <Card>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-bold text-slate-700">Gestao de categorias</h3>
+            <p className="text-xs text-slate-500">Use o modal para criar categoria sem quebrar o contexto da tabela.</p>
+          </div>
+          <FormModal title="Nova categoria" triggerLabel="Nova categoria" size="md">
+            <CategoryForm />
+          </FormModal>
+        </div>
+      </Card>
 
       <Card>
         <h3 className="mb-3 text-sm font-bold text-slate-700">Categorias cadastradas</h3>

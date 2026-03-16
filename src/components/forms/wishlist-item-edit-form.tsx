@@ -49,9 +49,7 @@ export function WishlistItemEditForm({ id, initialValues }: Props) {
   };
 
   return (
-    <details className="rounded-xl border border-slate-200 bg-white/80 p-3">
-      <summary className="cursor-pointer text-sm font-semibold text-slate-700">Editar item</summary>
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-3 grid gap-2 md:grid-cols-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-2 md:grid-cols-2">
         <Input placeholder="Nome do item" {...register("name")} />
         <Input placeholder="Categoria" {...register("category")} />
         <Input placeholder="Loja" {...register("store_name")} />
@@ -83,6 +81,5 @@ export function WishlistItemEditForm({ id, initialValues }: Props) {
           </Button>
         </div>
       </form>
-    </details>
   );
 }

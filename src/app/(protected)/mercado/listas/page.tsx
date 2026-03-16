@@ -4,6 +4,7 @@ import { GroceryItemForm } from "@/components/forms/grocery-item-form";
 import { GroceryListForm } from "@/components/forms/grocery-list-form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormModal } from "@/components/ui/form-modal";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -165,16 +166,16 @@ export default async function MercadoListasPage() {
         )}
       </Card>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        <div className="space-y-2">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wide">Nova lista</h2>
-          <GroceryListForm />
+      <Card>
+        <div className="flex flex-wrap items-center gap-2">
+          <FormModal title="Nova lista de mercado" triggerLabel="Nova lista" size="md">
+            <GroceryListForm />
+          </FormModal>
+          <FormModal title="Novo item de mercado" triggerLabel="Novo item" size="lg">
+            <GroceryItemForm lists={lists.map((l) => ({ id: l.id, label: l.name }))} />
+          </FormModal>
         </div>
-        <div className="space-y-2">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wide">Novo item</h2>
-          <GroceryItemForm lists={lists.map((l) => ({ id: l.id, label: l.name }))} />
-        </div>
-      </div>
+      </Card>
 
       <Card>
         <h3 className="mb-3 text-sm font-bold text-slate-700">Minhas listas</h3>

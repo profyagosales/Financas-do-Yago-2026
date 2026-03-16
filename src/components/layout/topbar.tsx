@@ -1,4 +1,5 @@
 import { signOut } from "@/actions/auth";
+import { MobileNav } from "@/components/layout/mobile-nav";
 import { Button } from "@/components/ui/button";
 
 export function Topbar() {
@@ -9,6 +10,7 @@ export function Topbar() {
         <p className="text-sm text-[color:var(--foreground)]">Controle completo em um unico lugar</p>
       </div>
       <div className="flex items-center gap-2">
+        <MobileNav />
         <form action="/busca" method="get" className="hidden items-center gap-2 lg:flex">
           <input
             type="text"
