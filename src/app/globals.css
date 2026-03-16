@@ -113,3 +113,24 @@ h3 {
 ::selection {
   background: color-mix(in srgb, var(--accent) 30%, transparent);
 }
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+
+  main {
+    animation: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  [class*="shadow"],
+  [class*="bg-gradient"] {
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+}

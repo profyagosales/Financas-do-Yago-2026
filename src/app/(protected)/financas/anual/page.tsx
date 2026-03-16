@@ -1,6 +1,6 @@
 import { ModulePage } from "@/components/common/module-page";
+import { PrintFiltersModal } from "@/components/common/print-filters-modal";
 import { AnnualAnalyticsShell } from "@/components/finance/annual-analytics-shell";
-import { ExportRangeForm } from "@/components/finance/export-range-form";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -85,18 +85,6 @@ export default async function AnualPage({ searchParams }: { searchParams: Promis
   const year = selYear;
   const startYear = `${year}-01-01`;
   const endYear = `${year + 1}-01-01`;
-  const today = now.toISOString().slice(0, 10);
-  const endTomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1)).toISOString().slice(0, 10);
-  const startLast7 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 7)).toISOString().slice(0, 10);
-  const startLast30 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 30)).toISOString().slice(0, 10);
-  const startLast90 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 90)).toISOString().slice(0, 10);
-  const presets = [
-    { label: "Hoje", start: today, end: endTomorrow },
-    { label: "7d", start: startLast7, end: endTomorrow },
-    { label: "30d", start: startLast30, end: endTomorrow },
-    { label: "90d", start: startLast90, end: endTomorrow },
-    { label: "YTD", start: startYear, end: endTomorrow },
-  ];
 
   const monthly = Array.from({ length: 12 }, (_, monthIndex) => {
     const monthRows = rows.filter((row) => {
@@ -154,7 +142,7 @@ export default async function AnualPage({ searchParams }: { searchParams: Promis
         ]}
       />
 
-      <Card>
+      <Card className="no-print">
         <div className="flex items-center justify-between gap-4">
           <a
             href={`?year=${selYear - 1}`}
@@ -172,80 +160,18 @@ export default async function AnualPage({ searchParams }: { searchParams: Promis
         </div>
       </Card>
 
-      <Card>
+      <Card className="no-print">
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-slate-800">Exportacao rapida</p>
-              <p className="text-xs text-slate-500">Baixe resumo ou detalhado no intervalo anual padrao.</p>
+              <p className="text-sm font-semibold text-slate-800">Impressao da visao anual</p>
+              <p className="text-xs text-slate-500">Abra os filtros e gere o resumo anual pronto para imprimir.</p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <a
-                href="/api/exports/financas/anual"
-                className="rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800"
-              >
-                Baixar CSV anual (resumo)
-              </a>
-              <a
-                href="/api/exports/financas/anual?mode=detailed"
-                className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200"
-              >
-                Baixar CSV anual (detalhado)
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <p className="text-sm font-semibold text-slate-800">Exportacao por intervalo</p>
-            <p className="text-xs text-slate-500">Defina datas customizadas para baixar o resumo ou o detalhado.</p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {presets.map((preset) => (
-              <div key={preset.label} className="flex gap-2">
-                <a
-                  href={`/api/exports/financas/anual?start=${preset.start}&end=${preset.end}`}
-                  className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
-                >
-                  {preset.label} resumo
-                </a>
-                <a
-                  href={`/api/exports/financas/anual?mode=detailed&start=${preset.start}&end=${preset.end}`}
-                  className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
-                >
-                  {preset.label} detalhado
-                </a>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid gap-2 xl:grid-cols-2">
-            <ExportRangeForm
-              action="/api/exports/financas/anual"
+            <PrintFiltersModal
+              title="Imprimir painel anual"
+              description="Defina intervalo e filtros da visao anual antes da impressao."
               defaultStart={startYear}
               defaultEnd={endYear}
-              submitLabel="CSV resumo"
-              showTypeFilter
-              showStatusFilter
-              showFormatFilter
-              defaultTypeFilter="all"
-              defaultStatusFilter="non_canceled"
-              defaultFormat="csv"
-            />
-
-            <ExportRangeForm
-              action="/api/exports/financas/anual"
-              mode="detailed"
-              defaultStart={startYear}
-              defaultEnd={endYear}
-              submitLabel="CSV detalhado"
-              buttonVariant="secondary"
-              showTypeFilter
-              showStatusFilter
-              showFormatFilter
-              defaultTypeFilter="all"
-              defaultStatusFilter="non_canceled"
-              defaultFormat="csv"
             />
           </div>
         </div>

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 interface FormModalProps {
   title: string;
-  triggerLabel: string;
+  triggerLabel: ReactNode;
   description?: string;
   children: ReactNode;
   triggerVariant?: "primary" | "secondary" | "ghost";

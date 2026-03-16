@@ -1,5 +1,5 @@
 import { ModulePage } from "@/components/common/module-page";
-import { ExportRangeForm } from "@/components/finance/export-range-form";
+import { PrintFiltersModal } from "@/components/common/print-filters-modal";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -140,22 +140,8 @@ export default async function MensalPage({ searchParams }: { searchParams: Promi
   const { hasEnv, prefs, rows, categoriesMap } = await getMonthlyData(selYear, selMonth);
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
 
-  const today = now.toISOString().slice(0, 10);
   const startCurrentMonth = new Date(Date.UTC(selYear, selMonth, 1)).toISOString().slice(0, 10);
   const endCurrentMonth = new Date(Date.UTC(selYear, selMonth + 1, 1)).toISOString().slice(0, 10);
-  const startLast7 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 7)).toISOString().slice(0, 10);
-  const startLast30 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 30)).toISOString().slice(0, 10);
-  const startLast90 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 90)).toISOString().slice(0, 10);
-  const startYtd = `${now.getUTCFullYear()}-01-01`;
-  const endTomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1)).toISOString().slice(0, 10);
-  const exportCurrentMonth = `/api/exports/financas/mensal?start=${startCurrentMonth}&end=${endCurrentMonth}`;
-  const exportLast90Days = `/api/exports/financas/mensal?start=${startLast90}&end=${endCurrentMonth}`;
-  const presets = [
-    { label: "Hoje", href: `/api/exports/financas/mensal?start=${today}&end=${endTomorrow}` },
-    { label: "7d", href: `/api/exports/financas/mensal?start=${startLast7}&end=${endTomorrow}` },
-    { label: "30d", href: `/api/exports/financas/mensal?start=${startLast30}&end=${endTomorrow}` },
-    { label: "YTD", href: `/api/exports/financas/mensal?start=${startYtd}&end=${endTomorrow}` },
-  ];
 
   const receitas = rows.filter((r) => r.type === "income").reduce((s, r) => s + r.amount, 0);
   const despesas = rows.filter((r) => r.type === "expense").reduce((s, r) => s + r.amount, 0);
@@ -187,11 +173,11 @@ export default async function MensalPage({ searchParams }: { searchParams: Promi
           "Receitas e despesas do mes",
           "Parcelas apenas na competencia correta",
           "Recorrencias ativas automaticamente",
-          "Exportacao e calendario financeiro",
+          "Impressao e calendario financeiro",
         ]}
       />
 
-      <Card>
+      <Card className="no-print">
         <div className="flex items-center justify-between gap-4">
           <a
             href={`?month=${prevMonthParam}`}
@@ -209,56 +195,20 @@ export default async function MensalPage({ searchParams }: { searchParams: Promi
         </div>
       </Card>
 
-      <Card className="bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent)_9%,var(--surface)_91%),var(--surface))]">
+      <Card className="no-print bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent)_9%,var(--surface)_91%),var(--surface))]">
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-slate-800">Exportacao rapida</p>
-              <p className="text-xs text-slate-500">Atalhos para periodos mais usados.</p>
+              <p className="text-sm font-semibold text-slate-800">Impressao da visao mensal</p>
+              <p className="text-xs text-slate-500">Abra os filtros e gere a pagina pronta para imprimir.</p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <a
-                href={exportCurrentMonth}
-                className="rounded-xl bg-[color:var(--button-primary-bg)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--button-primary-hover)]"
-              >
-                Baixar CSV do mes
-              </a>
-              <a
-                href={exportLast90Days}
-                className="rounded-xl bg-white/90 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-white"
-              >
-                Baixar CSV ultimos 90 dias
-              </a>
-            </div>
+            <PrintFiltersModal
+              title="Imprimir painel mensal"
+              description="Defina intervalo e filtros antes de imprimir o fechamento mensal."
+              defaultStart={startCurrentMonth}
+              defaultEnd={endCurrentMonth}
+            />
           </div>
-
-          <div>
-            <p className="text-sm font-semibold text-slate-800">Exportacao por intervalo</p>
-            <p className="text-xs text-slate-500">Escolha o periodo manualmente para gerar o CSV.</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {presets.map((preset) => (
-              <a
-                key={preset.label}
-                href={preset.href}
-                className="rounded-lg border border-[color:var(--border)] bg-white/80 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-white"
-              >
-                {preset.label}
-              </a>
-            ))}
-          </div>
-          <ExportRangeForm
-            action="/api/exports/financas/mensal"
-            defaultStart={startCurrentMonth}
-            defaultEnd={endCurrentMonth}
-            submitLabel="Baixar CSV customizado"
-            showTypeFilter
-            showStatusFilter
-            showFormatFilter
-            defaultTypeFilter="all"
-            defaultStatusFilter="all"
-            defaultFormat="csv"
-          />
         </div>
       </Card>
 
