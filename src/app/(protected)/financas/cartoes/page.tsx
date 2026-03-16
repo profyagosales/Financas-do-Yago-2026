@@ -10,21 +10,81 @@ import { toMoney } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+type CardRow = {
+  id: string;
+  name: string;
+  institution: string;
+  brand: string | null;
+  credit_limit: number | string | null;
+  closing_day: number;
+  due_day: number;
+  is_active: boolean;
+  used: number;
+  available: number;
+};
+
+type BillRow = {
+  id: string;
+  credit_card_id: string;
+  reference_month: string;
+  closing_date: string;
+  due_date: string;
+  total_amount: number | string | null;
+  status: string;
+};
+
+type TransactionRow = {
+  id: string;
+  credit_card_id: string | null;
+  description: string;
+  amount: number | string | null;
+  competency_date: string;
+  status: string;
+};
+
+type InstallmentRow = {
+  transaction_id: string;
+  bill_month: string;
+  installment_number: number;
+  total_installments: number;
+  amount: number | string | null;
+};
+
+type BillPurchaseItem = {
+  id: string;
+  description: string;
+  amount: number;
+  status: string;
+  installmentLabel: string | null;
+};
+
+function toMonthStart(dateValue: string) {
+  const date = new Date(`${dateValue}T00:00:00Z`);
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1)).toISOString().slice(0, 10);
+}
+
+function daysUntil(dateIso: string) {
+  const today = new Date();
+  const current = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+  const due = new Date(`${dateIso}T00:00:00Z`);
+  return Math.ceil((due.getTime() - current.getTime()) / (1000 * 60 * 60 * 24));
+}
+
 async function getCreditCardsAndBills() {
   if (!hasSupabaseEnv()) {
-    return { prefs: { currency: "BRL", locale: "pt-BR" }, cards: [], bills: [] };
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, cards: [] as CardRow[], bills: [] as BillRow[], purchasesByBill: {} as Record<string, BillPurchaseItem[]> };
   }
 
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
   if (!userId) {
-    return { prefs: { currency: "BRL", locale: "pt-BR" }, cards: [], bills: [] };
+    return { prefs: { currency: "BRL", locale: "pt-BR" }, cards: [] as CardRow[], bills: [] as BillRow[], purchasesByBill: {} as Record<string, BillPurchaseItem[]> };
   }
 
   const prefs = await getDisplayPrefsForUser(supabase, userId);
 
-  const [{ data: cardsData }, { data: txData }, { data: billsData }] = await Promise.all([
+  const [{ data: cardsData }, { data: txData }, { data: installmentsData }, { data: billsData }] = await Promise.all([
     supabase
       .from("credit_cards")
       .select("id, name, institution, brand, credit_limit, closing_day, due_day, is_active")
@@ -32,10 +92,14 @@ async function getCreditCardsAndBills() {
       .order("created_at", { ascending: false }),
     supabase
       .from("transactions")
-      .select("credit_card_id, amount, status")
+      .select("id, credit_card_id, description, amount, competency_date, status")
       .eq("user_id", userId)
       .not("credit_card_id", "is", null)
       .neq("status", "canceled"),
+    supabase
+      .from("transaction_installments")
+      .select("transaction_id, bill_month, installment_number, total_installments, amount")
+      .eq("user_id", userId),
     supabase
       .from("card_bills")
       .select("id, credit_card_id, reference_month, closing_date, due_date, total_amount, status")
@@ -50,7 +114,7 @@ async function getCreditCardsAndBills() {
     return acc;
   }, {});
 
-  const cards = (cardsData ?? []).map((card) => {
+  const cards = ((cardsData ?? []) as Omit<CardRow, "used" | "available">[]).map((card) => {
     const used = usedByCard[card.id] ?? 0;
     const limit = Number(card.credit_limit ?? 0);
     return {
@@ -60,15 +124,56 @@ async function getCreditCardsAndBills() {
     };
   });
 
+  const installmentsByTx = ((installmentsData ?? []) as InstallmentRow[]).reduce<Record<string, InstallmentRow[]>>((acc, item) => {
+    if (!acc[item.transaction_id]) acc[item.transaction_id] = [];
+    acc[item.transaction_id].push(item);
+    return acc;
+  }, {});
+
+  const purchasesByBill = ((billsData ?? []) as BillRow[]).reduce<Record<string, BillPurchaseItem[]>>((acc, bill) => {
+    const items: BillPurchaseItem[] = [];
+
+    for (const tx of (txData ?? []) as TransactionRow[]) {
+      if (tx.credit_card_id !== bill.credit_card_id) continue;
+
+      const installments = installmentsByTx[tx.id] ?? [];
+      if (installments.length > 0) {
+        const match = installments.find((item) => toMonthStart(item.bill_month) === bill.reference_month);
+        if (!match) continue;
+        items.push({
+          id: `${tx.id}-${match.installment_number}`,
+          description: tx.description,
+          amount: Number(match.amount ?? 0),
+          status: tx.status,
+          installmentLabel: `${match.installment_number}/${match.total_installments}`,
+        });
+        continue;
+      }
+
+      if (toMonthStart(tx.competency_date) !== bill.reference_month) continue;
+      items.push({
+        id: tx.id,
+        description: tx.description,
+        amount: Number(tx.amount ?? 0),
+        status: tx.status,
+        installmentLabel: null,
+      });
+    }
+
+    acc[bill.id] = items.sort((a, b) => b.amount - a.amount);
+    return acc;
+  }, {});
+
   return {
     prefs,
     cards,
-    bills: billsData ?? [],
+    bills: (billsData ?? []) as BillRow[],
+    purchasesByBill,
   };
 }
 
 export default async function CartoesPage() {
-  const { prefs, cards, bills } = await getCreditCardsAndBills();
+  const { prefs, cards, bills, purchasesByBill } = await getCreditCardsAndBills();
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
 
   return (
@@ -157,13 +262,73 @@ export default async function CartoesPage() {
                     <td className="border-b border-slate-100 py-2 pr-3">{bill.reference_month}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{cards.find((card) => card.id === bill.credit_card_id)?.name ?? "-"}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{bill.closing_date}</td>
-                    <td className="border-b border-slate-100 py-2 pr-3">{bill.due_date}</td>
+                    <td className={`border-b border-slate-100 py-2 pr-3 ${daysUntil(bill.due_date) <= 7 && bill.status !== "paid" ? "font-semibold text-amber-700" : ""}`}>
+                      {bill.due_date}
+                      {bill.status !== "paid" ? <span className="ml-2 text-xs text-slate-500">({daysUntil(bill.due_date)}d)</span> : null}
+                    </td>
                     <td className="border-b border-slate-100 py-2 pr-3">{bill.status}</td>
                     <td className="border-b border-slate-100 py-2 pr-3">{formatMoney(Number(bill.total_amount ?? 0))}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+      </Card>
+
+      <Card>
+        <h3 className="mb-3 text-sm font-bold text-slate-700">Compras por fatura</h3>
+        {!hasSupabaseEnv() ? (
+          <p className="text-sm text-slate-600">Conecte ao Supabase para visualizar o detalhamento.</p>
+        ) : bills.length === 0 ? (
+          <p className="text-sm text-slate-600">Nenhuma fatura consolidada ainda.</p>
+        ) : (
+          <div className="space-y-4">
+            {bills.slice(0, 12).map((bill) => {
+              const items = purchasesByBill[bill.id] ?? [];
+              const cardName = cards.find((card) => card.id === bill.credit_card_id)?.name ?? "-";
+              return (
+                <div key={`${bill.id}-details`} className="rounded-2xl border border-slate-200 p-4">
+                  <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">{cardName} • {bill.reference_month}</p>
+                      <p className="text-xs text-slate-500">Fechamento {bill.closing_date} • Vencimento {bill.due_date}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-slate-900">{formatMoney(Number(bill.total_amount ?? 0))}</p>
+                      <p className="text-xs text-slate-500">{items.length} compra{items.length === 1 ? "" : "s"}</p>
+                    </div>
+                  </div>
+
+                  {items.length === 0 ? (
+                    <p className="text-sm text-slate-600">Nenhuma compra individual encontrada para essa fatura.</p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-sm">
+                        <thead>
+                          <tr>
+                            <th className="border-b border-slate-200 py-2 pr-3">Descricao</th>
+                            <th className="border-b border-slate-200 py-2 pr-3">Parcela</th>
+                            <th className="border-b border-slate-200 py-2 pr-3">Status</th>
+                            <th className="border-b border-slate-200 py-2 pr-3">Valor</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {items.map((item) => (
+                            <tr key={item.id}>
+                              <td className="border-b border-slate-100 py-2 pr-3">{item.description}</td>
+                              <td className="border-b border-slate-100 py-2 pr-3">{item.installmentLabel ?? "A vista"}</td>
+                              <td className="border-b border-slate-100 py-2 pr-3">{item.status}</td>
+                              <td className="border-b border-slate-100 py-2 pr-3 font-medium">{formatMoney(item.amount)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </Card>
