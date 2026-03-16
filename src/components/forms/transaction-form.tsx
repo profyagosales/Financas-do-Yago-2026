@@ -141,168 +141,145 @@ export function TransactionForm({ categories, accounts, cards, tags }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 rounded-[28px] border border-[color:var(--border)] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--surface)_92%,white),color-mix(in_srgb,var(--muted-surface)_40%,white))] p-5 md:grid-cols-12 md:p-6">
-      <div className="md:col-span-12">
-        <div className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3">
-          <p className="text-sm font-semibold text-[color:var(--foreground)]">Novo lancamento</p>
-          <p className="text-xs text-[color:var(--muted)]">Preencha os dados essenciais, defina pagamento e finalize com anexos se necessario.</p>
-        </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 md:p-5">
+      <div className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--muted-surface)] px-4 py-3">
+        <p className="text-sm font-semibold text-[color:var(--foreground)]">Novo lancamento</p>
       </div>
 
-      <div className="md:col-span-8">
+      <div className={sectionCls}>
         <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Descricao</label>
-        <Input className={inputCls} placeholder="Ex.: Conta de energia, Salario, Internet" {...register("description")} />
-      </div>
+        <Input className={inputCls} placeholder="Ex.: Conta de energia" {...register("description")} />
 
-      <div className="md:col-span-4">
-        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Valor</label>
+        <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Valor</label>
         <Input className={inputCls} placeholder="0,00" type="number" step="0.01" {...register("amount")} />
       </div>
 
-      <div className={`${sectionCls} md:col-span-12`}>
-        <div className="grid gap-4 md:grid-cols-12">
-          <div className="md:col-span-4">
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Data de vencimento</label>
-            <Input className={inputCls} type="date" {...register("competency_date")} />
-          </div>
+      <div className={sectionCls}>
+        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Data de vencimento</label>
+        <Input className={inputCls} type="date" {...register("competency_date")} />
 
-          <div className="md:col-span-4">
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Tipo</label>
-            <select className={selectCls} {...register("type")}>
-              <option value="expense">Despesa (saida)</option>
-              <option value="income">Receita (entrada)</option>
+        <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Tipo</label>
+        <select className={selectCls} {...register("type")}>
+          <option value="expense">Despesa (saida)</option>
+          <option value="income">Receita (entrada)</option>
+        </select>
+
+        <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Status</label>
+        <select className={selectCls} {...register("status")}>
+          <option value="pending">Pendente</option>
+          <option value="paid">Pago</option>
+          <option value="overdue">Atrasado</option>
+          <option value="canceled">Cancelado</option>
+        </select>
+
+        {status === "paid" ? (
+          <>
+            <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Data de pagamento</label>
+            <Input className={inputCls} type="date" {...register("payment_date")} />
+          </>
+        ) : null}
+
+        {isExpense ? (
+          <>
+            <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Despesa</label>
+            <select
+              className={selectCls}
+              {...register("expense_mode")}
+              onChange={(event) => {
+                const next = event.currentTarget.value as "single" | "fixed";
+                setValue("expense_mode", next);
+                setValue("fixed_expense", next === "fixed");
+              }}
+            >
+              <option value="single">Unica</option>
+              <option value="fixed">Fixa</option>
             </select>
-          </div>
+          </>
+        ) : null}
 
-          <div className="md:col-span-4">
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Status</label>
-            <select className={selectCls} {...register("status")}>
-              <option value="pending">Pendente</option>
-              <option value="paid">Pago</option>
-              <option value="overdue">Atrasado</option>
-              <option value="canceled">Cancelado</option>
-            </select>
-          </div>
+        <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Categoria</label>
+        <select className={selectCls} {...register("category_id")}>
+          <option value="">Selecione categoria</option>
+          {categoryOptions.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
-          {status === "paid" ? (
-            <div className="md:col-span-4">
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Data de pagamento</label>
-              <Input className={inputCls} type="date" {...register("payment_date")} />
-            </div>
-          ) : null}
+      <div className={sectionCls}>
+        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Forma de pagamento</label>
+        <select className={selectCls} {...register("payment_method")}>
+          <option value="card">Cartao</option>
+          <option value="pix">Pix</option>
+          <option value="debit">Debito</option>
+          <option value="cash">Dinheiro</option>
+          <option value="bank_transfer">Transferencia bancaria</option>
+          <option value="other">Outro</option>
+        </select>
 
-          {isExpense ? (
-            <div className="md:col-span-4">
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Despesa</label>
-              <select
-                className={selectCls}
-                {...register("expense_mode")}
-                onChange={(event) => {
-                  const next = event.currentTarget.value as "single" | "fixed";
-                  setValue("expense_mode", next);
-                  setValue("fixed_expense", next === "fixed");
-                }}
-              >
-                <option value="single">Unica</option>
-                <option value="fixed">Fixa</option>
-              </select>
-            </div>
-          ) : null}
-
-          <div className={isExpense ? "md:col-span-4" : "md:col-span-8"}>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Categoria</label>
-            <select className={selectCls} {...register("category_id")}>
-              <option value="">Selecione categoria</option>
-              {categoryOptions.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.label}
+        {requireAccount ? (
+          <>
+            <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Conta</label>
+            <select className={selectCls} {...register("account_id")}>
+              <option value="">Selecione conta</option>
+              {accounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.label}
                 </option>
               ))}
             </select>
-          </div>
-        </div>
-      </div>
+          </>
+        ) : null}
 
-      <div className={`${sectionCls} md:col-span-12`}>
-        <div className="grid gap-4 md:grid-cols-12">
-          <div className="md:col-span-4">
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Forma de pagamento</label>
-            <select className={selectCls} {...register("payment_method")}>
-              <option value="card">Cartao</option>
-              <option value="pix">Pix</option>
-              <option value="debit">Debito</option>
-              <option value="cash">Dinheiro</option>
-              <option value="bank_transfer">Transferencia bancaria</option>
-              <option value="other">Outro</option>
+        {isCard ? (
+          <>
+            <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Cartao</label>
+            <select className={selectCls} {...register("credit_card_id")}>
+              <option value="">Selecione cartao</option>
+              {cards.map((card) => (
+                <option key={card.id} value={card.id}>
+                  {card.label}
+                </option>
+              ))}
             </select>
-          </div>
 
-          {requireAccount ? (
-            <div className="md:col-span-4">
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Conta</label>
-              <select className={selectCls} {...register("account_id")}>
-                <option value="">Selecione conta</option>
-                {accounts.map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {account.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : null}
+            <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Pagamento no cartao</label>
+            <select className={selectCls} {...register("payment_plan")}>
+              <option value="single">A vista</option>
+              <option value="installment">Parcelado</option>
+            </select>
 
-          {isCard ? (
-            <>
-              <div className="md:col-span-4">
-                <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Cartao</label>
-                <select className={selectCls} {...register("credit_card_id")}>
-                  <option value="">Selecione cartao</option>
-                  {cards.map((card) => (
-                    <option key={card.id} value={card.id}>
-                      {card.label}
+            {showInstallments ? (
+              <>
+                <label className="mb-1 mt-3 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Quantidade de parcelas</label>
+                <select className={selectCls} {...register("installments")}>
+                  {installmentOptions.map((value) => (
+                    <option key={value} value={value}>
+                      {value}x
                     </option>
                   ))}
                 </select>
-              </div>
-
-              <div className="md:col-span-4">
-                <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Pagamento no cartao</label>
-                <select className={selectCls} {...register("payment_plan")}>
-                  <option value="single">A vista</option>
-                  <option value="installment">Parcelado</option>
-                </select>
-              </div>
-
-              {showInstallments ? (
-                <div className="md:col-span-4">
-                  <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Quantidade de parcelas</label>
-                  <select className={selectCls} {...register("installments")}>
-                    {installmentOptions.map((value) => (
-                      <option key={value} value={value}>
-                        {value}x
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : null}
-            </>
-          ) : null}
-        </div>
+              </>
+            ) : null}
+          </>
+        ) : null}
       </div>
 
-      <div className="md:col-span-12">
+      <div className={sectionCls}>
         <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Observacoes</label>
         <Input className={inputCls} placeholder="Detalhes relevantes do lancamento" {...register("notes")} />
       </div>
 
-      {tags.length > 0 && (
-        <div className={`${sectionCls} md:col-span-12`}>
+      {tags.length > 0 ? (
+        <div className={sectionCls}>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Tags</p>
           <TagsSelector tags={tags} selectedIds={selectedTagIds} onChange={setSelectedTagIds} />
         </div>
-      )}
+      ) : null}
 
-      <div className={`${sectionCls} md:col-span-6`}>
+      <div className={sectionCls}>
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Arquivo do lancamento</p>
         <input
           type="file"
@@ -316,7 +293,7 @@ export function TransactionForm({ categories, accounts, cards, tags }: Props) {
       </div>
 
       {status === "paid" ? (
-        <div className={`${sectionCls} md:col-span-6`}>
+        <div className={sectionCls}>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Comprovante de pagamento</p>
           <input
             type="file"
@@ -330,8 +307,8 @@ export function TransactionForm({ categories, accounts, cards, tags }: Props) {
         </div>
       ) : null}
 
-      {errors.root?.message ? <p className="md:col-span-12 text-xs text-red-600">{errors.root.message}</p> : null}
-      <div className="md:col-span-12 flex justify-end">
+      {errors.root?.message ? <p className="text-xs text-red-600">{errors.root.message}</p> : null}
+      <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting} className="min-w-52">
           {isSubmitting ? "Salvando..." : "Cadastrar lancamento"}
         </Button>

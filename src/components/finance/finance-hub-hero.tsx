@@ -88,7 +88,7 @@ export function FinanceHubHero({
         <FormModal
           title="Cadastrar lancamento"
           triggerLabel={<span className="inline-flex items-center gap-2"><ListPlus size={16} />Cadastrar</span>}
-          size="xl"
+          size="lg"
           triggerVariant="primary"
         >
           <TransactionForm
