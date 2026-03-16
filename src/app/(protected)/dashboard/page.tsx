@@ -30,6 +30,7 @@ async function getDashboardData() {
       ],
       latest: [] as Array<{ id: string; description: string; amount: number; competency_date: string }>,
       reminders: [] as ReminderItem[],
+      mileageAlerts: [] as Array<{ id: string; programName: string; points: number; expiresAt: string; daysLeft: number }>,
       prefs: { currency: "BRL", locale: "pt-BR", showCharts: true },
       hasEnv: false,
     };
@@ -52,6 +53,7 @@ async function getDashboardData() {
       ],
       latest: [] as Array<{ id: string; description: string; amount: number; competency_date: string }>,
       reminders: [] as ReminderItem[],
+      mileageAlerts: [] as Array<{ id: string; programName: string; points: number; expiresAt: string; daysLeft: number }>,
       prefs: { currency: "BRL", locale: "pt-BR", showCharts: true },
       hasEnv: true,
     };
@@ -62,6 +64,9 @@ async function getDashboardData() {
   const dueLimit = new Date();
   dueLimit.setDate(dueLimit.getDate() + 7);
   const dueLimitDate = dueLimit.toISOString().slice(0, 10);
+  const mileageAlertLimit = new Date();
+  mileageAlertLimit.setDate(mileageAlertLimit.getDate() + 60);
+  const mileageAlertLimitDate = mileageAlertLimit.toISOString().slice(0, 10);
 
   const [
     { data: accountsData },
@@ -77,6 +82,7 @@ async function getDashboardData() {
     { data: cardBillsSoonData },
     { data: profileData },
     { data: settingsData },
+    { data: mileageExpiringData },
   ] = await Promise.all([
     supabase.from("bank_accounts").select("initial_balance").eq("user_id", userId).eq("is_active", true),
     supabase
@@ -129,6 +135,15 @@ async function getDashboardData() {
       .limit(20),
     supabase.from("profiles").select("currency, locale").eq("id", userId).maybeSingle(),
     supabase.from("settings").select("dashboard_config").eq("user_id", userId).maybeSingle(),
+    supabase
+      .from("mileage_entries")
+      .select("id, points, expires_at, entry_type, mileage_programs(name)")
+      .eq("user_id", userId)
+      .eq("entry_type", "earn")
+      .gte("expires_at", today)
+      .lte("expires_at", mileageAlertLimitDate)
+      .order("expires_at", { ascending: true })
+      .limit(50),
   ]);
 
   const saldoConsolidado = (accountsData ?? []).reduce((sum, item) => sum + Number(item.initial_balance ?? 0), 0);
@@ -199,6 +214,27 @@ async function getDashboardData() {
     showCharts: Boolean(dashboardConfig.show_charts ?? true),
   };
 
+  type MileageAlert = { id: string; programName: string; points: number; expiresAt: string; daysLeft: number };
+  const todayDate = new Date(today);
+  const mileageAlerts: MileageAlert[] = (mileageExpiringData ?? []).map((entry) => {
+    const rawProg = entry.mileage_programs as unknown;
+    const progName =
+      rawProg && typeof rawProg === "object" && !Array.isArray(rawProg)
+        ? (rawProg as { name: string }).name
+        : Array.isArray(rawProg) && rawProg.length > 0
+          ? (rawProg[0] as { name: string }).name
+          : "Programa";
+    const expiresDate = new Date(entry.expires_at as string);
+    const daysLeft = Math.ceil((expiresDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
+    return {
+      id: entry.id,
+      programName: progName,
+      points: Number(entry.points),
+      expiresAt: entry.expires_at as string,
+      daysLeft,
+    };
+  });
+
   return {
     cards,
     latest: (latestData ?? []).map((item) => ({
@@ -208,13 +244,14 @@ async function getDashboardData() {
       competency_date: item.competency_date,
     })),
     reminders,
+    mileageAlerts,
     prefs,
     hasEnv: true,
   };
 }
 
 export default async function DashboardPage() {
-  const { cards, latest, reminders, hasEnv, prefs } = await getDashboardData();
+  const { cards, latest, reminders, mileageAlerts, hasEnv, prefs } = await getDashboardData();
 
   const formatMoney = (value: number) => toMoney(value, prefs.locale, prefs.currency);
   const formatNumber = (value: number) =>
@@ -263,6 +300,29 @@ export default async function DashboardPage() {
       </Card>
 
       <LocalReminders reminders={reminders} />
+
+      {mileageAlerts.length > 0 && (
+        <Card>
+          <h3 className="mb-3 text-sm font-bold text-amber-700">
+            Alerta de expiracao de milhas ({mileageAlerts.length} lote{mileageAlerts.length > 1 ? "s" : ""} nos proximos 60 dias)
+          </h3>
+          <div className="space-y-2">
+            {mileageAlerts.map((alert) => (
+              <div
+                key={alert.id}
+                className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${
+                  alert.daysLeft <= 15 ? "bg-rose-50 text-rose-800" : "bg-amber-50 text-amber-800"
+                }`}
+              >
+                <span className="font-medium">{alert.programName}</span>
+                <span className="tabular-nums">
+                  {alert.points.toLocaleString(prefs.locale)} pts vence em {alert.expiresAt} ({alert.daysLeft}d)
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {prefs.showCharts ? (
         <DashboardChartsShell currency={prefs.currency} locale={prefs.locale} />

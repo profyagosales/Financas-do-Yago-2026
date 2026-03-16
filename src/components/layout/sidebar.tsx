@@ -17,6 +17,7 @@ const links = [
   ["FIIs", "/investimentos/fiis"],
   ["Bolsa", "/investimentos/bolsa"],
   ["Cripto", "/investimentos/cripto"],
+  ["Rebalanceamento", "/investimentos/rebalanceamento"],
   ["Livelo", "/milhas/livelo"],
   ["Latam Pass", "/milhas/latam-pass"],
   ["Azul", "/milhas/azul"],
