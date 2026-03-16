@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   title: "Financeiro do Yago",
   description: "Sistema pessoal de financas, investimentos, milhas e metas.",
   applicationName: "Financeiro do Yago",
+  icons: {
+    icon: "/icon-financeiro-yago.svg",
+    shortcut: "/icon-financeiro-yago.svg",
+    apple: "/icon-financeiro-yago.svg",
+  },
 };
 
 async function getTheme() {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FileText, ListTodo, ScanSearch } from "lucide-react";
+import { MarketHubHero } from "@/components/market/market-hub-hero";
 import { ModulePage } from "@/components/common/module-page";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
@@ -17,6 +18,7 @@ const items = [
 
 type ItemRow = { was_purchased: boolean; unit_price: number | string | null };
 type NoteRow = { review_status: "pending_review" | "reviewed" };
+type ListRow = { id: string; name: string };
 
 async function getMercadoHubData() {
   if (!hasSupabaseEnv()) {
@@ -27,6 +29,7 @@ async function getMercadoHubData() {
       pendentesCompra: 0,
       notasPendentes: 0,
       estimativa: 0,
+      listsOptions: [] as Array<{ id: string; label: string }>,
     };
   }
 
@@ -41,19 +44,21 @@ async function getMercadoHubData() {
       pendentesCompra: 0,
       notasPendentes: 0,
       estimativa: 0,
+      listsOptions: [] as Array<{ id: string; label: string }>,
     };
   }
 
   const prefs = await getDisplayPrefsForUser(supabase, userId);
 
   const [{ data: lists }, { data: items }, { data: notes }] = await Promise.all([
-    supabase.from("grocery_lists").select("id").eq("user_id", userId),
+    supabase.from("grocery_lists").select("id, name").eq("user_id", userId),
     supabase.from("grocery_items").select("was_purchased, unit_price").eq("user_id", userId),
     supabase.from("grocery_notes").select("review_status").eq("user_id", userId),
   ]);
 
   const rows = (items ?? []) as ItemRow[];
   const noteRows = (notes ?? []) as NoteRow[];
+  const listRows = (lists ?? []) as ListRow[];
   const pendentesCompra = rows.filter((item) => !item.was_purchased).length;
   const notasPendentes = noteRows.filter((note) => note.review_status === "pending_review").length;
   const estimativa = rows
@@ -62,11 +67,14 @@ async function getMercadoHubData() {
 
   return {
     prefs,
-    listas: (lists ?? []).length,
+    listas: listRows.length,
     itens: rows.length,
     pendentesCompra,
     notasPendentes,
     estimativa,
+    listsOptions: listRows
+      .map((list) => ({ id: list.id, label: list.name }))
+      .sort((a, b) => a.label.localeCompare(b.label, "pt-BR")),
   };
 }
 
@@ -76,16 +84,9 @@ export default async function MercadoPage() {
 
   return (
     <div className="space-y-4">
-      <ModulePage
-        title="Mercado"
-        subtitle="Dashboard do modulo. Selecione o fluxo de listas, notas ou historico."
-        bullets={[
-          "Listas de compras",
-          "Notas e revisao",
-          "Historico de precos",
-          "Comparativo por estabelecimento",
-        ]}
-      />
+      <ModulePage title="Mercado" />
+
+      <MarketHubHero lists={data.listsOptions} />
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
         <Card>

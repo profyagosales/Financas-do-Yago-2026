@@ -1,5 +1,7 @@
 import Link from "next/link";
+import type { Route } from "next";
 import { CircleDollarSign, Plane, ShieldCheck } from "lucide-react";
+import { MileageHubHero } from "@/components/mileage/mileage-hub-hero";
 import { ModulePage } from "@/components/common/module-page";
 import { Card } from "@/components/ui/card";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -20,22 +22,48 @@ type EntryRow = {
   expires_at: string | null;
 };
 
-type ProgramRow = { id: string; name: string };
+type ProgramRow = {
+  id: string;
+  name: string;
+  goal_points: number | null;
+  goal_due_date: string | null;
+  goal_notes: string | null;
+};
+
+const programHrefByName: Record<string, Route> = {
+  livelo: "/milhas/livelo",
+  "latam pass": "/milhas/latam-pass",
+  azul: "/milhas/azul",
+};
 
 async function getMilhasHubData() {
   if (!hasSupabaseEnv()) {
-    return { saldoTotal: 0, expiram90: 0, porPrograma: [] as Array<{ name: string; saldo: number }> };
+    return {
+      saldoTotal: 0,
+      expiram90: 0,
+      porPrograma: [] as Array<{ name: string; saldo: number }>,
+      programsOptions: [] as Array<{ id: string; name: string; href: Route; goalPoints?: number | null; goalDueDate?: string | null; goalNotes?: string | null }>,
+    };
   }
 
   const supabase = await createServerSupabaseClient();
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
   if (!userId) {
-    return { saldoTotal: 0, expiram90: 0, porPrograma: [] as Array<{ name: string; saldo: number }> };
+    return {
+      saldoTotal: 0,
+      expiram90: 0,
+      porPrograma: [] as Array<{ name: string; saldo: number }>,
+      programsOptions: [] as Array<{ id: string; name: string; href: Route; goalPoints?: number | null; goalDueDate?: string | null; goalNotes?: string | null }>,
+    };
   }
 
   const [{ data: programsData }, { data: entriesData }] = await Promise.all([
-    supabase.from("mileage_programs").select("id, name").eq("user_id", userId).eq("is_active", true),
+    supabase
+      .from("mileage_programs")
+      .select("id, name, goal_points, goal_due_date, goal_notes")
+      .eq("user_id", userId)
+      .eq("is_active", true),
     supabase.from("mileage_entries").select("program_id, entry_type, points, expires_at").eq("user_id", userId),
   ]);
 
@@ -62,7 +90,21 @@ async function getMilhasHubData() {
   const porPrograma = programs.map((program) => ({ name: program.name, saldo: saldoByProgram.get(program.id) ?? 0 }));
   const saldoTotal = porPrograma.reduce((acc, item) => acc + item.saldo, 0);
 
-  return { saldoTotal, expiram90, porPrograma };
+  const programsOptions = programs
+    .map((program) => {
+      const key = program.name.toLowerCase().trim();
+      return {
+        id: program.id,
+        name: program.name,
+        href: programHrefByName[key] ?? "/milhas",
+        goalPoints: program.goal_points,
+        goalDueDate: program.goal_due_date,
+        goalNotes: program.goal_notes,
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+
+  return { saldoTotal, expiram90, porPrograma, programsOptions };
 }
 
 export default async function MilhasPage() {
@@ -70,16 +112,9 @@ export default async function MilhasPage() {
 
   return (
     <div className="space-y-4">
-      <ModulePage
-        title="Milhas"
-        subtitle="Dashboard do modulo. Selecione abaixo a companhia/programa para abrir o detalhe."
-        bullets={[
-          "Visao por programa",
-          "Controle de vencimento",
-          "Meta de emissao",
-          "Importacao CSV de movimentacoes",
-        ]}
-      />
+      <ModulePage title="Milhas" />
+
+      <MileageHubHero programs={data.programsOptions} />
 
       <div className="grid gap-3 md:grid-cols-3">
         <Card>

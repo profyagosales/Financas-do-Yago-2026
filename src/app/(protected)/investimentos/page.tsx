@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Banknote, Building2, Coins, Landmark, PieChart } from "lucide-react";
+import { InvestmentsHubHero } from "@/components/investments/investments-hub-hero";
 import { ModulePage } from "@/components/common/module-page";
 import { Card } from "@/components/ui/card";
 import { getDisplayPrefsForUser } from "@/lib/supabase/display-prefs";
@@ -21,6 +22,8 @@ type AssetClass = "fixed_income" | "fii" | "stock" | "crypto";
 
 type AssetRow = {
   id: string;
+  name: string;
+  ticker: string | null;
   asset_class: AssetClass;
   current_value: number | string | null;
 };
@@ -40,6 +43,7 @@ async function getInvestimentosHubData() {
       totalProventos: 0,
       valorAtualInformado: 0,
       classes: { fixed_income: 0, fii: 0, stock: 0, crypto: 0 } as Record<AssetClass, number>,
+      assetOptions: [] as Array<{ id: string; label: string }>,
     };
   }
 
@@ -54,13 +58,14 @@ async function getInvestimentosHubData() {
       totalProventos: 0,
       valorAtualInformado: 0,
       classes: { fixed_income: 0, fii: 0, stock: 0, crypto: 0 } as Record<AssetClass, number>,
+      assetOptions: [] as Array<{ id: string; label: string }>,
     };
   }
 
   const prefs = await getDisplayPrefsForUser(supabase, userId);
 
   const [{ data: assets }, { data: txs }] = await Promise.all([
-    supabase.from("investment_assets").select("id, asset_class, current_value").eq("user_id", userId),
+    supabase.from("investment_assets").select("id, name, ticker, asset_class, current_value").eq("user_id", userId),
     supabase.from("investment_transactions").select("transaction_type, total_amount, fees").eq("user_id", userId),
   ]);
 
@@ -82,6 +87,9 @@ async function getInvestimentosHubData() {
     .reduce((acc, tx) => acc + Number(tx.total_amount ?? 0), 0);
 
   const valorAtualInformado = rows.reduce((acc, row) => acc + Number(row.current_value ?? 0), 0);
+  const assetOptions = rows
+    .map((row) => ({ id: row.id, label: row.ticker ? `${row.name} (${row.ticker})` : row.name }))
+    .sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
 
   return {
     prefs,
@@ -90,6 +98,7 @@ async function getInvestimentosHubData() {
     totalProventos,
     valorAtualInformado,
     classes,
+    assetOptions,
   };
 }
 
@@ -99,16 +108,9 @@ export default async function InvestimentosPage() {
 
   return (
     <div className="space-y-4">
-      <ModulePage
-        title="Investimentos"
-        subtitle="Dashboard do modulo. Escolha abaixo o tipo de ativo para entrar no detalhe."
-        bullets={[
-          "Visao central por classe",
-          "Entrada manual de movimentacoes",
-          "Indicadores de rentabilidade e participacao",
-          "Rebalanceamento da carteira",
-        ]}
-      />
+      <ModulePage title="Investimentos" />
+
+      <InvestmentsHubHero assets={data.assetOptions} />
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <Card>

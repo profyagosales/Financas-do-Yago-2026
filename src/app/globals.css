@@ -1,61 +1,61 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f2f6ff;
-  --foreground: #14213d;
-  --surface: #ffffff;
-  --surface-strong: #d7e3ff;
-  --accent: #0f6ab4;
-  --muted: #526581;
-  --muted-surface: #eef4ff;
-  --border: #c7d6ee;
-  --button-primary-bg: #0f6ab4;
+  --background: #eff5f1;
+  --foreground: #13241c;
+  --surface: #f9fcfa;
+  --surface-strong: #ddece3;
+  --accent: #147a5f;
+  --muted: #4d685b;
+  --muted-surface: #ebf4ef;
+  --border: #c9ddd1;
+  --button-primary-bg: #116b54;
   --button-primary-fg: #ffffff;
-  --button-primary-hover: #0b4f86;
-  --button-secondary-bg: #deebff;
-  --button-secondary-fg: #183256;
-  --button-secondary-hover: #cadfff;
-  --button-ghost-hover: rgba(120, 150, 198, 0.16);
-  --shadow-color: rgba(20, 33, 61, 0.12);
+  --button-primary-hover: #0d5744;
+  --button-secondary-bg: #ddede5;
+  --button-secondary-fg: #18362b;
+  --button-secondary-hover: #d2e6dc;
+  --button-ghost-hover: rgba(88, 126, 108, 0.16);
+  --shadow-color: rgba(20, 54, 42, 0.14);
 }
 
 html[data-theme="dark"] {
-  --background: #020617;
-  --foreground: #e2e8f0;
-  --surface: rgba(15, 23, 42, 0.9);
-  --surface-strong: #1e293b;
-  --accent: #38bdf8;
-  --muted: #94a3b8;
-  --muted-surface: #0f172a;
-  --border: #334155;
-  --button-primary-bg: #0ea5e9;
-  --button-primary-fg: #082f49;
-  --button-primary-hover: #38bdf8;
-  --button-secondary-bg: #1e293b;
-  --button-secondary-fg: #e2e8f0;
-  --button-secondary-hover: #334155;
-  --button-ghost-hover: rgba(51, 65, 85, 0.5);
-  --shadow-color: rgba(2, 6, 23, 0.4);
+  --background: #071810;
+  --foreground: #e6f4ed;
+  --surface: rgba(13, 36, 28, 0.9);
+  --surface-strong: #1c4737;
+  --accent: #5ee5bc;
+  --muted: #9ec7b5;
+  --muted-surface: #0a271d;
+  --border: #2b5d49;
+  --button-primary-bg: #49c59f;
+  --button-primary-fg: #062119;
+  --button-primary-hover: #62e4bc;
+  --button-secondary-bg: #143426;
+  --button-secondary-fg: #d9f3e9;
+  --button-secondary-hover: #1c4735;
+  --button-ghost-hover: rgba(75, 125, 103, 0.42);
+  --shadow-color: rgba(1, 16, 9, 0.5);
 }
 
 @media (prefers-color-scheme: dark) {
   html[data-theme="system"] {
-    --background: #020617;
-    --foreground: #e2e8f0;
-    --surface: rgba(15, 23, 42, 0.9);
-    --surface-strong: #1e293b;
-    --accent: #38bdf8;
-    --muted: #94a3b8;
-    --muted-surface: #0f172a;
-    --border: #334155;
-    --button-primary-bg: #0ea5e9;
-    --button-primary-fg: #082f49;
-    --button-primary-hover: #38bdf8;
-    --button-secondary-bg: #1e293b;
-    --button-secondary-fg: #e2e8f0;
-    --button-secondary-hover: #334155;
-    --button-ghost-hover: rgba(51, 65, 85, 0.5);
-    --shadow-color: rgba(2, 6, 23, 0.4);
+    --background: #071810;
+    --foreground: #e6f4ed;
+    --surface: rgba(13, 36, 28, 0.9);
+    --surface-strong: #1c4737;
+    --accent: #5ee5bc;
+    --muted: #9ec7b5;
+    --muted-surface: #0a271d;
+    --border: #2b5d49;
+    --button-primary-bg: #49c59f;
+    --button-primary-fg: #062119;
+    --button-primary-hover: #62e4bc;
+    --button-secondary-bg: #143426;
+    --button-secondary-fg: #d9f3e9;
+    --button-secondary-hover: #1c4735;
+    --button-ghost-hover: rgba(75, 125, 103, 0.42);
+    --shadow-color: rgba(1, 16, 9, 0.5);
   }
 }
 
@@ -69,11 +69,27 @@ html[data-theme="dark"] {
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--accent) 22%, transparent) 0%, transparent 36%),
-    radial-gradient(circle at 100% 100%, color-mix(in srgb, #22c55e 10%, transparent) 0%, transparent 35%),
+    radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--accent) 22%, transparent) 0%, transparent 37%),
+    radial-gradient(circle at 96% 93%, color-mix(in srgb, #16a34a 14%, transparent) 0%, transparent 36%),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 72%, transparent), transparent 260px),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-manrope), sans-serif;
+}
+
+main {
+  animation: page-in 0.38s ease-out both;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 h1,
