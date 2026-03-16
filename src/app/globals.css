@@ -6,6 +6,57 @@
   --surface: #ffffff;
   --surface-strong: #e2e8f0;
   --accent: #0369a1;
+  --muted: #64748b;
+  --muted-surface: #f8fafc;
+  --border: #cbd5e1;
+  --button-primary-bg: #0369a1;
+  --button-primary-fg: #ffffff;
+  --button-primary-hover: #075985;
+  --button-secondary-bg: #e2e8f0;
+  --button-secondary-fg: #0f172a;
+  --button-secondary-hover: #cbd5e1;
+  --button-ghost-hover: rgba(148, 163, 184, 0.16);
+  --shadow-color: rgba(15, 23, 42, 0.06);
+}
+
+html[data-theme="dark"] {
+  --background: #020617;
+  --foreground: #e2e8f0;
+  --surface: rgba(15, 23, 42, 0.9);
+  --surface-strong: #1e293b;
+  --accent: #38bdf8;
+  --muted: #94a3b8;
+  --muted-surface: #0f172a;
+  --border: #334155;
+  --button-primary-bg: #0ea5e9;
+  --button-primary-fg: #082f49;
+  --button-primary-hover: #38bdf8;
+  --button-secondary-bg: #1e293b;
+  --button-secondary-fg: #e2e8f0;
+  --button-secondary-hover: #334155;
+  --button-ghost-hover: rgba(51, 65, 85, 0.5);
+  --shadow-color: rgba(2, 6, 23, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] {
+    --background: #020617;
+    --foreground: #e2e8f0;
+    --surface: rgba(15, 23, 42, 0.9);
+    --surface-strong: #1e293b;
+    --accent: #38bdf8;
+    --muted: #94a3b8;
+    --muted-surface: #0f172a;
+    --border: #334155;
+    --button-primary-bg: #0ea5e9;
+    --button-primary-fg: #082f49;
+    --button-primary-hover: #38bdf8;
+    --button-secondary-bg: #1e293b;
+    --button-secondary-fg: #e2e8f0;
+    --button-secondary-hover: #334155;
+    --button-ghost-hover: rgba(51, 65, 85, 0.5);
+    --shadow-color: rgba(2, 6, 23, 0.4);
+  }
 }
 
 @theme inline {
@@ -18,8 +69,8 @@
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, #dbeafe 0%, transparent 30%),
-    radial-gradient(circle at bottom right, #ffedd5 0%, transparent 34%),
+    radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 18%, transparent) 0%, transparent 30%),
+    radial-gradient(circle at bottom right, color-mix(in srgb, var(--surface-strong) 45%, transparent) 0%, transparent 34%),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-manrope), sans-serif;
@@ -29,4 +80,8 @@ h1,
 h2,
 h3 {
   font-family: var(--font-space-grotesk), sans-serif;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
 }

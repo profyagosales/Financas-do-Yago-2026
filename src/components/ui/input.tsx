@@ -5,7 +5,8 @@ export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElem
   return (
     <input
       className={cn(
-        "w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-sky-400 placeholder:text-slate-400 focus:ring-2",
+        "w-full rounded-xl border px-3 py-2 text-sm outline-none focus:ring-2",
+        "border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--foreground)] placeholder:text-[color:var(--muted)] ring-[color:var(--accent)]",
         className,
       )}
       {...props}

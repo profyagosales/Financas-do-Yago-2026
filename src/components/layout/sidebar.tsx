@@ -34,8 +34,8 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden h-screen w-72 overflow-y-auto border-r border-slate-200 bg-white/95 px-4 py-6 lg:block">
-      <p className="mb-6 text-xl font-black tracking-tight text-sky-800">Financeiro do Yago</p>
+    <aside className="hidden h-screen w-72 overflow-y-auto border-r px-4 py-6 lg:block border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_96%,transparent)]">
+      <p className="mb-6 text-xl font-black tracking-tight text-[color:var(--accent)]">Financeiro do Yago</p>
       <nav className="space-y-1">
         {links.map(([label, href]) => {
           const active = pathname === href;
@@ -45,7 +45,9 @@ export function Sidebar() {
               href={href}
               className={cn(
                 "block rounded-lg px-3 py-2 text-sm transition",
-                active ? "bg-sky-700 text-white" : "text-slate-700 hover:bg-slate-100",
+                active
+                  ? "bg-[color:var(--button-primary-bg)] text-[color:var(--button-primary-fg)]"
+                  : "text-[color:var(--foreground)] hover:bg-[color:var(--button-ghost-hover)]",
               )}
             >
               {label}

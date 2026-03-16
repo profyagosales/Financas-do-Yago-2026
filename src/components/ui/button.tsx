@@ -10,9 +10,9 @@ export function Button({ className, variant = "primary", ...props }: Props) {
     <button
       className={cn(
         "rounded-xl px-4 py-2 text-sm font-semibold transition active:scale-[0.99]",
-        variant === "primary" && "bg-sky-700 text-white hover:bg-sky-800",
-        variant === "secondary" && "bg-slate-100 text-slate-900 hover:bg-slate-200",
-        variant === "ghost" && "bg-transparent text-slate-700 hover:bg-slate-100",
+        variant === "primary" && "bg-[color:var(--button-primary-bg)] text-[color:var(--button-primary-fg)] hover:bg-[color:var(--button-primary-hover)]",
+        variant === "secondary" && "bg-[color:var(--button-secondary-bg)] text-[color:var(--button-secondary-fg)] hover:bg-[color:var(--button-secondary-hover)]",
+        variant === "ghost" && "bg-transparent text-[color:var(--foreground)] hover:bg-[color:var(--button-ghost-hover)]",
         className,
       )}
       {...props}

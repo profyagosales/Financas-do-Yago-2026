@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { RegisterServiceWorker } from "@/components/pwa/register-sw";
+import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -19,13 +21,33 @@ export const metadata: Metadata = {
   applicationName: "Financeiro do Yago",
 };
 
-export default function RootLayout({
+async function getTheme() {
+  if (!hasSupabaseEnv()) return "system" as const;
+
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return "system" as const;
+
+  const { data } = await supabase
+    .from("settings")
+    .select("theme")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const theme = data?.theme;
+  return theme === "dark" || theme === "light" || theme === "system" ? theme : ("system" as const);
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const theme = await getTheme();
+
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" data-theme={theme}>
       <body
         className={`${manrope.variable} ${spaceGrotesk.variable} antialiased`}
       >

@@ -5,7 +5,7 @@ import { OfflineQueueBanner } from "@/components/pwa/offline-queue-banner";
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-[color:var(--background)] text-[color:var(--foreground)]">
       <div className="mx-auto flex max-w-[1600px]">
         <Sidebar />
         <div className="min-h-screen flex-1">
