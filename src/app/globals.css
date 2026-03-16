@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f2f6ff;
+  --foreground: #14213d;
   --surface: #ffffff;
-  --surface-strong: #e2e8f0;
-  --accent: #0369a1;
-  --muted: #64748b;
-  --muted-surface: #f8fafc;
-  --border: #cbd5e1;
-  --button-primary-bg: #0369a1;
+  --surface-strong: #d7e3ff;
+  --accent: #0f6ab4;
+  --muted: #526581;
+  --muted-surface: #eef4ff;
+  --border: #c7d6ee;
+  --button-primary-bg: #0f6ab4;
   --button-primary-fg: #ffffff;
-  --button-primary-hover: #075985;
-  --button-secondary-bg: #e2e8f0;
-  --button-secondary-fg: #0f172a;
-  --button-secondary-hover: #cbd5e1;
-  --button-ghost-hover: rgba(148, 163, 184, 0.16);
-  --shadow-color: rgba(15, 23, 42, 0.06);
+  --button-primary-hover: #0b4f86;
+  --button-secondary-bg: #deebff;
+  --button-secondary-fg: #183256;
+  --button-secondary-hover: #cadfff;
+  --button-ghost-hover: rgba(120, 150, 198, 0.16);
+  --shadow-color: rgba(20, 33, 61, 0.12);
 }
 
 html[data-theme="dark"] {
@@ -69,8 +69,8 @@ html[data-theme="dark"] {
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 18%, transparent) 0%, transparent 30%),
-    radial-gradient(circle at bottom right, color-mix(in srgb, var(--surface-strong) 45%, transparent) 0%, transparent 34%),
+    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--accent) 22%, transparent) 0%, transparent 36%),
+    radial-gradient(circle at 100% 100%, color-mix(in srgb, #22c55e 10%, transparent) 0%, transparent 35%),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-manrope), sans-serif;
