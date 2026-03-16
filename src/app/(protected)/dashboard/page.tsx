@@ -70,6 +70,7 @@ async function getDashboardData() {
 
   const [
     { data: accountsData },
+    { data: paidAccountTxData },
     { data: investmentData },
     { data: txMonthData },
     { data: cardBillsData },
@@ -84,7 +85,12 @@ async function getDashboardData() {
     { data: settingsData },
     { data: mileageExpiringData },
   ] = await Promise.all([
-    supabase.from("bank_accounts").select("initial_balance").eq("user_id", userId).eq("is_active", true),
+    supabase.from("bank_accounts").select("id, initial_balance").eq("user_id", userId).eq("is_active", true),
+    supabase
+      .from("transactions")
+      .select("type, amount, account_id, destination_account_id")
+      .eq("user_id", userId)
+      .eq("status", "paid"),
     supabase
       .from("investment_transactions")
       .select("transaction_type, total_amount, fees")
@@ -146,7 +152,39 @@ async function getDashboardData() {
       .limit(50),
   ]);
 
-  const saldoConsolidado = (accountsData ?? []).reduce((sum, item) => sum + Number(item.initial_balance ?? 0), 0);
+  const activeAccountIds = new Set((accountsData ?? []).map((item) => item.id));
+  const paidFlowByAccount = new Map<string, number>();
+
+  for (const tx of paidAccountTxData ?? []) {
+    const amount = Number(tx.amount ?? 0);
+    if (tx.type === "income" || tx.type === "adjustment") {
+      if (tx.account_id && activeAccountIds.has(tx.account_id)) {
+        paidFlowByAccount.set(tx.account_id, (paidFlowByAccount.get(tx.account_id) ?? 0) + amount);
+      }
+      continue;
+    }
+
+    if (tx.type === "expense") {
+      if (tx.account_id && activeAccountIds.has(tx.account_id)) {
+        paidFlowByAccount.set(tx.account_id, (paidFlowByAccount.get(tx.account_id) ?? 0) - amount);
+      }
+      continue;
+    }
+
+    if (tx.type === "transfer") {
+      if (tx.account_id && activeAccountIds.has(tx.account_id)) {
+        paidFlowByAccount.set(tx.account_id, (paidFlowByAccount.get(tx.account_id) ?? 0) - amount);
+      }
+      if (tx.destination_account_id && activeAccountIds.has(tx.destination_account_id)) {
+        paidFlowByAccount.set(tx.destination_account_id, (paidFlowByAccount.get(tx.destination_account_id) ?? 0) + amount);
+      }
+    }
+  }
+
+  const saldoConsolidado = (accountsData ?? []).reduce(
+    (sum, item) => sum + Number(item.initial_balance ?? 0) + (paidFlowByAccount.get(item.id) ?? 0),
+    0,
+  );
 
   const totalInvestido = (investmentData ?? []).reduce((sum, item) => {
     if (["buy", "deposit"].includes(item.transaction_type)) {
