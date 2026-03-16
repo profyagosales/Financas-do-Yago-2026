@@ -1,5 +1,5 @@
 export type TransactionTypeFilter = "all" | "income" | "expense" | "transfer" | "adjustment";
-export type TransactionStatusFilter = "all" | "non_canceled" | "pending" | "paid" | "canceled";
+export type TransactionStatusFilter = "all" | "non_canceled" | "pending" | "paid" | "overdue" | "canceled";
 export type ExportFormat = "csv" | "json";
 
 function isIsoDate(value: string | null) {
@@ -33,7 +33,7 @@ export function parseTypeFilter(input: URL): TransactionTypeFilter {
 
 export function parseStatusFilter(input: URL, fallback: TransactionStatusFilter = "all"): TransactionStatusFilter {
   const raw = input.searchParams.get("status");
-  if (raw === "all" || raw === "non_canceled" || raw === "pending" || raw === "paid" || raw === "canceled") {
+  if (raw === "all" || raw === "non_canceled" || raw === "pending" || raw === "paid" || raw === "overdue" || raw === "canceled") {
     return raw;
   }
   return fallback;

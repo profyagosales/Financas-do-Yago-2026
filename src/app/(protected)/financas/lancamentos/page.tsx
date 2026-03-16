@@ -57,7 +57,7 @@ async function getFormOptions() {
   const [{ data: categoriesData }, { data: accountsData }, { data: cardsData }] = await Promise.all([
     supabase
       .from("categories")
-      .select("id, name")
+      .select("id, name, type")
       .eq("user_id", userId)
       .eq("is_active", true)
       .order("name", { ascending: true }),
@@ -76,7 +76,7 @@ async function getFormOptions() {
   ]);
 
   return {
-    categories: (categoriesData ?? []).map((item) => ({ id: item.id, label: item.name })),
+    categories: (categoriesData ?? []).map((item) => ({ id: item.id, label: item.name, type: item.type })),
     accounts: (accountsData ?? []).map((item) => ({ id: item.id, label: item.name })),
     cards: (cardsData ?? []).map((item) => ({ id: item.id, label: item.name })),
     icons: getIconsByDomains(["expense", "subscription", "saas", "market", "transport", "utility", "telecom", "insurance", "ecommerce", "mileage", "airline", "crypto", "broker", "wallet"]).map((item) => ({
@@ -394,7 +394,7 @@ export default async function LancamentosPage() {
                               credit_card_id: tx.credit_card_id,
                               competency_date: tx.competency_date,
                               payment_date: tx.payment_date,
-                              status: tx.status as "pending" | "paid" | "canceled",
+                              status: tx.status as "pending" | "paid" | "overdue" | "canceled",
                               notes: tx.notes,
                             }}
                             categories={options.categories}

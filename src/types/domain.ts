@@ -1,7 +1,7 @@
 export type ID = string;
 
 export type TransactionType = "income" | "expense" | "transfer" | "adjustment";
-export type TransactionStatus = "pending" | "paid" | "canceled";
+export type TransactionStatus = "pending" | "paid" | "overdue" | "canceled";
 
 export interface Profile {
   id: ID;

@@ -16,7 +16,7 @@ type TxRow = {
   amount: number;
   description: string;
   competency_date: string;
-  status: "pending" | "paid" | "canceled";
+  status: "pending" | "paid" | "overdue" | "canceled";
   category_id: string | null;
   account_id: string | null;
   credit_card_id: string | null;
@@ -89,7 +89,7 @@ async function getFinancasFormOptions() {
   const [{ data: categoriesData }, { data: accountsData }, { data: cardsData }, tagsData] = await Promise.all([
     supabase
       .from("categories")
-      .select("id, name")
+      .select("id, name, type")
       .eq("user_id", userId)
       .eq("is_active", true)
       .order("name", { ascending: true }),
@@ -109,7 +109,7 @@ async function getFinancasFormOptions() {
   ]);
 
   return {
-    categories: (categoriesData ?? []).map((item) => ({ id: item.id, label: item.name })),
+    categories: (categoriesData ?? []).map((item) => ({ id: item.id, label: item.name, type: item.type })),
     accounts: (accountsData ?? []).map((item) => ({ id: item.id, label: item.name })),
     cards: (cardsData ?? []).map((item) => ({ id: item.id, label: item.name })),
     icons: getIconsByDomains(["expense", "subscription", "saas", "market", "transport", "utility", "telecom", "insurance", "ecommerce", "mileage", "airline", "crypto", "broker", "wallet"]).map((item) => ({

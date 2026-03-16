@@ -98,6 +98,7 @@ function normalizeCsvType(value: string) {
 function normalizeCsvStatus(value: string) {
   const v = value.trim().toLowerCase();
   if (["paid", "pago"].includes(v)) return "paid" as const;
+  if (["overdue", "atrasado"].includes(v)) return "overdue" as const;
   if (["canceled", "cancelado"].includes(v)) return "canceled" as const;
   if (["pending", "pendente", ""].includes(v)) return "pending" as const;
   return null;
@@ -360,9 +361,14 @@ export async function createTransaction(input: unknown) {
     recurring_rule: recurringMonthly ? "monthly" : base.recurring_rule ?? null,
   };
 
+  const initialStatus = base.status ?? "pending";
+  const initialPaymentDate = initialStatus === "paid"
+    ? (base.payment_date && base.payment_date.trim() !== "" ? base.payment_date : base.competency_date)
+    : null;
+
   const { data: inserted, error } = await supabase
     .from("transactions")
-    .insert({ ...insertBase, user_id: userId, status: "pending" })
+    .insert({ ...insertBase, user_id: userId, status: initialStatus, payment_date: initialPaymentDate })
     .select("id, competency_date, amount")
     .single();
 
@@ -398,7 +404,7 @@ export async function createTransaction(input: unknown) {
       return {
         ...insertBase,
         user_id: userId,
-        status: "pending",
+        status: initialStatus === "paid" ? "pending" : initialStatus,
         payment_date: null,
         competency_date: nextDate.toISOString().slice(0, 10),
       };
@@ -527,7 +533,7 @@ export async function importTransactionsCsv(formData: FormData) {
     competency_date: string;
     payment_date: string | null;
     notes: string | null;
-    status: "pending" | "paid" | "canceled";
+    status: "pending" | "paid" | "overdue" | "canceled";
   }> = [];
 
   const errors: string[] = [];
@@ -628,8 +634,9 @@ export async function updateTransaction(id: string, input: unknown) {
     credit_card_id: z.string().uuid().nullable().optional(),
     competency_date: z.string(),
     payment_date: z.string().nullable().optional(),
+    payment_method: z.enum(["card", "pix", "debit", "cash", "bank_transfer", "other"]).nullable().optional(),
     notes: z.string().nullable().optional(),
-    status: z.enum(["pending", "paid", "canceled"]),
+    status: z.enum(["pending", "paid", "overdue", "canceled"]),
   });
   const payload = updateSchema.parse(input);
   const supabase = await createServerSupabaseClient();
@@ -650,6 +657,7 @@ export async function updateTransaction(id: string, input: unknown) {
       destination_account_id: opt(payload.destination_account_id),
       credit_card_id: opt(payload.credit_card_id),
       payment_date: opt(payload.payment_date),
+      payment_method: opt(payload.payment_method),
       notes: opt(payload.notes),
     })
     .eq("id", id)

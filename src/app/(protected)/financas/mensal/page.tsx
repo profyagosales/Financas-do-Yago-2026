@@ -14,7 +14,7 @@ type TxRow = {
   description: string;
   amount: number;
   competency_date: string;
-  status: "pending" | "paid" | "canceled";
+  status: "pending" | "paid" | "overdue" | "canceled";
   category_id: string | null;
 };
 

@@ -17,7 +17,7 @@ const editSchema = z.object({
   credit_card_id: z.string().optional(),
   competency_date: z.string(),
   payment_date: z.string().optional(),
-  status: z.enum(["pending", "paid", "canceled"]),
+  status: z.enum(["pending", "paid", "overdue", "canceled"]),
   notes: z.string().optional(),
 });
 
@@ -40,7 +40,7 @@ interface Props {
     credit_card_id?: string | null;
     competency_date: string;
     payment_date?: string | null;
-    status: "pending" | "paid" | "canceled";
+    status: "pending" | "paid" | "overdue" | "canceled";
     notes?: string | null;
   };
   categories: Option[];
@@ -108,6 +108,7 @@ export function TransactionEditForm({
       <select className={selectCls} {...register("status")}>
         <option value="pending">Pendente</option>
         <option value="paid">Pago</option>
+        <option value="overdue">Atrasado</option>
         <option value="canceled">Cancelado</option>
       </select>
 

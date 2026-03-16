@@ -42,6 +42,8 @@ export const transactionSchema = z
     credit_card_id: z.string().uuid().nullable().optional(),
     competency_date: z.string(),
     payment_date: z.string().optional(),
+    status: z.enum(["pending", "paid", "overdue", "canceled"]).default("pending"),
+    payment_method: z.enum(["card", "pix", "debit", "cash", "bank_transfer", "other"]).optional(),
     notes: z.string().optional(),
     icon_key: z.string().optional(),
     icon_url: z.string().optional(),
