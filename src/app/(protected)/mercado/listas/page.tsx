@@ -1,4 +1,4 @@
-import { deleteGroceryItem, deleteGroceryList, markGroceryItemPurchased } from "@/actions/grocery";
+import { deleteGroceryItem, deleteGroceryList, markGroceryItemPurchased, toggleGroceryItemFavorite } from "@/actions/grocery";
 import { ModulePage } from "@/components/common/module-page";
 import { GroceryItemForm } from "@/components/forms/grocery-item-form";
 import { GroceryListForm } from "@/components/forms/grocery-list-form";
@@ -22,6 +22,7 @@ type ItemRow = {
   total_price: number | null;
   establishment: string | null;
   item_category: string | null;
+  is_favorite: boolean;
   was_purchased: boolean;
   purchased_at: string | null;
 };
@@ -58,8 +59,9 @@ async function getListsPageData() {
       .order("created_at", { ascending: false }),
     supabase
       .from("grocery_items")
-      .select("id, list_id, raw_name, quantity, unit, unit_price, total_price, establishment, item_category, was_purchased, purchased_at")
+      .select("id, list_id, raw_name, quantity, unit, unit_price, total_price, establishment, item_category, is_favorite, was_purchased, purchased_at")
       .eq("user_id", userId)
+      .order("is_favorite", { ascending: false })
       .order("was_purchased", { ascending: true })
       .order("created_at", { ascending: false })
       .limit(500),
@@ -93,6 +95,7 @@ export default async function MercadoListasPage() {
   const totalItems = items.length;
   const purchased = items.filter((i) => i.was_purchased).length;
   const toBuy = totalItems - purchased;
+  const favorites = items.filter((i) => i.is_favorite);
   const costEstimate = items
     .filter((i) => !i.was_purchased && i.unit_price !== null)
     .reduce((sum, i) => sum + Number(i.unit_price), 0);
@@ -104,6 +107,7 @@ export default async function MercadoListasPage() {
         subtitle="Listas de compra reutilizaveis e controle de itens."
         bullets={[
           "Itens por lista",
+          "Itens favoritos reutilizaveis",
           "Marcar como comprado",
           "Preco por item",
           "Historico de precos automatico",
@@ -118,7 +122,7 @@ export default async function MercadoListasPage() {
         </Card>
       ) : null}
 
-      <div className="grid gap-3 lg:grid-cols-4">
+      <div className="grid gap-3 lg:grid-cols-5">
         <Card className="bg-gradient-to-br from-white to-slate-50">
           <p className="text-xs uppercase tracking-wide text-slate-500">Listas</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{lists.length}</p>
@@ -132,10 +136,34 @@ export default async function MercadoListasPage() {
           <p className="mt-1 text-2xl font-black text-slate-900">{toBuy}</p>
         </Card>
         <Card className="bg-gradient-to-br from-white to-slate-50">
+          <p className="text-xs uppercase tracking-wide text-slate-500">Favoritos</p>
+          <p className="mt-1 text-2xl font-black text-slate-900">{favorites.length}</p>
+        </Card>
+        <Card className="bg-gradient-to-br from-white to-slate-50">
           <p className="text-xs uppercase tracking-wide text-slate-500">Estimativa restante</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{formatMoney(costEstimate)}</p>
         </Card>
       </div>
+
+      <Card>
+        <h3 className="mb-3 text-sm font-bold text-slate-700">Itens favoritos</h3>
+        {favorites.length === 0 ? (
+          <p className="text-sm text-slate-600">Marque itens recorrentes como favoritos para acesso rapido.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {favorites.map((item) => (
+              <div
+                key={item.id}
+                className="rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+              >
+                <span className="font-semibold">{item.raw_name}</span>
+                {item.item_category ? <span className="ml-2 text-xs text-amber-700">{item.item_category}</span> : null}
+                {item.unit_price !== null ? <span className="ml-2 text-xs text-amber-700">{formatMoney(item.unit_price)}</span> : null}
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
 
       <div className="grid gap-4 xl:grid-cols-2">
         <div className="space-y-2">
@@ -214,6 +242,7 @@ export default async function MercadoListasPage() {
                     </td>
                     <td className="border-b border-slate-100 py-2 pr-3">
                       <span className={item.was_purchased ? "line-through" : ""}>{item.raw_name}</span>
+                      {item.is_favorite ? <span className="ml-2 text-xs font-semibold text-amber-600">Favorito</span> : null}
                       {item.item_category ? (
                         <span className="ml-2 text-xs text-slate-400">{item.item_category}</span>
                       ) : null}
@@ -230,6 +259,11 @@ export default async function MercadoListasPage() {
                     </td>
                     <td className="border-b border-slate-100 py-2 pr-3">
                       <div className="flex gap-2">
+                        <form action={toggleGroceryItemFavorite.bind(null, item.id)}>
+                          <Button type="submit" variant="secondary">
+                            {item.is_favorite ? "Remover favorito" : "Favoritar"}
+                          </Button>
+                        </form>
                         <form action={markGroceryItemPurchased.bind(null, item.id)}>
                           <Button type="submit" variant="secondary">
                             {item.was_purchased ? "Desmarcar" : "Marcar comprado"}

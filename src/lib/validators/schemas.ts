@@ -122,6 +122,7 @@ export const groceryItemSchema = z.object({
   unit_price: z.coerce.number().nonnegative().optional(),
   establishment: z.string().optional(),
   item_category: z.string().optional(),
+  is_favorite: z.boolean().default(false),
 });
 
 export const groceryNoteSchema = z.object({

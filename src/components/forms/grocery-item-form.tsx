@@ -34,7 +34,7 @@ export function GroceryItemForm({ lists }: Props) {
     formState: { isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: { list_id: lists[0]?.id },
+    defaultValues: { list_id: lists[0]?.id, is_favorite: false },
   });
 
   const onSubmit = async (values: FormData) => {
@@ -50,7 +50,16 @@ export function GroceryItemForm({ lists }: Props) {
       setMessage(result.message ?? "Erro ao adicionar item.");
       return;
     }
-    reset({ list_id: values.list_id, raw_name: "", quantity: undefined, unit: "", unit_price: undefined, establishment: values.establishment, item_category: "" });
+    reset({
+      list_id: values.list_id,
+      raw_name: "",
+      quantity: undefined,
+      unit: "",
+      unit_price: undefined,
+      establishment: values.establishment,
+      item_category: "",
+      is_favorite: values.is_favorite,
+    });
     setMessage("Item adicionado.");
   };
 
@@ -74,6 +83,11 @@ export function GroceryItemForm({ lists }: Props) {
       <Input placeholder="Unidade (kg, un, L...)" {...register("unit")} />
       <Input type="number" step="0.01" placeholder="Preco unitario" {...register("unit_price")} />
       <Input className="md:col-span-3" placeholder="Estabelecimento" {...register("establishment")} />
+
+      <label className="md:col-span-3 flex items-center gap-2 text-sm text-slate-700">
+        <input type="checkbox" {...register("is_favorite")} />
+        Marcar como item favorito para reutilizar depois
+      </label>
 
       {message ? <p className="md:col-span-3 text-sm text-slate-600">{message}</p> : null}
 

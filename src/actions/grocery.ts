@@ -69,6 +69,7 @@ export async function addGroceryItem(input: unknown) {
     total_price: totalPrice ?? null,
     establishment: opt(payload.establishment) ?? null,
     item_category: opt(payload.item_category) ?? null,
+    is_favorite: Boolean(payload.is_favorite),
     was_purchased: false,
   });
 
@@ -120,6 +121,30 @@ export async function markGroceryItemPurchased(id: string) {
 
   revalidatePath("/mercado/listas");
   revalidatePath("/mercado/historico");
+}
+
+export async function toggleGroceryItemFavorite(id: string) {
+  const supabase = await createServerSupabaseClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return;
+
+  const { data: item } = await supabase
+    .from("grocery_items")
+    .select("is_favorite")
+    .eq("id", id)
+    .eq("user_id", userId)
+    .single();
+
+  if (!item) return;
+
+  await supabase
+    .from("grocery_items")
+    .update({ is_favorite: !item.is_favorite })
+    .eq("id", id)
+    .eq("user_id", userId);
+
+  revalidatePath("/mercado/listas");
 }
 
 export async function deleteGroceryItem(id: string) {

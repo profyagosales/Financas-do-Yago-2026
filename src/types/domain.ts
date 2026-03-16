@@ -211,6 +211,7 @@ export interface GroceryItem {
   establishment?: string | null;
   purchased_at?: string | null;
   item_category?: string | null;
+  is_favorite: boolean;
   was_purchased: boolean;
   created_at: string;
   updated_at: string;
