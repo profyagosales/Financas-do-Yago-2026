@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -57,17 +58,17 @@ export function FormModal({
             role="dialog"
             aria-modal="true"
             className={cn(
-              "relative z-10 flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-[color:color-mix(in_srgb,var(--border)_82%,var(--accent))] bg-[color:color-mix(in_srgb,var(--surface)_90%,transparent)] p-4 shadow-[0_30px_80px_color-mix(in_srgb,var(--foreground)_18%,transparent)] backdrop-blur-xl md:max-h-[calc(100vh-4rem)] md:p-6",
+              "relative z-10 flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-[color:color-mix(in_srgb,var(--border)_82%,var(--accent))] bg-[color:color-mix(in_srgb,var(--surface)_90%,transparent)] p-3 shadow-[0_30px_80px_color-mix(in_srgb,var(--foreground)_18%,transparent)] backdrop-blur-xl md:max-h-[calc(100vh-4rem)] md:p-4",
               WIDTH_BY_SIZE[size],
             )}
           >
-            <div className="mb-4 flex items-start justify-between gap-4">
+            <div className="mb-3 flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-lg font-bold text-[color:var(--foreground)]">{title}</h2>
                 {description ? <p className="mt-1 text-sm text-[color:var(--muted)]">{description}</p> : null}
               </div>
-              <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-                Fechar
+              <Button type="button" variant="ghost" onClick={() => setOpen(false)} aria-label="Fechar modal" className="h-9 w-9 p-0">
+                <X size={18} />
               </Button>
             </div>
 

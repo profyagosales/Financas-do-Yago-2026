@@ -141,7 +141,7 @@ export function TransactionForm({ categories, accounts, cards, tags }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 pb-24 md:p-5 md:pb-24">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pb-20">
       <div className={sectionCls}>
         <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Descricao</label>
         <Input className={inputCls} placeholder="Ex.: Conta de energia" {...register("description")} />
@@ -304,10 +304,10 @@ export function TransactionForm({ categories, accounts, cards, tags }: Props) {
       ) : null}
 
       {errors.root?.message ? <p className="text-xs text-red-600">{errors.root.message}</p> : null}
-      <div className="sticky bottom-0 -mx-4 border-t border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_88%,transparent)] px-4 py-3 backdrop-blur md:-mx-5 md:px-5">
+      <div className="sticky bottom-0 z-10 border-t border-[color:var(--border)] bg-[color:color-mix(in_srgb,var(--surface)_94%,transparent)] py-3 backdrop-blur">
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting} className="min-w-52">
-          {isSubmitting ? "Salvando..." : "Cadastrar lancamento"}
+            {isSubmitting ? "Salvando..." : "Salvar"}
           </Button>
         </div>
       </div>
