@@ -1,83 +1,119 @@
-# Financeiro do Yago 2026
+# Financeiro do Yago
 
-Sistema pessoal de financas com foco em uso unico, arquitetura profissional e base pronta para escalar.
+Painel pessoal de finanças — web app + PWA para uso individual. Consolida finanças pessoais, investimentos, milhas, metas, listas de mercado e lista de desejo em um único sistema profissional.
+
+---
 
 ## Stack
 
-- Next.js App Router + TypeScript
-- Tailwind CSS
-- Supabase (Auth, Postgres, Storage)
-- React Hook Form + Zod
-- TanStack Table
-- Recharts
-- PWA (manifest + service worker)
+| | |
+|---|---|
+| Framework | Next.js 15 — App Router + TypeScript strict |
+| Estilização | Tailwind CSS v4 + CSS Custom Properties (tema claro/escuro) |
+| Tipografia | Manrope (corpo) · Space Grotesk (títulos) |
+| Backend | Supabase — Auth · Postgres · Storage · RLS |
+| Formulários | React Hook Form + Zod |
+| Tabelas | TanStack Table v8 |
+| Gráficos | Recharts |
+| Ícones | Lucide React |
+| PWA | Manifest + Service Worker |
 
-## Modulos implementados (base)
+---
 
-- Login
-- Dashboard
-- Financas
-	- Mensal
-	- Anual
-	- Contas
-	- Cartoes
-	- Lancamentos
-	- Categorias
-- Investimentos
-	- Renda Fixa
-	- FIIs
-	- Bolsa
-	- Cripto
-- Milhas
-	- Livelo
-	- Latam Pass
-	- Azul
-- Mercado
-	- Listas
-	- Notas fiscais
-	- Historico de precos
-- Lista de Desejo
-- Metas
-- Relatorios
-- Configuracoes
+## Módulos
 
-## Requisitos
+| Hub | Subpáginas |
+|---|---|
+| **Dashboard** | Visão consolidada com gráficos e alertas |
+| **Finanças** | Mensal · Anual · Contas · Cartões · Lançamentos · Categorias |
+| **Investimentos** | Renda Fixa · FIIs · Bolsa · Cripto |
+| **Milhas** | Livelo · LATAM Pass · Azul |
+| **Mercado** | Listas · Notas Fiscais · Histórico de Preços |
+| **Lista de Desejo** | Itens com preço alvo e prioridade |
+| **Metas** | Objetivos financeiros com aportes parciais |
+| **Relatórios** | Análises consolidadas por período |
+| **Configurações** | Tema, perfil, preferências |
+
+---
+
+## Pré-requisitos
 
 - Node.js 20+
-- Projeto Supabase criado
+- Conta no [Supabase](https://supabase.com) com projeto criado
 
-## Variaveis de ambiente
+---
 
-Crie o arquivo .env.local:
+## Configuração
+
+### 1. Variáveis de ambiente
+
+Crie `.env.local` na raiz do projeto:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://SEU-PROJETO.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=SUA_ANON_KEY
 ```
 
-## Executar localmente
+### 2. Banco de dados
+
+Execute as migrations e o seed em ordem:
+
+```bash
+# Via scripts automatizados
+./scripts/supabase/apply-migrations.sh
+./scripts/supabase/apply-seed.sh
+```
+
+Ou manualmente no SQL Editor do Supabase:
+
+```
+1. supabase/migrations/202603150001_initial_schema.sql
+2. supabase/migrations/202603150002_finance_icons_and_attachments.sql
+3. supabase/migrations/202603150003_transaction_icon_key.sql
+4. supabase/migrations/202603150004_dynamic_icon_cache_and_custom_icons.sql
+5. supabase/seed/001_base_categories.sql
+```
+
+### 3. Executar
 
 ```bash
 npm install
 npm run dev
 ```
 
-Aplicacao em http://localhost:3000
+Acesse: http://localhost:3000
 
-## Banco de dados
+---
 
-Arquivos SQL principais:
+## Documentação técnica
 
-- supabase/migrations/202603150001_initial_schema.sql
-- supabase/migrations/202603150002_finance_icons_and_attachments.sql
-- supabase/seed/001_base_categories.sql
+| Documento | Conteúdo |
+|---|---|
+| [docs/arquitetura.md](docs/arquitetura.md) | Estrutura de pastas, fluxo de auth, padrão de páginas, Server Actions, convenções |
+| [docs/design-system.md](docs/design-system.md) | Tokens CSS, paleta, tipografia, gradientes, componentes UI, padrões visuais |
+| [docs/componentes.md](docs/componentes.md) | API de cada componente: Button, Card, ModulePage, Heroes, Forms, etc. |
+| [docs/banco-de-dados.md](docs/banco-de-dados.md) | Schema completo, tabelas, índices, RLS, triggers, migrations, seed |
+| [financeiro_do_yago_blueprint_do_produto.md](financeiro_do_yago_blueprint_do_produto.md) | Blueprint de produto: requisitos, módulos e casos de uso |
 
-Ordem recomendada:
+---
 
-1. Rodar migration inicial
-2. Rodar migration de icones/anexos (bucket attachments + policies)
-3. Rodar seed de categorias
-4. Validar RLS e policies
+## Design
+
+O app usa um sistema de **CSS Custom Properties** com dois temas (claro e escuro) baseados em verde esmeralda/teal. O tema é controlado pelo atributo `data-theme` em `<html>` e salvo nas `settings` do usuário no banco.
+
+A escala de cores `slate-*` do Tailwind é remapeada via `@theme inline` para os tokens do tema — qualquer classe `text-slate-*`, `border-slate-*` ou `bg-slate-*` adapta-se automaticamente ao tema ativo.
+
+Veja [docs/design-system.md](docs/design-system.md) para detalhes completos.
+
+---
+
+## Segurança
+
+- **RLS ativo em todas as tabelas** — usuário só acessa seus próprios dados
+- **Autenticação via Supabase Auth** — email + senha, sessão gerenciada por JWT
+- **Middleware Next.js** (`src/proxy.ts`) — protege todas as rotas de `/dashboard` em diante
+- **Server Actions** — toda escrita no banco passa por validação Zod no servidor antes de qualquer query
+- **Sem dados entre usuários** — aplicação single-user por design
 
 Automacao e acesso direto ao Supabase:
 
